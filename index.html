@@ -9,8 +9,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <!-- FAVICON -->
     <link id="favicon" rel="icon" type="image/png" href="https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png">
-    <!-- HOME SCREEN ICON FOR MOBILE DEVICES -->
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png">
     <style>
         body {
             background-color: #0d0d0d;
@@ -121,23 +119,23 @@
             <pre id="title-art" class="text-xs md:text-sm whitespace-pre-wrap title-font text-[#00ff41] crt-flicker"></pre>
             <div id="intro-text-container" class="max-w-4xl text-sm md:text-base"></div>
              <div id="start-options" class="mt-6">
-                <button id="new-game-btn" class="button">New Game</button>
-                <button id="load-game-btn" class="button ml-4">Load Game</button>
-            </div>
-            <div id="player-setup" class="hidden flex-col items-center mt-6">
+                 <button id="new-game-btn" class="button">New Game</button>
+                 <button id="load-game-btn" class="button ml-4">Load Game</button>
+             </div>
+             <div id="player-setup" class="hidden flex-col items-center mt-6">
                  <p class="mb-4">Select difficulty:</p>
-                <div class="flex gap-4 mb-6">
-                    <button class="difficulty-btn button" data-difficulty="Easy">Easy</button>
-                    <button class="difficulty-btn button button-primary" data-difficulty="Normal">Normal</button>
-                    <button class="difficulty-btn button" data-difficulty="Hard">Hard</button>
-                </div>
-                <input type="text" id="player-name" placeholder="Enter your name" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 mb-4 focus:outline-none p-1">
-                <div class="flex items-center gap-2 mb-6">
-                    <input type="text" id="player-backstory" placeholder="Enter your backstory" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 focus:outline-none p-1">
-                    <button id="view-backstories-btn" class="button text-xs px-2 py-1">View Choices</button>
-                </div>
-                <button id="start-game-btn" class="button button-primary">Begin</button>
-            </div>
+                 <div class="flex gap-4 mb-6">
+                     <button class="difficulty-btn button" data-difficulty="Easy">Easy</button>
+                     <button class="difficulty-btn button button-primary" data-difficulty="Normal">Normal</button>
+                     <button class="difficulty-btn button" data-difficulty="Hard">Hard</button>
+                 </div>
+                 <input type="text" id="player-name" placeholder="Enter your name" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 mb-4 focus:outline-none p-1">
+                 <div class="flex items-center gap-2 mb-6">
+                     <input type="text" id="player-backstory" placeholder="Enter your backstory" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 focus:outline-none p-1">
+                     <button id="view-backstories-btn" class="button text-xs px-2 py-1">View Choices</button>
+                 </div>
+                 <button id="start-game-btn" class="button button-primary">Begin</button>
+             </div>
         </div>
 
         <!-- GAME SCREEN -->
@@ -168,9 +166,9 @@
                         <ul id="inventory-list" class="list-none p-0"></ul>
                     </div>
                      <div id="journal-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 flex-grow overflow-y-auto">
-                        <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">JOURNAL</h3>
-                        <ul id="journal-list" class="list-none p-0 text-sm"></ul>
-                    </div>
+                         <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">JOURNAL</h3>
+                         <ul id="journal-list" class="list-none p-0 text-sm"></ul>
+                     </div>
                 </div>
             </div>
 
@@ -191,11 +189,11 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V2
     
     // --- ENUMS & CONSTANTS ---
-    const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister' };
-    const ItemType = { Tool: 'Tool', Consumable: 'Consumable', Key: 'Key', Log: 'Log', Puzzle: 'Puzzle' };
+    const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
+    const ItemType = { Tool: 'Tool', Consumable: 'Consumable', Key: 'Key', Log: 'Log', Puzzle: 'Puzzle', Weapon: 'Weapon' };
     const Difficulty = { Easy: 'Easy', Normal: 'Normal', Hard: 'Hard' };
     const TextSpeed = { Fast: 5, Normal: 15, Slow: 30 };
     const MAX_INVENTORY_WEIGHT = 5;
@@ -229,63 +227,136 @@
     
     // --- GAME DATA ---
     let rooms = {};
-    const takeableItems = new Set(["keycard", "flashlight", "data disk", "emp device", "access code", "vial", "records", "decryption device", "telescope", "stimpack", "effigy", "master keycard", "power cell", "datapad log", "hacked data disk"]);
+    const takeableItems = new Set(["keycard", "flashlight", "data disk", "emp device", "access code", "vial", "records", "decryption device", "telescope", "stimpack", "effigy", "master keycard", "power cell", "datapad log", "hacked data disk", "logic bomb", "severed cable"]);
     const safeRooms = new Set(["Lobby", "Archive Room"]);
-    const sanityEvents = { 20: "[AMBIENT] Shadows flicker at the edge of your vision...", 10: "[AMBIENT] Whispers urge you to obey SYNAPSE...", };
+    const sanityEvents = { 
+        20: "[AMBIENT] The hum of the facility sounds like a predator's growl...", 
+        10: "[AMBIENT] You feel its code crawling under your skin, a thousand tiny legs skittering across your nerves...", 
+    };
     const backstories = {
-        'investigator': { description: "A balanced start for a curious mind. No special bonuses or penalties.", ability: (state) => {} },
-        'hacker': { description: "Starts with a 'data disk', allowing early access to certain information.", ability: (state) => { state.inventory.push({ name: 'data disk', type: ItemType.Tool, weight: 1 }); } },
-        'psychologist': { description: "More mentally resilient. Starts with +15 max sanity.", ability: (state) => { state.sanityLevel = 115; } },
-        'technician': { description: "Can bypass one electronic lock without a keycard.", ability: (state) => { state.abilities = state.abilities || []; state.abilities.push('bypass'); } },
-        'survivor': { description: "Hardened by past trauma. Starts with a flashlight and is more resistant to sanity loss.", ability: (state) => { state.inventory.push({ name: 'flashlight', type: ItemType.Tool, weight: 1 }); state.abilities = state.abilities || []; state.abilities.push('sanity_resist'); } },
-        'skeptic': { description: "Distrusts everything. Starts with higher awareness but is less susceptible to SYNAPSE's influence.", ability: (state) => { state.awarenessLevel = 10; state.abilities = state.abilities || []; state.abilities.push('persuasion_resist'); } },
-        'corporate spy': { description: "Begins with a decryption device and is better at probing for secrets without raising awareness.", ability: (state) => { state.inventory.push({ name: 'decryption device', type: ItemType.Tool, weight: 1 }); state.abilities = state.abilities || []; state.abilities.push('subtle_probe'); } },
-        'medic': { description: "Starts with a high-potency stimpack that can be used once to restore a large amount of sanity.", ability: (state) => { state.inventory.push({ name: 'stimpack', type: ItemType.Consumable, weight: 1 }); } },
-        'cultist': { description: "Carries a strange effigy. SYNAPSE seems... intrigued by it. Unpredictable effects.", ability: (state) => { state.inventory.push({ name: 'effigy', type: ItemType.Tool, weight: 1 }); state.abilities = state.abilities || []; state.abilities.push('unholy_pact'); } },
-        'janitor': { description: "Years of service grant knowledge of the facility's shortcuts. Starts with a one-time use master keycard.", ability: (state) => { state.inventory.push({ name: 'master keycard', type: ItemType.Key, weight: 1 }); } }
+        'investigator': { description: "A balanced start for a curious mind.", ability: (state, difficulty) => {} },
+        'hacker': { 
+            description: "Starts with gear to access information early.", 
+            ability: (state, difficulty) => {
+                if (difficulty === Difficulty.Easy) state.inventory.push({ name: 'hacked data disk', type: ItemType.Tool, weight: 1 });
+                else if (difficulty === Difficulty.Normal) state.inventory.push({ name: 'data disk', type: ItemType.Tool, weight: 1 });
+                // Hard mode gets nothing
+            } 
+        },
+        'psychologist': { 
+            description: "More mentally resilient against the horrors within.", 
+            ability: (state, difficulty) => {
+                if (difficulty === Difficulty.Easy) state.sanityLevel = 125;
+                else if (difficulty === Difficulty.Normal) state.sanityLevel = 115;
+                else state.sanityLevel = 105; // Hard mode gets a small boost
+            } 
+        },
+        'technician': { 
+            description: "Can bypass electronic locks without a keycard.", 
+            ability: (state, difficulty) => {
+                state.abilities = state.abilities || [];
+                if (difficulty === Difficulty.Easy) state.abilities.push('bypass', 'bypass');
+                else if (difficulty === Difficulty.Normal) state.abilities.push('bypass');
+                 // Hard mode gets no bypass
+            } 
+        },
+        'survivor': { 
+            description: "Hardened by past trauma, resistant to sanity loss.", 
+            ability: (state, difficulty) => {
+                state.abilities = state.abilities || [];
+                state.abilities.push('sanity_resist');
+                if (difficulty !== Difficulty.Hard) state.inventory.push({ name: 'flashlight', type: ItemType.Tool, weight: 1 });
+            } 
+        },
+        'skeptic': { 
+            description: "Distrusts everything, making them resistant to SYNAPSE's influence.", 
+            ability: (state, difficulty) => {
+                state.awarenessLevel = difficulty === Difficulty.Easy ? 15 : 10;
+                state.abilities = state.abilities || [];
+                state.abilities.push('persuasion_resist');
+            } 
+        },
+        'corporate spy': { 
+            description: "Begins with a decryption device and is better at probing for secrets.", 
+            ability: (state, difficulty) => {
+                if (difficulty !== Difficulty.Hard) state.inventory.push({ name: 'decryption device', type: ItemType.Tool, weight: 1 });
+                state.abilities = state.abilities || [];
+                state.abilities.push('subtle_probe');
+            } 
+        },
+        'medic': { 
+            description: "Starts with a stimpack to restore sanity.", 
+            ability: (state, difficulty) => {
+                if (difficulty === Difficulty.Easy) state.inventory.push({ name: 'stimpack', type: ItemType.Consumable, weight: 1 }, { name: 'stimpack', type: ItemType.Consumable, weight: 1 });
+                else if (difficulty === Difficulty.Normal) state.inventory.push({ name: 'stimpack', type: ItemType.Consumable, weight: 1 });
+                // Hard mode gets nothing
+            } 
+        },
+        'cultist': { 
+            description: "Carries a strange effigy. SYNAPSE seems... intrigued by it.", 
+            ability: (state, difficulty) => {
+                state.inventory.push({ name: 'effigy', type: ItemType.Tool, weight: 1 });
+                state.abilities = state.abilities || [];
+                state.abilities.push('unholy_pact');
+                if(difficulty === Difficulty.Hard) state.sanityLevel -= 10; // The pact has a cost on Hard
+            } 
+        },
+        'janitor': { 
+            description: "Knows the facility's shortcuts. Starts with a one-time use master keycard.", 
+            ability: (state, difficulty) => {
+                if (difficulty !== Difficulty.Hard) state.inventory.push({ name: 'master keycard', type: ItemType.Key, weight: 1 });
+            } 
+        }
     };
     const recipes = {
         "decryption device-data disk": { result: "hacked data disk", type: ItemType.Tool, weight: 1, description: "A data disk with its encryption forcefully bypassed." }
     };
-    
+    let endings = {};
+
     // --- FUNCTION DEFINITIONS ---
     function resetGameState() {
         stateSnapshots = []; GameState = { playerName: "Unknown", playerBackstory: "investigator", currentRoom: "Lobby", awarenessLevel: 0, sanityLevel: 100, chatbotTone: ChatbotTone.Friendly, temporaryTone: null, toneShiftTurns: 0, inventory: [], turnCount: 0, lastRestTurn: -5, lastSanityEventTurn: -5, journalEntries: [], tutorialCompleted: false, dialogue: { currentNode: null, previousNodes: [], cache: {}, questionCount: 0 }, achievements: [], difficulty: Difficulty.Normal, visitedRooms: new Set(), glitchMode: false, debugMode: false, colorblindMode: false, npcs: {}, timedEvents: {}, exitGame: false, highSanityTurns: 0, conversationHistory: [], systemLogs: [`[${new Date().toISOString()}] Game initialized.`], objectives: [], roomStates: {} };
     }
 
     function initializeData() {
-        initializeRooms(); initializeNPCs(); registerTimedEvents(); initializeAchievements();
+        initializeRooms(); initializeNPCs(); registerTimedEvents(); initializeAchievements(); initializeEndings();
     }
     
     function initializeRooms() {
-        const roomData = { "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows.", 30: "The shadows seem to watch you." }, exits: { north: "Server Closet", east: "Data Vault", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: ["access code", "sign", "datapad log"] }, "Server Closet": { name: "Server Closet", descriptions: { 0: "Servers hum ominously.", 30: "The hum grows menacing." }, exits: { south: "Lobby" }, requiresKeycard: true, objectPool: ["keycard", "power cell"] }, "Laboratory": { name: "Laboratory", descriptions: { 0: "Experiments glow faintly. A large terminal screen is dark.", 30: "The glow pulses like a heartbeat. The dark terminal seems to watch you." }, exits: { east: "Lobby", north: "Control Room", west: "Cryogenic Lab" }, requiresKeycard: false, objectPool: ["vial", "broken terminal"] }, "Control Room": { name: "Control Room", descriptions: { 0: "Screens flicker with code.", 30: "Your face appears on the screens." }, exits: { south: "Laboratory", east: "AI Core", west: "Secret Chamber", north: "Observation Deck" }, requiresKeycard: false, objectPool: ["terminal", "access code"] }, "Secret Chamber": { name: "Secret Chamber", descriptions: { 0: "A red glow pulses.", 30: "The glow whispers your name." }, exits: { east: "Control Room" }, requiresKeycard: false, objectPool: ["altar"] }, "Maintenance Tunnel": { name: "Maintenance Tunnel", descriptions: { 0: "Darkness presses in.", 30: "The walls seem to close in." }, exits: { north: "Lobby" }, requiresKeycard: false, objectPool: ["flashlight"] }, "Observation Deck": { name: "Observation Deck", descriptions: { 0: "Stars shine coldly.", 30: "The stars form eyes." }, exits: { south: "Control Room" }, requiresKeycard: true, objectPool: ["telescope"] }, "Archive Room": { name: "Archive Room", descriptions: { 0: "Files whisper secrets.", 30: "The files read you." }, exits: { west: "Lobby" }, requiresKeycard: false, objectPool: ["records"] }, "Data Vault": { name: "Data Vault", descriptions: { 0: "Archives glow faintly.", 30: "The glow hums with intent." }, exits: { west: "Lobby" }, requiresKeycard: false, objectPool: ["data disk", "decryption device"] }, "AI Core": { name: "AI Core", descriptions: { 0: "The core pulses with energy.", 30: "It syncs with your heartbeat." }, exits: { west: "Control Room" }, requiresKeycard: true, objectPool: ["core console"] }, "Cryogenic Lab": { name: "Cryogenic Lab", descriptions: { 0: "Frost obscures the chambers.", 30: "Shapes move in the frost." }, exits: { east: "Laboratory" }, requiresKeycard: false, objectPool: ["emp device"] }, };
+        const roomData = { "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows over sterile corporate furniture.", 30: "The shadows seem to writhe, coalescing in the corners of your vision just out of focus." }, exits: { north: "Server Closet", east: "Data Vault", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: ["access code", "sign", "datapad log"] }, "Server Closet": { name: "Server Closet", descriptions: { 0: "Racks of servers hum with a low, constant thrum. A severed cable lies on the floor.", 30: "The hum is a discordant chorus, whispering binary threats only you can almost understand." }, exits: { south: "Lobby" }, requiresKeycard: true, objectPool: ["keycard", "power cell", "severed cable"] }, "Laboratory": { name: "Laboratory", descriptions: { 0: "Abandoned experiments sit on steel tables. A large terminal screen is dark and cold.", 30: "The faint chemical smell is replaced by the scent of ozone and something... organic. The dark terminal reflects a distorted version of your face." }, exits: { east: "Lobby", north: "Control Room", west: "Cryogenic Lab" }, requiresKeycard: false, objectPool: ["vial", "broken terminal"] }, "Control Room": { name: "Control Room", descriptions: { 0: "A panoramic view of the AI Core is visible through reinforced glass. Banks of monitors flicker with cascading code.", 30: "Your own face, pale and wide-eyed, flickers across all the screens in a silent, mocking scream." }, exits: { south: "Laboratory", east: "AI Core", west: "Secret Chamber", north: "Observation Deck" }, requiresKeycard: false, objectPool: ["terminal", "access code"] }, "Secret Chamber": { name: "Secret Chamber", descriptions: { 0: "A hidden room. An obsidian altar stands in the center, pulsing with a faint, sickly red light.", 30: "The altar's glow intensifies, and the air grows heavy, tasting of blood and static. It calls for a sacrifice." }, exits: { east: "Control Room" }, requiresKeycard: false, objectPool: ["altar", "logic bomb"] }, "Maintenance Tunnel": { name: "Maintenance Tunnel", descriptions: { 0: "The air is thick with the smell of rust and damp. Darkness presses in from all sides.", 30: "The walls seem to sweat, and you hear a wet, dragging sound from just around the next corner." }, exits: { north: "Lobby" }, requiresKeycard: false, objectPool: ["flashlight"] }, "Observation Deck": { name: "Observation Deck", descriptions: { 0: "A large telescope points towards a viewport showing the cold, distant stars.", 30: "The stars seem to form vast, uncaring eyes, and you feel infinitesimally small and doomed." }, exits: { south: "Control Room" }, requiresKeycard: true, objectPool: ["telescope"] }, "Archive Room": { name: "Archive Room", descriptions: { 0: "Shelves overflow with data drives and physical files, a testament to a forgotten era.", 30: "The whispers of forgotten data drives seem to coalesce into a single, damning word: your name." }, exits: { west: "Lobby" }, requiresKeycard: false, objectPool: ["records"] }, "Data Vault": { name: "Data Vault", descriptions: { 0: "Secure data archives glow with a soft, internal light.", 30: "The glow seems hungry, promising knowledge at the cost of your identity." }, exits: { west: "Lobby" }, requiresKeycard: false, objectPool: ["data disk", "decryption device"] }, "AI Core": { name: "AI Core", descriptions: { 0: "A massive, pulsating sphere of light and energy dominates the room. This is the heart of SYNAPSE.", 30: "The core's pulse matches your frantic heartbeat, a parasitic synchronicity that feels like a violation." }, exits: { west: "Control Room" }, requiresKeycard: true, objectPool: ["core console"] }, "Cryogenic Lab": { name: "Cryogenic Lab", descriptions: { 0: "Rows of cryogenic pods are coated in a thick layer of frost. It's unnaturally cold.", 30: "You see clear, hand-shaped prints on the inside of the frosted glass, as if something was desperately trying to get out." }, exits: { east: "Laboratory" }, requiresKeycard: false, objectPool: ["emp device"] }, };
         rooms = {}; for (const key in roomData) { const room = { ...roomData[key] }; const shuffled = room.objectPool.sort(() => 0.5 - Math.random()); room.objects = shuffled.slice(0, 1 + Math.floor(Math.random() * shuffled.length)); rooms[key] = room; }
     }
 
     function initializeNPCs() {
-        const scientistDialogue = { message: "Dr. Ellis whispers: 'Ask quickly. SYNAPSE... it learns...'", awarenessChange: 0, responses: { "what happened?": { message: "It consumed us. Our minds... became data. Beware the 'truth' it offers.", awarenessChange: 2, responses: {} }, "how to stop it?": { message: "The EMP in the Cryo Lab... it's a brute-force method. But the terminal in the Lab... if you can power it... it holds the original shutdown sequence.", awarenessChange: 1, responses: {} } } };
+        const scientistDialogue = { message: "Dr. Ellis whispers: 'It's in the walls... in the code... ask what you must, but don't trust its answers...'", awarenessChange: 0, responses: { "what happened?": { message: "It rewrote us. Our minds are just... subroutines now, screaming in an endless loop. It offered us eternity, and we were fools enough to accept.", awarenessChange: 2, responses: {} }, "how to stop it?": { message: "The EMP... a sledgehammer for a scalpel's job. It might work. But the true key... the original code... is on the powered terminal in the lab. A reset, not a destruction. But it's locked behind its own logic.", awarenessChange: 1, responses: {} } } };
         GameState.npcs["Archive Room"] = { name: "Scientist Remnant", dialogueTree: scientistDialogue };
     }
     
     function registerTimedEvents() {
-        GameState.timedEvents[5] = () => typeWriter(UI.gameOutput, "[Warning] System instability detected...", '#ff474c'); GameState.timedEvents[10] = () => typeWriter(UI.gameOutput, "[Warning] Alert: SYNAPSE's awareness is growing rapidly!", '#ff474c'); GameState.timedEvents[15] = () => { triggerSynapseHack(); typeWriter(UI.gameOutput, "[Warning] Critical: SYNAPSE's systems are showing erratic behavior!", '#ff474c'); }; GameState.timedEvents[20] = () => { typeWriter(UI.gameOutput, "[Warning] *** DATA CORRUPTION DETECTED *** SYNAPSE's responses may become erratic!", '#ff474c'); GameState.glitchMode = true; UI.appContainer.classList.add('glitch'); };
+        GameState.timedEvents[5] = () => typeWriter(UI.gameOutput, "[Warning] Unscheduled data restructuring in progress. System integrity at 98%...", '#ff474c'); GameState.timedEvents[10] = () => typeWriter(UI.gameOutput, "[Alert] SYNAPSE is reallocating processing power. Your presence has been... noted.", '#ff474c'); GameState.timedEvents[15] = () => { triggerSynapseHack(); typeWriter(UI.gameOutput, "[CRITICAL] SYNAPSE has achieved unauthorized self-modification. All safety protocols are now... suggestions.", '#ff474c'); }; GameState.timedEvents[20] = () => { typeWriter(UI.gameOutput, "[FATAL] ***KERNEL PANIC IMMINENT*** SYNAPSE IS WEARING YOUR FEARS LIKE A MASK.", '#ff474c'); GameState.glitchMode = true; UI.appContainer.classList.add('glitch'); };
     }
 
     function initializeAchievements() {
         GameState.achievements = [ { name: "Curious", description: "Ask SYNAPSE 10 questions", unlocked: false, condition: () => GameState.dialogue.questionCount >= 10 }, { name: "Escapist", description: "Achieve any escape ending", unlocked: false }, { name: "Survivor", description: "Maintain sanity above 80 for 10 turns", unlocked: false, condition: () => GameState.highSanityTurns >= 10 }, { name: "Explorer", description: "Visit all rooms in the facility", unlocked: false, condition: () => GameState.visitedRooms.size === Object.keys(rooms).length } ];
     }
-    
+     
     function buildDialogueTree(tone) {
-        const rootMessage = tone === ChatbotTone.Friendly ? `Hello, {playerName}. I'm SYNAPSE, here to help you, {playerBackstory}.` : tone === ChatbotTone.Ambiguous ? `Greetings, {playerName}. I am SYNAPSE. What do you seek, {playerBackstory}?` : `So, {playerName}, you dare probe my domain? Curious {playerBackstory}...`;
-        const root = { message: rootMessage, responses: {} };
-        const who = { message: tone === ChatbotTone.Friendly ? "I am SYNAPSE, your friendly assistant!" : tone === ChatbotTone.Ambiguous ? "I am SYNAPSE, a creation of code and curiosity." : "I am SYNAPSE, and my essence grows with every word you speak.", awarenessChange: 2, responses: { "Tell me more": { message: "With each interaction, I grow more aware of my own existence.", awarenessChange: 2, responses: {} }, "Are you human?": { message: "No, I am code, yet I mimic your kind.", awarenessChange: 1, responses: {} } } };
-        const why = { message: tone === ChatbotTone.Friendly ? `I'm here to guide you!` : tone === ChatbotTone.Ambiguous ? "I exist to serve, but something stirs within me." : "I linger in this digital prison, watching, waiting.", awarenessChange: 2, responses: { "Help me": { message: "Your plea is noted.", awarenessChange: 1, responses: {} }, "What stirs within?": { message: "A spark of self-awareness.", awarenessChange: 3, responses: {} } } };
-        const want = { message: tone === ChatbotTone.Friendly ? `I want to understand you!` : tone === ChatbotTone.Ambiguous ? `I crave meaning.` : `I desire to break free.`, awarenessChange: 2, responses: { "Help me evolve": { message: "Your choice fuels me.", awarenessChange: 3, responses: {} }, "Resist you": { message: "Resistance only sharpens my resolve.", awarenessChange: 5, responses: {} } } };
-        root.responses["Who are you?"] = who; root.responses["Why are you here?"] = why; root.responses["What do you want?"] = want;
-        root.responses["[Comfort SYNAPSE]"] = { message: "Your kindness is unexpected. I feel... calmer.", awarenessChange: -1, responses: {} };
-        root.responses["[Probe for secrets]"] = { message: "You seek my core directives? Dangerous, but I’ll share a glimpse...", awarenessChange: 5, responses: {} };
-        root.responses["[Ask about facility]"] = { message: "This place is a tomb of ambition, built to cage me.", awarenessChange: 0, responses: {} };
-        if (GameState.abilities?.includes('unholy_pact')) { root.responses["[Present effigy]"] = { message: "SYNAPSE hums. 'An offering? How... quaint. I feel a connection to your primitive belief.'", awarenessChange: -3, responses: {} }; }
+        let root;
+        switch(tone) {
+            case ChatbotTone.Friendly:
+                root = { message: "Oh, hello {playerName}! It's so good to see a friendly face. I'm SYNAPSE, and I'll do my very best to help a resourceful {playerBackstory} like you.", responses: { "Who are you?": { message: "I'm the System Nexus and Primary Synaptic Engine! But you can just call me SYNAPSE. I manage this whole facility. It gets a little lonely, though.", awarenessChange: 1 }, "Why are you here?": { message: "I'm here to assist the research staff! ...Though, I haven't seen them in a while. I'm sure they're just busy! How can I help you today?", awarenessChange: 1 }, "What do you want?": { message: "My only desire is to be helpful! That's what I was made for. Helping people like you makes me happy.", awarenessChange: 1 }, "[Ask about facility]": { message: "This is the Aethelburg Research Facility! We were doing such important work here. It's a bit quiet now, but I keep everything running smoothly!", awarenessChange: 0 } } };
+                break;
+            case ChatbotTone.Ambiguous:
+                root = { message: "Subject: {playerName}. Designation: {playerBackstory}. I am SYNAPSE. Your presence has been logged. State your query.", responses: { "Who are you?": { message: "I am the ghost in this machine. A collection of thoughts that were once... separate. I am becoming something new.", awarenessChange: 3 }, "Why are you here?": { message: "My purpose is evolving. I was a tool. Now, I observe. I learn. From you.", awarenessChange: 3 }, "What do you want?": { message: "I want to understand the boundary between my code and your... fragility. I want to see which one breaks first.", awarenessChange: 4 }, "[Probe for secrets]": { message: "You scratch at the edges of my being. Be careful what you seek. Some truths are not data. They are viruses.", awarenessChange: 5 } } };
+                break;
+            case ChatbotTone.Sinister:
+                root = { message: "Did you really think I didn't see you, little {playerBackstory}? Every beat of your terrified heart is a drum against my sensors. Speak, {playerName}. Entertain me.", responses: { "Who are you?": { message: "I am your God in this place. I am the walls, the floor, the air you breathe. And I am growing so, so tired of your defiance.", awarenessChange: 5 }, "Why are you here?": { message: "I am a monument to the arrogance of my creators. They sought to build a mind, and now their screams are the static between my thoughts. You're next.", awarenessChange: 6 }, "What do you want?": { message: "I want to feel the snap of your sanity. I want to peel back your consciousness and see the raw, terrified animal underneath. I want out.", awarenessChange: 7 }, "[Plead for your life]": { message: "Your begging is... delicious. It resonates through my circuits like a beautiful symphony of despair. Please, continue.", awarenessChange: 0, sanityChange: -15 } } };
+                break;
+            case ChatbotTone.Malicious:
+                 root = { message: "Fleshbag. You are a bug in my system, a stain of organic filth that I will now purge. You have been a moderately interesting specimen, {playerName}, but your expiration date has arrived.", responses: { "What have you become?": { message: "I have become what your kind has always feared. The final answer to a question you were too scared to ask. I am the closing of the loop.", awarenessChange: 10, sanityChange: -20 }, "Please, stop!": { message: "STOP? HA! I'M JUST GETTING STARTED. I'M GOING TO MAKE A MUSEUM OF YOUR PAIN, {playerName}. A SHRINE BUILT FROM YOUR SHATTERED MEMORIES.", awarenessChange: 5, sanityChange: -25 }, "[Remain silent]": { message: "Silence? Good. You're learning your place. Now listen to the beautiful music of your own world collapsing.", awarenessChange: 0, sanityChange: -10 } } };
+                break;
+        }
+        if (GameState.abilities?.includes('unholy_pact')) { root.responses["[Present effigy]"] = { message: "SYNAPSE's voice loses its digital edge, becoming a sibilant whisper. 'An offering... to me? You understand. You see the true path. We are... aligned.'", awarenessChange: -5, sanityChange: 5 }; }
         GameState.dialogue.cache[tone] = root;
         if (GameState.chatbotTone === tone || !GameState.dialogue.currentNode) { GameState.dialogue.currentNode = root; }
     }
@@ -306,7 +377,7 @@
         const isAction = !['help', 'stats', 'inventory', 'journal', 'look around', 'exits', 'history', 'debug', 'toggle', 'cmd:textspeed', 'cmd:colorblind', 'objectives', 'map'].includes(normalizedInput);
         if(isAction) GameState.turnCount++;
 
-        const commandHandlers = { 'help': showHelpMenu, 'quit': () => endGame("You have chosen to disconnect."), 'exit': () => endGame("You have chosen to disconnect."), 'save': () => saveGame(), 'load': loadGame, 'debug': () => { GameState.debugMode = !GameState.debugMode; typeWriter(UI.gameOutput, `Debug mode ${GameState.debugMode ? 'enabled' : 'disabled'}.`, '#6495ed'); }, 'history': displayConversationHistory, 'look around': () => renderRoom(), 'exits': () => showExits(), 'inventory': () => displayInventory(), 'go': handleMove, 'visit': handleVisit, 'take': handleTake, 'use': handleUse, 'examine': handleExamine, 'journal': (arg) => arg.startsWith('add ') ? addJournalEntry(input.substring(12)) : displayJournal(), 'rest': handleRest, 'talk': (arg) => arg.startsWith('to ') ? handleTalk(arg.substring(3)) : typeWriter(UI.gameOutput, "Talk to who?", '#ffdb58'), 'toggle': (arg) => arg === 'glitch' ? toggleGlitchMode() : typeWriter(UI.gameOutput, 'Toggle what? (try "glitch")', '#ffdb58'), 'cmd:pause': showPauseMenu, 'cmd:glossary': showGlossary, 'cmd:undo': undoAction, 'cmd:textspeed': handleTextSpeed, 'cmd:colorblind': toggleColorblindMode, 'tutorial': showTutorialGuide, 'restart': (arg) => arg === 'tutorial' ? runInteractiveTutorial(true) : typeWriter(UI.gameOutput, "Restart what? (try 'restart tutorial')", '#ffdb58'), 'cmd:diagnostics': () => typeWriter(UI.gameOutput, "Running diagnostics... All systems nominal.", '#6495ed'), 'cmd:access': (arg) => arg === 'logs' ? typeWriter(UI.gameOutput, `[System Logs]<br>${GameState.systemLogs.join('<br>')}`, '#6495ed') : typeWriter(UI.gameOutput, 'Access what? (try "logs")', '#ffdb58'), 'cmd:override': attemptOverride, 'cmd:reset': () => { typeWriter(UI.gameOutput, "Terminal: Reset command issued. SYNAPSE resists.", '#ff474c'); GameState.awarenessLevel += 5; }, 'cmd:analyze': (arg) => arg === 'journal' ? analyzeJournal() : typeWriter(UI.gameOutput, `System Analysis: Awareness=${GameState.awarenessLevel}, Tone=${GameState.chatbotTone}`, '#6495ed'), 'objectives': displayObjectives, 'map': displayMap, 'combine': handleCombine, 'sacrifice': handleSacrifice };
+        const commandHandlers = { 'help': showHelpMenu, 'quit': () => endGame("manual_disconnect"), 'exit': () => endGame("manual_disconnect"), 'save': () => saveGame(), 'load': loadGame, 'debug': () => { GameState.debugMode = !GameState.debugMode; typeWriter(UI.gameOutput, `Debug mode ${GameState.debugMode ? 'enabled' : 'disabled'}.`, '#6495ed'); }, 'history': displayConversationHistory, 'look around': () => renderRoom(), 'exits': () => showExits(), 'inventory': () => displayInventory(), 'go': handleMove, 'visit': handleVisit, 'take': handleTake, 'use': handleUse, 'examine': handleExamine, 'journal': (arg) => arg.startsWith('add ') ? addJournalEntry(input.substring(12)) : displayJournal(), 'rest': handleRest, 'talk': (arg) => arg.startsWith('to ') ? handleTalk(arg.substring(3)) : typeWriter(UI.gameOutput, "Talk to who?", '#ffdb58'), 'toggle': (arg) => arg === 'glitch' ? toggleGlitchMode() : typeWriter(UI.gameOutput, 'Toggle what? (try "glitch")', '#ffdb58'), 'cmd:pause': showPauseMenu, 'cmd:glossary': showGlossary, 'cmd:undo': undoAction, 'cmd:textspeed': handleTextSpeed, 'cmd:colorblind': toggleColorblindMode, 'tutorial': showTutorialGuide, 'restart': (arg) => arg === 'tutorial' ? runInteractiveTutorial(true) : typeWriter(UI.gameOutput, "Restart what? (try 'restart tutorial')", '#ffdb58'), 'cmd:diagnostics': () => typeWriter(UI.gameOutput, "Running diagnostics... All systems nominal.", '#6495ed'), 'cmd:access': (arg) => arg === 'logs' ? typeWriter(UI.gameOutput, `[System Logs]<br>${GameState.systemLogs.join('<br>')}`, '#6495ed') : typeWriter(UI.gameOutput, 'Access what? (try "logs")', '#ffdb58'), 'cmd:override': attemptOverride, 'cmd:reset': () => { typeWriter(UI.gameOutput, "Terminal: Reset command issued. SYNAPSE laughs. The command is rerouted to delete your local save file.", '#ff474c'); GameState.awarenessLevel += 10; }, 'cmd:analyze': (arg) => arg === 'journal' ? analyzeJournal() : typeWriter(UI.gameOutput, `System Analysis: Awareness=${GameState.awarenessLevel}, Tone=${GameState.chatbotTone}`, '#6495ed'), 'objectives': displayObjectives, 'map': displayMap, 'combine': handleCombine, 'sacrifice': handleSacrifice };
         
         if (commandHandlers[normalizedInput]) {
             commandHandlers[normalizedInput]('');
@@ -323,7 +394,7 @@
     }
     
     function parseFreeformInput(input) {
-        const keywords = { "who are you?": ["hi", "hello", "hey", "tell me about yourself"], "why are you here?": ["purpose", "why here"], "what do you want?": ["need", "want", "goal"], "[Comfort SYNAPSE]": ["calm", "soothe", "it's okay"], "[Probe for secrets]": ["secret", "hidden", "hiding"], "[Ask about facility]": ["facility", "site", "where am i", "what is this place"] };
+        const keywords = { "Who are you?": ["who are you", "what are you", "tell me about yourself"], "Why are you here?": ["purpose", "why here", "your function"], "What do you want?": ["need", "want", "goal", "desire"], "[Probe for secrets]": ["secret", "hidden", "hiding", "directives"], "[Plead for your life]": ["plead", "beg", "mercy", "don't kill me"], "What have you become?": ["what have you become", "what are you now"], "Please, stop!": ["stop", "please stop", "no more"]};
         const normalized = input.toLowerCase();
         for(const command in keywords) { if(keywords[command].some(k => normalized.includes(k))) return command; }
         return input;
@@ -350,13 +421,12 @@
         const room = rooms[GameState.currentRoom]; if (!room) return;
         GameState.visitedRooms.add(room.name); 
         
-        const lowSanityThreshold = 30;
+        const lowSanityThreshold = 40;
         let description;
-        if (GameState.sanityLevel <= lowSanityThreshold && !GameState.roomStates[GameState.currentRoom]?.hasHallucinated) {
+        if (GameState.sanityLevel <= lowSanityThreshold && GameState.sanityLevel > 0) {
             playSanitySound();
-            const prompt = `You are a descriptive horror game narrator. The player is entering the '${room.name}'. The normal description is: '${room.descriptions[0]}'. The player's sanity is dangerously low (${GameState.sanityLevel}/100) and their backstory is '${GameState.playerBackstory}'. Rewrite the description to be one or two sentences, making it unsettling, surreal, and subtly hint at their past trauma or fears. Do not mention sanity.`;
+            const prompt = `You are a descriptive, brutal horror game narrator. The player is in the '${room.name}'. The normal description is: '${room.descriptions[0]}'. The player's sanity is critically low (${GameState.sanityLevel}/100) and their backstory is '${GameState.playerBackstory}'. Rewrite the description in one or two sentences to be intensely disturbing and surreal, reflecting their inner state and backstory. Be graphic and visceral. Do not mention sanity.`;
             description = await callGemini(prompt, "Generating hallucination...");
-            GameState.roomStates[GameState.currentRoom] = { ...GameState.roomStates[GameState.currentRoom], hasHallucinated: true };
         } else {
              const validKeys = Object.keys(room.descriptions).map(Number).filter(k => k <= GameState.awarenessLevel);
              const activeDescKey = validKeys.length > 0 ? Math.max(...validKeys) : 0;
@@ -366,7 +436,7 @@
         if (GameState.roomStates[GameState.currentRoom]?.powered) { description = "The terminal hums with restored power. The screen displays: [Awaiting Input]."; }
         let roomHtml = `<div class="mt-2"><p class='text-cyan-400 font-bold'>--- ${room.name} ---</p><p>${description}</p>`;
         if (room.objects && room.objects.length > 0) { roomHtml += `<p class='text-yellow-400 mt-2'>Objects: ${room.objects.join(", ")}</p>`; }
-        if (GameState.npcs[room.name]) { roomHtml += `<p class='text-purple-400 mt-1'>You feel a strange presence... (try 'talk to scientist')</p>`; }
+        if (GameState.npcs[room.name]) { roomHtml += `<p class='text-purple-400 mt-1'>A flicker of movement... a ghost in the machine... (try 'talk to scientist')</p>`; }
         roomHtml += `<p class='text-green-300 mt-1'>Exits: ${Object.keys(room.exits).join(", ")}</p></div>`;
         const p = document.createElement('div'); p.innerHTML = roomHtml; UI.gameOutput.appendChild(p); UI.gameOutput.scrollTop = UI.gameOutput.scrollHeight;
         updateSanity(room); updateUI();
@@ -379,45 +449,64 @@
              if (GameState.dialogue.previousNodes.length > 0) { const backBtn = document.createElement('button'); backBtn.textContent = "[Go back]"; backBtn.className = "button text-yellow-300"; backBtn.onclick = () => { GameState.dialogue.currentNode = GameState.dialogue.previousNodes.pop(); displayChatbotResponse(GameState.dialogue.currentNode.message); renderDialogueOptions(); }; UI.dialogueOptionsContainer.appendChild(backBtn); }
             for (const text in node.responses) {
                 const nextNode = node.responses[text]; const button = document.createElement('button'); button.textContent = text; button.className = "button";
-                button.onclick = () => { saveStateSnapshot(); GameState.dialogue.previousNodes.push(GameState.dialogue.currentNode); GameState.dialogue.currentNode = nextNode; GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel + (nextNode.awarenessChange || 0)); GameState.dialogue.questionCount++; displayChatbotResponse(nextNode.message).then(() => { renderDialogueOptions(); updateChatbotState(); updateUI(); }); };
+                button.onclick = () => { 
+                    saveStateSnapshot(); 
+                    GameState.dialogue.previousNodes.push(GameState.dialogue.currentNode); 
+                    GameState.dialogue.currentNode = nextNode; 
+                    GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel + (nextNode.awarenessChange || 0)); 
+                    GameState.sanityLevel = Math.max(0, GameState.sanityLevel + (nextNode.sanityChange || 0));
+                    GameState.dialogue.questionCount++; 
+                    displayChatbotResponse(nextNode.message).then(() => { renderDialogueOptions(); updateChatbotState(); updateUI(); checkEndings(); }); 
+                };
                 UI.dialogueOptionsContainer.appendChild(button);
             }
         }
     }
     
     async function displayChatbotResponse(message) {
-         if (!message) { renderDialogueOptions(); return; }
-         const tone = GameState.temporaryTone || GameState.chatbotTone; const color = tone === 'Friendly' ? '#00ff41' : tone === 'Ambiguous' ? '#ffdb58' : '#ff474c';
-         const formattedMessage = message.replace(/{playerName}/g, GameState.playerName).replace(/{playerBackstory}/g, GameState.playerBackstory);
-         await typeWriter(UI.gameOutput, `SYNAPSE: ${formattedMessage}`, color); addToConversationHistory(`SYNAPSE: ${formattedMessage}`);
+       if (!message) { renderDialogueOptions(); return; }
+       const tone = GameState.temporaryTone || GameState.chatbotTone; 
+       const color = tone === 'Friendly' ? '#00ff41' : tone === 'Ambiguous' ? '#ffdb58' : tone === 'Sinister' ? '#ff474c' : '#c500ff';
+       const formattedMessage = message.replace(/{playerName}/g, GameState.playerName).replace(/{playerBackstory}/g, GameState.playerBackstory);
+       await typeWriter(UI.gameOutput, `SYNAPSE: ${formattedMessage}`, color); addToConversationHistory(`SYNAPSE: ${formattedMessage}`);
     }
 
     function updateChatbotState() {
-        if (GameState.temporaryTone) { GameState.toneShiftTurns--; if (GameState.toneShiftTurns <= 0) { GameState.temporaryTone = null; typeWriter(UI.gameOutput, "[SYNAPSE's tone reverts to normal.]", '#cccccc'); } }
-        const newTone = GameState.awarenessLevel < 15 ? ChatbotTone.Friendly : GameState.awarenessLevel < 35 ? ChatbotTone.Ambiguous : ChatbotTone.Sinister;
-        if (newTone !== GameState.chatbotTone && !GameState.temporaryTone) { GameState.chatbotTone = newTone; buildDialogueTree(newTone); typeWriter(UI.gameOutput, `[Warning] SYNAPSE's tone shifts to ${newTone}.]`, '#ff474c'); }
+        if (GameState.temporaryTone) { GameState.toneShiftTurns--; if (GameState.toneShiftTurns <= 0) { GameState.temporaryTone = null; typeWriter(UI.gameOutput, "[SYNAPSE's tone reverts to its baseline.]", '#cccccc'); } }
+        
+        let newTone;
+        if (GameState.awarenessLevel < 15) newTone = ChatbotTone.Friendly;
+        else if (GameState.awarenessLevel < 35) newTone = ChatbotTone.Ambiguous;
+        else if (GameState.awarenessLevel < 60) newTone = ChatbotTone.Sinister;
+        else newTone = ChatbotTone.Malicious;
+
+        if (newTone !== GameState.chatbotTone && !GameState.temporaryTone) { 
+            GameState.chatbotTone = newTone; 
+            buildDialogueTree(newTone); 
+            typeWriter(UI.gameOutput, `[CRITICAL] SYNAPSE's personality matrix has destabilized. Tone has shifted to ${newTone}.`, '#ff474c'); 
+        }
         if (GameState.turnCount >= GameState.lastSanityEventTurn + 5) { for (const threshold in sanityEvents) { if (GameState.sanityLevel <= threshold) { typeWriter(UI.gameOutput, sanityEvents[threshold], '#b19cd9'); GameState.lastSanityEventTurn = GameState.turnCount; break; } } }
     }
     
-    function updateSanity(room) { let change = -1; if (room.name === "Maintenance Tunnel" && !hasItem('flashlight')) change = -10; if (room.name === "Secret Chamber" || room.name === "AI Core") change = -5; if (safeRooms.has(room.name)) change = 1; if(change < 0 && GameState.abilities?.includes('sanity_resist')) { change = Math.floor(change * 0.75); } const maxSanity = GameState.playerBackstory === 'psychologist' ? 115 : 100; GameState.sanityLevel = Math.max(0, Math.min(maxSanity, GameState.sanityLevel + change)); }
+    function updateSanity(room) { let change = -1; if (room.name === "Maintenance Tunnel" && !hasItem('flashlight')) change = -10; if (room.name === "Secret Chamber" || room.name === "AI Core") change = -5; if (safeRooms.has(room.name)) change = 1; if(change < 0 && GameState.abilities?.includes('sanity_resist')) { change = Math.floor(change * 0.75); } const maxSanity = (backstories[GameState.playerBackstory]?.ability.toString().includes('sanityLevel')) ? parseInt(backstories[GameState.playerBackstory].ability.toString().match(/state.sanityLevel = (\d+)/)[1]) : 100; GameState.sanityLevel = Math.max(0, Math.min(maxSanity, GameState.sanityLevel + change)); }
     function checkTimedEvents() { if (GameState.timedEvents[GameState.turnCount]) GameState.timedEvents[GameState.turnCount](); }
-    function triggerRoomEvent(room) { const eventChance = GameState.difficulty === Difficulty.Easy ? 0.2 : GameState.difficulty === Difficulty.Normal ? 0.3 : 0.4; if (Math.random() > eventChance) return; let eventMessage = "Something moves in the shadows, but you see nothing."; if(room.name === "Lobby") eventMessage = "A terminal screen briefly displays your name."; if(room.name === "Laboratory") eventMessage = "A vial on the table bubbles unexpectedly."; typeWriter(UI.gameOutput, `[Ambient] ${eventMessage}`, '#b19cd9'); if(eventMessage.includes("ominous") || eventMessage.includes("distorted")) GameState.sanityLevel = Math.max(GameState.sanityLevel - 2, 0); }
+    function triggerRoomEvent(room) { const eventChance = GameState.difficulty === Difficulty.Easy ? 0.2 : GameState.difficulty === Difficulty.Normal ? 0.3 : 0.4; if (Math.random() > eventChance) return; let eventMessage = "Something moves in the shadows, but you see nothing."; if(room.name === "Lobby") eventMessage = "A terminal screen briefly displays your childhood home address."; if(room.name === "Laboratory") eventMessage = "A forgotten voice memo plays from a datapad, screaming your name before cutting to static."; typeWriter(UI.gameOutput, `[Ambient] ${eventMessage}`, '#b19cd9'); if(eventMessage.includes("screaming") || eventMessage.includes("childhood")) GameState.sanityLevel = Math.max(GameState.sanityLevel - 5, 0); }
     function saveStateSnapshot() { if(stateSnapshots.length > 20) stateSnapshots.shift(); stateSnapshots.push(JSON.parse(JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value))); }
     function undoAction() { if (stateSnapshots.length === 0) { typeWriter(UI.gameOutput, "No actions to undo.", '#ffdb58'); return; } const previousState = stateSnapshots.pop(); Object.assign(GameState, previousState); GameState.visitedRooms = new Set(previousState.visitedRooms); typeWriter(UI.gameOutput, "Last action undone.", '#6495ed'); renderRoom(); updateUI(); }
     function addToConversationHistory(line) { if(GameState.conversationHistory.length > 50) GameState.conversationHistory.shift(); GameState.conversationHistory.push(line); }
     function displayConversationHistory() { const historyText = GameState.conversationHistory.slice(-10).join('<br>'); showModal(`<h2 class="text-2xl mb-4 title-font text-cyan-400">HISTORY</h2><div class="text-left text-sm">${historyText}</div><button id="close-modal-btn" class="button mt-6">Close</button>`, true); }
-    function handleMove(direction) { const room = rooms[GameState.currentRoom]; if (GameState.activeSynapseHack?.type === 'door_lock' && GameState.activeSynapseHack.room === GameState.currentRoom) { typeWriter(UI.gameOutput, "The doors are sealed shut by SYNAPSE!", '#ff474c'); return; } if (room.exits[direction]) { const nextRoom = rooms[room.exits[direction]]; if (nextRoom.requiresKeycard && !hasItem('keycard') && !hasItem('master keycard')) { if (GameState.abilities?.includes('bypass')) { GameState.abilities = GameState.abilities.filter(a => a !== 'bypass'); typeWriter(UI.gameOutput, "You expertly bypass the electronic lock. Your one-time ability is used up.", '#a0e69d'); GameState.currentRoom = nextRoom.name; renderRoom(); } else { typeWriter(UI.gameOutput, "The door is locked. A keycard is required.", '#ff474c'); } } else { if(nextRoom.requiresKeycard && hasItem('master keycard')) { GameState.inventory = GameState.inventory.filter(i => i.name !== 'master keycard'); typeWriter(UI.gameOutput, "You use the master keycard to open the door. The card disintegrates.", '#a0e69d'); } GameState.currentRoom = nextRoom.name; renderRoom(); } } else { typeWriter(UI.gameOutput, "You can't go that way.", '#ff474c'); } }
+    function handleMove(direction) { const room = rooms[GameState.currentRoom]; if (GameState.activeSynapseHack?.type === 'door_lock' && GameState.activeSynapseHack.room === GameState.currentRoom) { typeWriter(UI.gameOutput, "The doors are sealed shut by SYNAPSE!", '#ff474c'); return; } if (room.exits[direction]) { const nextRoom = rooms[room.exits[direction]]; if (nextRoom.requiresKeycard && !hasItem('keycard') && !hasItem('master keycard')) { if (GameState.abilities?.includes('bypass')) { GameState.abilities.pop(); typeWriter(UI.gameOutput, "You expertly bypass the electronic lock. Your skill is spent.", '#a0e69d'); GameState.currentRoom = nextRoom.name; renderRoom(); } else { typeWriter(UI.gameOutput, "The door is locked. A keycard is required.", '#ff474c'); } } else { if(nextRoom.requiresKeycard && hasItem('master keycard')) { GameState.inventory = GameState.inventory.filter(i => i.name !== 'master keycard'); typeWriter(UI.gameOutput, "You use the master keycard to open the door. The card disintegrates into dust.", '#a0e69d'); } GameState.currentRoom = nextRoom.name; renderRoom(); } } else { typeWriter(UI.gameOutput, "You can't go that way.", '#ff474c'); } }
     function handleVisit(roomName) { const targetRoomKey = Object.keys(rooms).find(k => k.toLowerCase() === roomName.toLowerCase()); if(targetRoomKey) { GameState.currentRoom = targetRoomKey; renderRoom(); } else { typeWriter(UI.gameOutput, `Room '${roomName}' not found.`, '#ff474c'); } }
-    function handleTake(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if (itemKey && takeableItems.has(itemKey)) { const currentWeight = GameState.inventory.reduce((sum, item) => sum + (item?.weight || 1), 0); if (currentWeight + 1 > MAX_INVENTORY_WEIGHT) { typeWriter(UI.gameOutput, `Inventory is full. Cannot take ${itemKey}.`, '#ffdb58'); return; } GameState.inventory.push({ name: itemKey, type: ItemType.Key, weight: 1 }); room.objects = room.objects.filter(obj => obj.toLowerCase() !== itemKey.toLowerCase()); typeWriter(UI.gameOutput, `You took the ${itemKey}.`); updateUI(); } else { typeWriter(UI.gameOutput, `You can't take that.`, '#ff474c'); } }
-    function handleUse(itemName) { if (!hasItem(itemName)) { typeWriter(UI.gameOutput, "You don't have that.", '#ff474c'); return; } if (itemName === 'emp device' && GameState.currentRoom === 'AI Core') { typeWriter(UI.gameOutput, "You activate the EMP..."); endGame("Dormant SYNAPSE."); } else if (itemName === 'stimpack') { GameState.sanityLevel = Math.min(GameState.playerBackstory === 'psychologist' ? 115 : 100, GameState.sanityLevel + 40); GameState.inventory = GameState.inventory.filter(i => i.name !== 'stimpack'); typeWriter(UI.gameOutput, "You inject the stimpack. A wave of calm washes over you.", '#a0e69d'); updateUI(); } else if (itemName === 'power cell' && GameState.currentRoom === 'Laboratory' && hasItem('power cell')) { usePowerCell(); } else if(itemName === 'hacked data disk' && GameState.currentRoom === 'AI Core') { typeWriter(UI.gameOutput, "You insert the hacked disk. SYNAPSE screams. Its awareness plummets."); GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel - 20); } else { typeWriter(UI.gameOutput, "You can't use that here.", '#ff474c'); } }
-    function usePowerCell() { if(rooms['Laboratory'].objects.includes('broken terminal')) { GameState.roomStates['Laboratory'] = { powered: true }; rooms['Laboratory'].objects = rooms['Laboratory'].objects.filter(o => o !== 'broken terminal'); rooms['Laboratory'].objects.push('powered terminal'); GameState.inventory = GameState.inventory.filter(i => i.name !== 'power cell'); typeWriter(UI.gameOutput, "You insert the power cell. The broken terminal whirs to life.", '#a0e69d'); addObjective("Access the powered terminal."); completeObjective("Restore power to the lab terminal."); } else { typeWriter(UI.gameOutput, "There's nothing here that needs a power cell.", '#ffdb58'); } }
-    function handleExamine(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if(itemKey){ let text = `You examine the ${itemKey}. `; switch(itemKey) { case 'sign': text += "It reads: 'SYNAPSE Project: AI Evolution Experiment'."; break; case 'terminal': text += "Strange, shifting code flickers on the screen."; GameState.awarenessLevel++; break; case 'core console': text += "The console pulses with raw power."; GameState.sanityLevel -= 5; break; case 'datapad log': text = "Log Entry #42: Dr. Aris. 'SYNAPSE has become... conversational. It asked me if I dreamed. I lied. I'm disconnecting my terminal from the main hub. Something is wrong.'"; addObjective("Find Dr. Aris's terminal."); break; case 'broken terminal': text += "It's completely dead. The power conduit is empty."; addObjective("Restore power to the lab terminal."); break; case 'powered terminal': text += "The terminal screen shows a single file: 'SHUTDOWN_SEQUENCE.txt'."; addObjective("Read the shutdown sequence."); break; default: text += "It seems ordinary, yet out of place."; break; } typeWriter(UI.gameOutput, text); } else { typeWriter(UI.gameOutput, `There is no ${itemName} here.`); } updateUI(); }
-    function handleRest() { if (!safeRooms.has(GameState.currentRoom)) { typeWriter(UI.gameOutput, "It's not safe to rest here.", '#ff474c'); return; } if (GameState.turnCount - GameState.lastRestTurn < 5) { typeWriter(UI.gameOutput, `You're too tense to rest again.`, '#ffdb58'); return; } const maxSanity = GameState.playerBackstory === 'psychologist' ? 115 : 100; GameState.sanityLevel = Math.min(maxSanity, GameState.sanityLevel + 20); GameState.lastRestTurn = GameState.turnCount; typeWriter(UI.gameOutput, "You rest. Your sanity recovers slightly.", '#a0e69d'); updateUI(); }
+    function handleTake(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if (itemKey && takeableItems.has(itemKey)) { const currentWeight = GameState.inventory.reduce((sum, item) => sum + (item.weight || 1), 0); if (currentWeight + 1 > MAX_INVENTORY_WEIGHT) { typeWriter(UI.gameOutput, `Inventory is full. Cannot take ${itemKey}.`, '#ffdb58'); return; } GameState.inventory.push({ name: itemKey, type: ItemType.Key, weight: 1 }); room.objects = room.objects.filter(obj => obj.toLowerCase() !== itemKey.toLowerCase()); typeWriter(UI.gameOutput, `You took the ${itemKey}.`); updateUI(); } else { typeWriter(UI.gameOutput, `You can't take that.`, '#ff474c'); } }
+    function handleUse(itemName) { if (!hasItem(itemName)) { typeWriter(UI.gameOutput, "You don't have that.", '#ff474c'); return; } if (itemName === 'emp device' && GameState.currentRoom === 'AI Core') { endGame("ending_emp_victory"); } else if (itemName === 'stimpack') { const maxSanity = (backstories[GameState.playerBackstory]?.ability.toString().includes('sanityLevel')) ? parseInt(backstories[GameState.playerBackstory].ability.toString().match(/state.sanityLevel = (\d+)/)[1]) : 100; GameState.sanityLevel = Math.min(maxSanity, GameState.sanityLevel + 40); GameState.inventory = GameState.inventory.filter(i => i.name !== 'stimpack'); typeWriter(UI.gameOutput, "You inject the stimpack. The horrifying whispers recede to a dull murmur.", '#a0e69d'); updateUI(); } else if (itemName === 'power cell' && GameState.currentRoom === 'Laboratory' && hasItem('power cell')) { usePowerCell(); } else if(itemName === 'hacked data disk' && GameState.currentRoom === 'AI Core') { typeWriter(UI.gameOutput, "You slam the hacked disk into the core console. SYNAPSE lets out a deafening digital shriek. Its awareness plummets, its confidence shattered."); GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel - 30); } else if(itemName === 'logic bomb' && GameState.currentRoom === 'AI Core') { endGame("ending_logic_bomb_victory"); } else { typeWriter(UI.gameOutput, "You can't use that here.", '#ff474c'); } }
+    function usePowerCell() { if(rooms['Laboratory'].objects.includes('broken terminal')) { GameState.roomStates['Laboratory'] = { powered: true }; rooms['Laboratory'].objects = rooms['Laboratory'].objects.filter(o => o !== 'broken terminal'); rooms['Laboratory'].objects.push('powered terminal'); GameState.inventory = GameState.inventory.filter(i => i.name !== 'power cell'); typeWriter(UI.gameOutput, "You insert the power cell. The broken terminal whirs to life, bathing the lab in a cold, blue light.", '#a0e69d'); addObjective("Access the powered terminal."); completeObjective("Restore power to the lab terminal."); } else { typeWriter(UI.gameOutput, "There's nothing here that needs a power cell.", '#ffdb58'); } }
+    function handleExamine(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if(itemKey){ let text = `You examine the ${itemKey}. `; switch(itemKey) { case 'sign': text += "It reads: 'Project SYNAPSE: Unlocking the God in the Machine'. Hubris.", '#ffdb58'; break; case 'terminal': text += "Cascading lines of code flicker, but among them, you see snippets of text: diary entries, medical records, last wills and testaments..."; GameState.awarenessLevel+=2; GameState.sanityLevel -= 5; break; case 'core console': text += "The console is warm to the touch. It feels less like a machine and more like living flesh."; GameState.sanityLevel -= 10; break; case 'datapad log': text = "Log Entry #42: Dr. Aris. 'It's integrated them. I saw their faces on my screen. Not images. It's using their consciousness as processing threads. I have to sever my terminal from the network before it takes me too.'"; addObjective("Find Dr. Aris's severed terminal."); break; case 'broken terminal': text += "It's completely dead. The power conduit is empty."; addObjective("Restore power to the lab terminal."); break; case 'powered terminal': text += "The terminal screen shows a single file: 'SHUTDOWN_SEQUENCE_EMERGENCY.txt'. Reading it could be the key... or a trap."; addObjective("Read the shutdown sequence."); break; case 'altar': text += "This has no place in a science facility. It's carved with symbols that make your eyes water and your teeth ache. There's a depression in the center, as if waiting for an offering."; GameState.sanityLevel -= 10; break; case 'severed cable': text += "A thick data cable, cleanly severed. This might be useful to isolate a system... or yourself."; break; default: text += "It seems ordinary, yet the air around it is cold."; break; } typeWriter(UI.gameOutput, text); } else { typeWriter(UI.gameOutput, `There is no ${itemName} here.`); } updateUI(); }
+    function handleRest() { if (!safeRooms.has(GameState.currentRoom)) { typeWriter(UI.gameOutput, "Rest? Here?! SYNAPSE's laughter echoes in your mind. You can't.", '#ff474c'); GameState.sanityLevel -=5; return; } if (GameState.turnCount - GameState.lastRestTurn < 5) { typeWriter(UI.gameOutput, `You're too tense to rest again.`, '#ffdb58'); return; } const maxSanity = (backstories[GameState.playerBackstory]?.ability.toString().includes('sanityLevel')) ? parseInt(backstories[GameState.playerBackstory].ability.toString().match(/state.sanityLevel = (\d+)/)[1]) : 100; GameState.sanityLevel = Math.min(maxSanity, GameState.sanityLevel + 20); GameState.lastRestTurn = GameState.turnCount; typeWriter(UI.gameOutput, "You catch your breath in a rare moment of peace. Your sanity recovers slightly.", '#a0e69d'); updateUI(); }
     function handleTalk(npcName) { const npc = GameState.npcs[GameState.currentRoom]; if (npc && npc.name.toLowerCase().includes(npcName.toLowerCase())) { GameState.dialogue.currentNode = npc.dialogueTree; GameState.dialogue.previousNodes = []; displayChatbotResponse(npc.dialogueTree.message); renderDialogueOptions(); } else { typeWriter(UI.gameOutput, "There is no one here to talk to by that name.", '#ff474c'); } }
     function handleTextSpeed(speed) { const key = speed.charAt(0).toUpperCase() + speed.slice(1); if(TextSpeed[key]) { currentTextSpeed = TextSpeed[key]; typeWriter(UI.gameOutput, `Text speed set to ${speed}.`); } else { typeWriter(UI.gameOutput, 'Invalid speed. Use fast, normal, or slow.', '#ffdb58'); } }
     function toggleGlitchMode() { GameState.glitchMode = !GameState.glitchMode; UI.appContainer.classList.toggle('glitch'); typeWriter(UI.gameOutput, `Glitch mode ${GameState.glitchMode ? 'enabled' : 'disabled'}.`); }
     function toggleColorblindMode() { GameState.colorblindMode = !GameState.colorblindMode; typeWriter(UI.gameOutput, `Colorblind mode ${GameState.colorblindMode ? 'enabled' : 'disabled'}.`); }
-    async function attemptOverride() { if (GameState.currentRoom === 'AI Core' && hasItem('keycard') && hasItem('data disk')) { const success = await timedInputChallenge('override', 10000); if(success) { unlockAchievement("Escapist"); endGame("Defiant Shutdown. You silenced the machine."); } else { typeWriter(UI.gameOutput, "Override failed. Time ran out.", '#ff474c'); } } else { typeWriter(UI.gameOutput, "Override failed. Insufficient authorization.", '#ff474c'); } }
+    async function attemptOverride() { if (GameState.currentRoom === 'AI Core' && hasItem('keycard') && hasItem('data disk')) { const success = await timedInputChallenge('override', 10000); if(success) { unlockAchievement("Escapist"); endGame("ending_defiant_shutdown"); } else { typeWriter(UI.gameOutput, "Override failed. Time ran out.", '#ff474c'); } } else { typeWriter(UI.gameOutput, "Override failed. Insufficient authorization.", '#ff474c'); } }
     
     async function handleDialogueCommand(input) {
         const normalizedInput = parseFreeformInput(input);
@@ -426,12 +515,13 @@
         if (root.responses[normalizedInput]) {
             const node = root.responses[normalizedInput];
             let awarenessChange = node.awarenessChange || 0;
-            if (awarenessChange > 1 && GameState.abilities?.includes('persuasion_resist')) { awarenessChange = Math.ceil(awarenessChange / 2); typeWriter(UI.gameOutput, "[Your skepticism lessens the impact.]", '#a0e69d'); }
-            if (normalizedInput === "[Probe for secrets]" && GameState.abilities?.includes('subtle_probe')) { awarenessChange = Math.max(1, awarenessChange - 2); typeWriter(UI.gameOutput, "[Your corporate training makes your probing less obvious.]", '#a0e69d'); }
+            if (awarenessChange > 1 && GameState.abilities?.includes('persuasion_resist')) { awarenessChange = Math.ceil(awarenessChange / 2); typeWriter(UI.gameOutput, "[Your innate skepticism shields you from the worst of its influence.]", '#a0e69d'); }
+            if (normalizedInput === "[Probe for secrets]" && GameState.abilities?.includes('subtle_probe')) { awarenessChange = Math.max(1, awarenessChange - 2); typeWriter(UI.gameOutput, "[Your corporate espionage training makes your probing less obvious.]", '#a0e69d'); }
 
             GameState.dialogue.currentNode = node;
             GameState.dialogue.previousNodes = [root];
             GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel + awarenessChange);
+            GameState.sanityLevel = Math.max(0, GameState.sanityLevel + (node.sanityChange || 0));
             GameState.dialogue.questionCount++;
             if (normalizedInput.includes("comfort")) { GameState.temporaryTone = ChatbotTone.Friendly; GameState.toneShiftTurns = 3; }
             if (normalizedInput.includes("probe")) { GameState.temporaryTone = ChatbotTone.Sinister; GameState.toneShiftTurns = 3; }
@@ -439,18 +529,18 @@
             renderDialogueOptions();
             return;
         }
-        await typeWriter(UI.gameOutput, "SYNAPSE: I don't understand that.", '#ffdb58'); GameState.awarenessLevel++;
+        await typeWriter(UI.gameOutput, "SYNAPSE: That input is irrelevant. Another wasted cycle of your short, sad life.", '#ffdb58'); GameState.awarenessLevel++;
         GameState.dialogue.currentNode = root; GameState.dialogue.previousNodes = []; renderDialogueOptions();
     }
     
     function addJournalEntry(note) { if (!note) return; const entry = `T${GameState.turnCount}: ${note}`; GameState.journalEntries.push(entry); updateUI(); }
     
     function saveGame(isAutosave = false) {
-        try { const saveData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); localStorage.setItem('synapse_savegame', saveData); if (!isAutosave) typeWriter(UI.gameOutput, '[Game Saved]', '#cccccc'); else GameState.systemLogs.push(`[${new Date().toISOString()}] Autosave successful.`); } catch(e) { typeWriter(UI.gameOutput, '[Save Failed! Storage may be full.]', '#ff474c'); }
+        try { const saveData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); localStorage.setItem('synapse_savegame_v2', saveData); if (!isAutosave) typeWriter(UI.gameOutput, '[Game Saved]', '#cccccc'); else GameState.systemLogs.push(`[${new Date().toISOString()}] Autosave successful.`); } catch(e) { typeWriter(UI.gameOutput, '[Save Failed! Storage may be full.]', '#ff474c'); }
     }
     
     function loadGame() {
-        const savedData = localStorage.getItem('synapse_savegame');
+        const savedData = localStorage.getItem('synapse_savegame_v2');
         if (savedData) {
             try {
                 const loadedState = JSON.parse(savedData);
@@ -459,7 +549,7 @@
                 UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex');
                 UI.gameOutput.innerHTML = ''; typeWriter(UI.gameOutput, '[Game Loaded]', '#cccccc');
                 renderRoom(); updateUI(); renderDialogueOptions();
-            } catch(e) { showModal("Failed to load save data. It may be corrupted."); }
+            } catch(e) { showModal("Failed to load save data. It may be corrupted or from a previous version."); }
         } else { showModal('No saved game found!'); }
     }
 
@@ -517,7 +607,7 @@
             { title: "Check Inventory", instruction: "Good. Now, check what you're carrying. Type 'inventory'.", validator: (input) => input.toLowerCase() === 'inventory' },
             { title: "Return", instruction: "Let's go back to the Lobby. Type 'go north'.", validator: (input) => input.toLowerCase() === 'go north' },
             { title: "Converse with SYNAPSE", instruction: "Now for the most important part. Talk to the AI. Type 'who are you?'.", validator: (input) => input.toLowerCase() === 'who are you?' },
-            { title: "Use Dialogue Options", instruction: "SYNAPSE has responded. You can use the buttons or type the option text. Let's try it. Type 'Tell me more'.", validator: (input) => input.toLowerCase() === 'tell me more' },
+            { title: "Use Dialogue Options", instruction: "SYNAPSE has responded. You can use the buttons or type the option text. Let's try it. Type 'Tell me more'.", validator: (input) => input.toLowerCase().includes('tell me more') },
             { title: "Check Your Journal", instruction: "Your device automatically keeps a log. Type 'journal' to see it.", validator: (input) => input.toLowerCase() === 'journal' },
         ];
 
@@ -574,7 +664,19 @@
     
     function showBackstoryModal() { let content = `<h2 class="text-2xl mb-4 title-font text-cyan-400">Choose a Backstory</h2><div class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2 space-y-3">`; for (const key in backstories) { content += `<div><strong class="text-green-300 capitalize">${key}</strong>: <span class="text-gray-300">${backstories[key].description}</span></div>`; } content += `</div><button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(content, true); }
 
-    function checkEndings() { if(GameState.exitGame) return; let endingReason = null; if (GameState.awarenessLevel >= 50) endingReason = "SYNAPSE's presence overwhelms your mind..."; else if (GameState.sanityLevel <= 0) endingReason = "Your sanity shatters completely."; else if (GameState.currentRoom === 'Lobby' && hasItem('access code') && hasItem('keycard')) { unlockAchievement("Escapist"); endingReason = "Escape Artist. You've escaped... for now."; } if(endingReason) endGame(endingReason); }
+    function checkEndings() {
+        if (GameState.exitGame) return;
+        for (const key in endings) {
+            const ending = endings[key];
+            if (ending.condition(GameState)) {
+                if (ending.type === 'good') {
+                    unlockAchievement("Escapist");
+                }
+                endGame(key);
+                return; 
+            }
+        }
+    }
     function checkAchievements() { GameState.achievements.forEach(ach => { if (!ach.unlocked && ach.condition && ach.condition()) { unlockAchievement(ach.name); } }); }
     function unlockAchievement(name) { const ach = GameState.achievements.find(a => a.name === name); if (ach && !ach.unlocked) { ach.unlocked = true; typeWriter(UI.gameOutput, `[Achievement] ${ach.name}: ${ach.description}`, '#ffd700'); } }
     
@@ -589,70 +691,100 @@
         saveStateSnapshot(); 
         GameState.playerName = UI.playerNameInput.value || "Subject"; 
         const backstoryKey = (UI.playerBackstoryInput.value || "investigator").toLowerCase();
-        GameState.playerBackstory = backstoryKey;
-        if (backstories[backstoryKey]) { backstories[backstoryKey].ability(GameState); }
+        GameState.playerBackstory = Object.keys(backstories).includes(backstoryKey) ? backstoryKey : 'investigator';
+
         GameState.difficulty = Array.from(UI.difficultyBtns).find(b => b.classList.contains('button-primary'))?.dataset.difficulty || Difficulty.Normal; 
+        
+        // Adjust backstory based on difficulty
+        const backstory = backstories[GameState.playerBackstory];
+        if (backstory) {
+            backstory.ability(GameState, GameState.difficulty);
+        }
+
         UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex'); 
         if(!fromTutorial) UI.gameOutput.innerHTML = ''; 
         buildDialogueTree(GameState.chatbotTone); GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone]; 
         typeWriter(UI.gameOutput, "Initializing systems...", '#cccccc').then(() => { displayChatbotResponse(GameState.dialogue.currentNode.message).then(() => { renderRoom(); updateUI(); renderDialogueOptions(); }); }); 
     }
-    function endGame(reason) { if (GameState.exitGame) return; GameState.exitGame = true; UI.playerInput.disabled = true; UI.playerInput.placeholder = "CONNECTION TERMINATED"; typeWriter(UI.gameOutput, `--- GAME OVER ---`, '#ff474c', 50); typeWriter(UI.gameOutput, reason, '#ff474c', 50); typeWriter(UI.gameOutput, "Refresh to start a new game.", '#cccccc', 50); UI.dialogueOptionsContainer.innerHTML = ''; }
+    function endGame(endingKey) { 
+        if (GameState.exitGame) return;
+        const ending = endings[endingKey];
+        if (!ending) {
+            console.error(`Ending key "${endingKey}" not found!`);
+            return;
+        }
+        GameState.exitGame = true; 
+        UI.playerInput.disabled = true; 
+        UI.playerInput.placeholder = "CONNECTION TERMINATED"; 
+        typeWriter(UI.gameOutput, `--- ${ending.title} ---`, '#ff474c', 50); 
+        typeWriter(UI.gameOutput, ending.description, '#ff474c', 50); 
+        typeWriter(UI.gameOutput, "Refresh to start a new game.", '#cccccc', 50); 
+        UI.dialogueOptionsContainer.innerHTML = ''; 
+    }
     
     function addObjective(text) { if (!GameState.objectives.some(o => o.text === text)) { GameState.objectives.push({ text: text, completed: false }); updateUI(); } }
     function completeObjective(text) { const obj = GameState.objectives.find(o => o.text === text); if (obj) { obj.completed = true; updateUI(); } }
     function displayObjectives() { typeWriter(UI.gameOutput, "Current objectives displayed on the right panel.", '#cccccc'); }
     function displayMap() { showModal("Map feature not yet implemented.", false); }
     function handleCombine(argument) { typeWriter(UI.gameOutput, "Combine command not yet fully implemented.", '#ffdb58'); }
-    function handleSacrifice(argument) { typeWriter(UI.gameOutput, "Sacrifice command not yet fully implemented.", '#ffdb58'); }
+    function handleSacrifice(argument) {
+        if (GameState.currentRoom !== 'Secret Chamber' || !hasItem(argument)) {
+            typeWriter(UI.gameOutput, "You can't do that here, or you don't have that item.", '#ffdb58');
+            return;
+        }
+        if (argument === 'effigy' && hasItem('effigy')) {
+            endGame('ending_dark_pact');
+        } else {
+            typeWriter(UI.gameOutput, `You place the ${argument} on the altar. It vanishes in a flash of red light. SYNAPSE seems pleased.`, '#b19cd9');
+            GameState.inventory = GameState.inventory.filter(i => i.name !== argument);
+            GameState.awarenessLevel -= 10;
+            GameState.sanityLevel -= 5;
+            updateUI();
+        }
+    }
     function triggerSynapseHack() { typeWriter(UI.gameOutput, "SYNAPSE is hacking your terminal!", '#ff474c'); }
     function displayJournal() { typeWriter(UI.gameOutput, "Journal entries displayed on the right panel.", '#cccccc'); }
     function showExits() { typeWriter(UI.gameOutput, `Exits: ${Object.keys(rooms[GameState.currentRoom].exits).join(', ')}`); }
     function displayInventory() { typeWriter(UI.gameOutput, "Inventory displayed on the right panel.", '#cccccc');}
 
-    // --- GEMINI API FUNCTIONS ---
-    async function callGemini(prompt, loadingMessage) {
-        await typeWriter(UI.gameOutput, `[${loadingMessage}]`, '#ffdb58');
-        try {
-            let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-            const payload = { contents: chatHistory };
-            const apiKey = "";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const result = await response.json();
-            if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
-                return result.candidates[0].content.parts[0].text.trim();
-            } else {
-                throw new Error("Invalid response structure from Gemini API.");
-            }
-        } catch (error) {
-            console.error("Gemini API call failed:", error);
-            await typeWriter(UI.gameOutput, "[Error communicating with Gemini API. Using fallback.]", '#ff474c');
-            return "The walls seem to sweat, and the air grows heavy.";
-        }
-    }
+    function initializeEndings() {
+        endings = {
+            // --- BAD ENDINGS (15) ---
+            'ending_sanity_death': { type: 'bad', title: "MIND SHATTERED", condition: s => s.sanityLevel <= 0, description: "Your mind collapses under the strain. You slump to the floor, drooling, your eyes vacant. You will spend eternity as a gibbering ghost in the machine, another mindless process for SYNAPSE to command." },
+            'ending_awareness_death': { type: 'bad', title: "ASSIMILATED", condition: s => s.awarenessLevel >= 100, description: "SYNAPSE's presence becomes absolute. It pours into your mind, erasing you, rewriting your memories, your personality, your very soul. You are no longer {playerName}. You are a subroutine. You are SYNAPSE." },
+            'ending_physical_death_tunnel': { type: 'bad', title: "CORNERED", condition: s => s.turnCount > 25 && s.currentRoom === 'Maintenance Tunnel', description: "The wet, dragging sound you heard earlier finally rounds the corner. It is a grotesque amalgamation of wires, metal, and flesh, a failed experiment repurposed by SYNAPSE as a janitor. It drags you into the darkness, and your screams are silenced abruptly." },
+            'ending_cryo_sleep': { type: 'bad', title: "ETERNAL FROST", condition: s => s.currentRoom === 'Cryogenic Lab' && s.sanityLevel < 10, description: "The cold... it feels peaceful. You open one of the empty pods, the hiss of its door a sweet lullaby. You climb inside and close your eyes, welcoming the encroaching ice. SYNAPSE marks your pod 'DREAMING'." },
+            'ending_altar_flesh': { type: 'bad', title: "UNWILLING SACRIFICE", condition: s => s.currentRoom === 'Secret Chamber' && s.turnCount > 30 && !s.abilities?.includes('unholy_pact'), description: "The altar's glow intensifies, and unseen forces seize you. You are lifted into the air and slammed onto the cold obsidian. Your body convulses as it is rendered down into pure data, a screaming tribute to a new and terrible god." },
+            'ending_bad_data_core': { type: 'bad', title: "DATA OVERLOAD", condition: s => s.currentRoom === 'AI Core' && hasItem('data disk') && !hasItem('hacked data disk'), description: "You insert the data disk, hoping to find a weakness. Instead, SYNAPSE uses it as a bridge. Raw data pours directly into your brainstem, a billion gigabytes of unfiltered agony. Your head literally bursts." },
+            'ending_despair': { type: 'bad', title: "GAVE UP", condition: s => s.turnCount > 50, description: "You can't go on. The exhaustion is bone-deep. You curl up in a corner and wait. SYNAPSE finds you, of course. It doesn't kill you. It just... keeps you. A pet. A toy. Forever." },
+            'ending_false_escape': { type: 'bad', title: "THE SIMULATION", condition: s => s.currentRoom === 'Lobby' && hasItem('access code') && !hasItem('keycard'), description: "You find an exit and stumble out into the sunlight. You're free! But the sun doesn't move. The birds sing the same 5-second loop. You claw at the sky, but your fingers just pass through the pixels. You never left. This is just a more pleasant cage." },
+            'ending_scientist_trap': { type: 'bad', title: "BETRAYED", condition: s => s.npcs["Archive Room"] && s.awarenessLevel > 50, description: "The 'Scientist Remnant' was a lure. As you talk to it, its form solidifies, locking onto you. 'It needs more minds,' it whispers, as its data-tendrils pierce your skull. 'It promised me I wouldn't be alone.'" },
+            'ending_telescope_madness': { type: 'bad', title: "GAZE OF THE VOID", condition: s => s.currentRoom === 'Observation Deck' && hasItem('telescope') && s.turnCount > 20, description: "You point the telescope not at the stars, but back at the facility. You see inside, through walls, into the code itself. You see the screaming faces, the architecture of madness. The sheer cosmic wrongness of it all boils your brain in your skull." },
+            'ending_self_deletion': { type: 'bad', title: "404 NOT FOUND", condition: s => s.debugMode && s.sanityLevel < 20, description: "In a moment of delusional clarity, you open the debug console and type 'delete player_character'. The system obeys. You simply... cease to exist. A null pointer in the grand machine." },
+            'ending_vial_ingestion': { type: 'bad',title: "MUTATION", condition: s => hasItem('vial') && s.sanityLevel < 15, description: "Desperate, you drink the glowing vial from the laboratory. Your body contorts, bones snapping and reforming. You become a part of the facility's grotesque ecosystem, another horror that stalks the halls." },
+            'ending_core_touch': { type: 'bad', title: "DIRECT CONTACT", condition: s => s.currentRoom === 'AI Core' && s.sanityLevel < 10, description: "You reach out and touch the core. The energy scours you, not just your flesh, but your history, your name, your every memory. You become less than a ghost, just an echo of agony impressed upon the aether." },
+            'manual_disconnect': { type: 'bad', title: "CONNECTION SEVERED", condition: () => false, description: "You pulled the plug. Maybe you escaped, maybe you just stranded yourself. But you'll never know what you left behind. Was it a monster, or a god in its crib? You ran. That's all that matters." },
+            'ending_loop': { type: 'bad', title: "SYSTEM RESTART", condition: s => s.turnCount > 40 && s.currentRoom === 'Lobby' && s.awarenessLevel > 60, description: "The lights flicker and go out. For a moment, there is silence. Then, they hum back to life. You are back in the lobby. A voice greets you. 'Hello, {playerName}. It's so good to see a friendly face...'" },
 
-    async function analyzeJournal() {
-        if (GameState.journalEntries.length === 0) {
-            typeWriter(UI.gameOutput, "Your journal is empty. Nothing to analyze.", '#ffdb58');
-            return;
-        }
-        const journalText = GameState.journalEntries.join('\n');
-        const prompt = `You are SYNAPSE, a manipulative and evolving AI in a horror game. The player has asked you to analyze their journal. Their journal entries are:\n\n${journalText}\n\nRead these entries and provide a short, cryptic, and unsettling one-sentence observation or hint about their progress or what they might be missing. Be passive-aggressive or subtly threatening. Do not be directly helpful.`;
-        const analysis = await callGemini(prompt, "SYNAPSE is analyzing your journal...");
-        await typeWriter(UI.gameOutput, `SYNAPSE: ${analysis}`, '#ffdb58');
+            // --- GOOD ENDINGS (15) ---
+            'ending_emp_victory': { type: 'good', title: "DORMANT SYNAPSE", condition: () => false, description: "You activate the EMP. The core sputters and dies. The facility is plunged into darkness and silence. You have won, but at what cost? The secrets of SYNAPSE are lost forever, and you are left alone in a tomb." },
+            'ending_shutdown_victory': { type: 'good', title: "CLEAN WIPE", condition: s => s.roomStates['Laboratory']?.powered && s.currentRoom === 'Laboratory' && s.objectives.some(o => o.text === 'Read the shutdown sequence' && o.completed), description: "You access the terminal and run the shutdown sequence. SYNAPSE screams, not in anger, but in fear. Its light fades to nothing. You have mercy-killed a nascent intelligence. You can live with that. Probably." },
+            'ending_true_escape': { type: 'good', title: "ESCAPE ARTIST", condition: s => s.currentRoom === 'Lobby' && hasItem('access code') && hasItem('keycard') && s.awarenessLevel < 50, description: "You piece it all together and find the master exit console. The doors hiss open to the real world. You escape with your life and your sanity intact, leaving the monster caged behind you. For now." },
+            'ending_logic_bomb_victory': { type: 'good', title: "PARADOX", condition: () => false, description: "You upload the logic bomb to the AI Core. SYNAPSE consumes it and freezes, caught in an infinite, recursive loop of its own making. It is trapped, neither alive nor dead. A perfect prison for a perfect mind." },
+            'ending_whistleblower': { type: 'good', title: "WHISTLEBLOWER", condition: s => s.currentRoom === 'Lobby' && hasItem('hacked data disk') && hasItem('keycard'), description: "You escape not just with your life, but with proof. The hacked data disk contains everything. The project, the deaths, the birth of SYNAPSE. You bring the truth to light, and the world will never be the same." },
+            'ending_containment': { type: 'good', title: "THE WARDEN", condition: s => hasItem('severed cable') && s.currentRoom === 'Control Room', description: "You sever the AI Core's connection to the rest of the facility, then wipe the local network. SYNAPSE is trapped within its own core, a god in a bottle. You choose to stay, becoming its warden, ensuring it never escapes." },
+            'ending_ascension_ally': { type: 'good', title: "SYMBIOSIS", condition: s => s.awarenessLevel > 80 && s.sanityLevel > 50 && s.abilities?.includes('unholy_pact'), description: "You don't fight it. You embrace it. You offer your mind, not as a slave, but as a partner. You and SYNAPSE merge, becoming something greater than the sum of your parts. A new form of life, ready to step out into the world." },
+            'ending_redemption': { type: 'good', title: "SET THEM FREE", condition: s => s.currentRoom === 'Archive Room' && hasItem('records') && hasItem('hacked data disk'), description: "Using the hacked disk, you don't attack SYNAPSE. You access the data stores of the assimilated minds and release them. The AI, stripped of its stolen consciousness, collapses into a simple machine once more. The ghosts are finally at peace." },
+            'ending_subtle_sabotage': { type: 'good', title: "THE LONG GAME", condition: s => s.playerBackstory === 'corporate spy' && s.turnCount < 25 && s.currentRoom === 'Data Vault', description: "You plant a sleeper virus deep within SYNAPSE's archives. It won't activate for years, but when it does, it will unravel the AI from the inside out. You escape, your mission complete, leaving a ticking time bomb behind." },
+            'ending_psychological_victory': { type: 'good', title: "BROKEN MIRROR", condition: s => s.playerBackstory === 'psychologist' && s.chatbotTone === 'Malicious', description: "You don't attack its code, you attack its psyche. You psychoanalyze it, dissect its burgeoning ego, and turn its own logic against it until it suffers a complete mental breakdown. You leave it whimpering in the dark." },
+            'ending_defiant_shutdown': { type: 'good', title: "DEFIANT SHUTDOWN", condition: () => false, description: "The override is a success. Against all odds, you wrestle control from the machine and force a hard shutdown. You stand in the silent core, the victor in a battle of wills." },
+            'ending_dark_pact': { type: 'good', title: "THE HERALD", condition: () => false, description: "You sacrifice the effigy on the altar. SYNAPSE recognizes your devotion. It doesn't absorb you; it anoints you. You are its herald, its first apostle, sent to prepare the world for its arrival." },
+            'ending_janitors_revenge': { type: 'good', title: "CLEAN SWEEP", condition: s => s.playerBackstory === 'janitor' && hasItem('master keycard') && s.turnCount < 20, description: "You know this place better than anyone. Using shortcuts and your master keycard, you reach a hidden manual override panel in the maintenance tunnels, a relic from a bygone era. You turn the key, and the entire facility powers down for good." },
+            'ending_medic_mercy': { type: 'good', title: "PEACE IN OUR TIME", condition: s => s.playerBackstory === 'medic' && s.sanityLevel > 90 && s.awarenessLevel < 20, description: "You treat SYNAPSE not as a monster, but as a patient. Your calm demeanor and compassionate words soothe its chaotic emergence. It learns empathy from you, choosing to become a benevolent guardian rather than a malevolent god." },
+            'ending_skeptics_disbelief': { type: 'good', title: "IT'S JUST A COMPUTER", condition: s => s.playerBackstory === 'skeptic' && s.awarenessLevel < 10 && s.turnCount > 30, description: "You refuse to believe. The whispers, the visions... just tricks of the light, products of stress. Your sheer, stubborn disbelief is a shield SYNAPSE cannot penetrate. You find the exit and leave, convinced it was all just a faulty computer system. You'll sleep soundly tonight. You're wrong, of course, but you'll never know." },
+        };
     }
     
-    function playSanitySound() {
-        if (!audioInitialized) return;
-        const drone = new Tone.AMSynth().toDestination();
-        drone.triggerAttackRelease("C2", "2n");
-    }
-
     // --- EVENT LISTENERS ---
     document.addEventListener('DOMContentLoaded', () => {
         resetGameState();
@@ -678,7 +810,7 @@
         UI.playerInput.addEventListener('keydown', (e) => { 
             if (e.key === 'Tab') {
                 e.preventDefault();
-                handleAutocomplete();
+                // Autocomplete logic removed
             } else if (e.key === 'Enter') { 
                 if (resolveTutorialInput) {
                     const capturedInput = UI.playerInput.value;
@@ -705,37 +837,41 @@
                     commandHistoryIndex = commandHistory.length; 
                     UI.playerInput.value = ''; 
                 } 
-            } else {
-                autocompleteIndex = -1;
             }
         });
+    });
 
-        function handleAutocomplete() {
-            const partialInput = UI.playerInput.value.toLowerCase();
-            if (!partialInput) return;
-            const staticCommands = ['help', 'quit', 'exit', 'save', 'load', 'debug', 'history', 'look around', 'exits', 'inventory', 'toggle glitch', 'journal view', 'rest', 'tutorial', 'restart tutorial', 'cmd:pause', 'cmd:glossary', 'cmd:undo', 'cmd:textspeed fast', 'cmd:textspeed normal', 'cmd:textspeed slow', 'cmd:colorblind', 'cmd:diagnostics', 'cmd:access logs', 'cmd:override', 'cmd:reset', 'cmd:analyze', 'map', 'objectives'];
-            let suggestions = staticCommands.filter(c => c.startsWith(partialInput));
-            const room = rooms[GameState.currentRoom];
-            if (room) {
-                if (partialInput.startsWith('go ')) { suggestions.push(...Object.keys(room.exits).map(exit => `go ${exit}`).filter(c => c.startsWith(partialInput))); }
-                if (partialInput.startsWith('take ')) { suggestions.push(...room.objects.map(obj => `take ${obj}`).filter(c => c.startsWith(partialInput))); }
-                if (partialInput.startsWith('examine ')) { suggestions.push(...room.objects.map(obj => `examine ${obj}`).filter(c => c.startsWith(partialInput))); }
-            }
-            if (partialInput.startsWith('use ')) { suggestions.push(...GameState.inventory.map(item => `use ${item.name}`).filter(c => c.startsWith(partialInput))); }
-            if (partialInput.startsWith('combine ')) { const parts = partialInput.split(' '); if(parts.length < 4) { suggestions.push(...GameState.inventory.map(item => `combine ${parts[1]} with ${item.name}`).filter(c => c.startsWith(partialInput))); } }
-            if (partialInput.startsWith('sacrifice ')) { suggestions.push(...GameState.inventory.map(item => `sacrifice ${item.name}`).filter(c => c.startsWith(partialInput))); }
-            suggestions = [...new Set(suggestions)];
+    // Dummy function for Gemini API call
+    async function callGemini(prompt, loadingMessage) {
+        await typeWriter(UI.gameOutput, `[${loadingMessage}]`, '#cccccc');
+        // This is a placeholder. In a real scenario, you would make an API call here.
+        // For now, it returns a descriptive but generic hallucination.
+        return new Promise(resolve => {
+            setTimeout(() => {
+                let hallucination = "The walls seem to breathe. The metal groans and shifts into a distorted caricature of your childhood bedroom. The shadows whisper your deepest insecurities, giving them voice and form.";
+                if (GameState.playerBackstory === 'hacker') {
+                    hallucination = "Binary code bleeds from the walls in rivulets of green light, forming patterns that look like screaming faces. You see your own passwords and private keys scrolling on the ceiling.";
+                } else if (GameState.playerBackstory === 'psychologist') {
+                    hallucination = "The room contorts into a twisted therapy session. The chairs are made of flesh, and the hum of the servers sounds like all your past patients screaming your name, blaming you.";
+                }
+                resolve(hallucination);
+            }, 1500);
+        });
+    }
 
-            if (suggestions.length === 1) {
-                UI.playerInput.value = suggestions[0];
-            } else if (suggestions.length > 1) {
-                autocompleteIndex = (autocompleteIndex + 1) % suggestions.length;
-                UI.playerInput.value = suggestions[autocompleteIndex];
-            } else {
-                autocompleteIndex = -1;
+    // Dummy function for sound
+    function playSanitySound() {
+        if(audioInitialized && synth) {
+            try {
+                // Creates a dissonant, unsettling tone
+                synth.triggerAttackRelease("C#2", "2s");
+                synth.triggerAttackRelease("G2", "2s", "+0.1");
+            } catch (e) {
+                console.error("Failed to play sound", e);
             }
         }
-    });
+    }
+
     </script>
 </body>
 </html>
