@@ -334,7 +334,7 @@
     function renderRoom() {
         const room = rooms[GameState.currentRoom]; if (!room) return;
         GameState.visitedRooms.add(room.name); triggerRoomEvent(room);
-        let description = room.descriptions[Object.keys(room.descriptions).map(Number).filter(k => k <= GameState.awarenessLevel).Max()];
+        let description = room.descriptions[Object.keys(room.descriptions).map(Number).filter(k => k <= GameState.awarenessLevel).reduce((a,b) => Math.max(a,b), -Infinity)];
         if (GameState.roomStates[GameState.currentRoom]?.powered) { description = "The terminal hums with restored power. The screen displays: [Awaiting Input]."; }
         let roomHtml = `<div class="mt-2"><p class='text-cyan-400 font-bold'>--- ${room.name} ---</p><p>${description}</p>`;
         if (room.objects && room.objects.length > 0) { roomHtml += `<p class='text-yellow-400 mt-2'>Objects: ${room.objects.join(", ")}</p>`; }
@@ -492,8 +492,9 @@
             { title: "Check Your Journal", instruction: "Your device automatically keeps a log. Type 'journal' to see it.", validator: (input) => input.toLowerCase() === 'journal' },
         ];
 
-        for (const step of tutorialSteps) {
-            await typeWriter(UI.gameOutput, `\n--- ${step.title} ---`, '#ffdb58');
+        for (let i = 0; i < tutorialSteps.length; i++) {
+            const step = tutorialSteps[i];
+            await typeWriter(UI.gameOutput, `\n--- ${step.title} (Step ${i + 1} of ${tutorialSteps.length}) ---`, '#ffdb58');
             await typeWriter(UI.gameOutput, step.instruction, '#cccccc');
             let incorrectAttempts = 0;
 
@@ -515,7 +516,8 @@
                     incorrectAttempts++;
                     await typeWriter(UI.gameOutput, "That's not quite right. Please try again.", '#ff474c');
                     if (incorrectAttempts > 1) {
-                        await typeWriter(UI.gameOutput, `Hint: Try typing '${step.validator.toString().match(/'(.*?)'/)[1]}'`, '#ffdb58');
+                        const expectedCommand = step.validator.toString().match(/'(.*?)'/)[1];
+                        await typeWriter(UI.gameOutput, `Hint: Try typing '${expectedCommand}'`, '#ffdb58');
                     }
                 }
             }
