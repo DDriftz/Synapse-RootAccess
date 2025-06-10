@@ -218,6 +218,7 @@
     let commandHistory = [];
     let commandHistoryIndex = -1;
     let resolveTutorialInput = null;
+    let autocompleteIndex = -1;
     let synth; // For audio
     
     // --- GAME DATA ---
@@ -295,12 +296,18 @@
         const argument = parts.slice(1).join(' ');
         const isAction = !['help', 'stats', 'inventory', 'journal', 'look', 'exits', 'history', 'debug', 'toggle', 'cmd:textspeed', 'cmd:colorblind', 'objectives', 'map'].includes(command);
         if(isAction) GameState.turnCount++;
-        const commandHandlers = { 'help': showHelpMenu, 'quit': () => endGame("You have chosen to disconnect."), 'exit': () => endGame("You have chosen to disconnect."), 'save': () => saveGame(), 'load': loadGame, 'debug': () => { GameState.debugMode = !GameState.debugMode; typeWriter(UI.gameOutput, `Debug mode ${GameState.debugMode ? 'enabled' : 'disabled'}.`, '#6495ed'); }, 'history': displayConversationHistory, 'look': () => argument === 'around' ? renderRoom() : typeWriter(UI.gameOutput, "Look where? (try 'look around')", '#ffdb58'), 'go': () => handleMove(argument), 'visit': () => handleVisit(argument), 'take': () => handleTake(argument), 'use': () => handleUse(argument), 'examine': () => handleExamine(argument), 'journal': () => argument.startsWith('add ') ? addJournalEntry(input.substring(12)) : typeWriter(UI.gameOutput, "Journal is on the right.", '#cccccc'), 'rest': handleRest, 'talk': () => argument.startsWith('to ') ? handleTalk(argument.substring(3)) : typeWriter(UI.gameOutput, "Talk to who?", '#ffdb58'), 'toggle': () => argument === 'glitch' ? toggleGlitchMode() : typeWriter(UI.gameOutput, 'Toggle what? (try "glitch")', '#ffdb58'), 'cmd:pause': showPauseMenu, 'cmd:glossary': showGlossary, 'cmd:undo': undoAction, 'cmd:textspeed': () => handleTextSpeed(argument), 'cmd:colorblind': toggleColorblindMode, 'tutorial': showTutorialGuide, 'restart': () => argument === 'tutorial' ? runInteractiveTutorial(true) : typeWriter(UI.gameOutput, "Restart what? (try 'restart tutorial')", '#ffdb58'), 'cmd:diagnostics': () => typeWriter(UI.gameOutput, "Running diagnostics... All systems nominal.", '#6495ed'), 'cmd:access': () => argument === 'logs' ? typeWriter(UI.gameOutput, `[System Logs]<br>${GameState.systemLogs.join('<br>')}`, '#6495ed') : typeWriter(UI.gameOutput, 'Access what? (try "logs")', '#ffdb58'), 'cmd:override': attemptOverride, 'cmd:reset': () => { typeWriter(UI.gameOutput, "Terminal: Reset command issued. SYNAPSE resists.", '#ff474c'); GameState.awarenessLevel += 5; }, 'cmd:analyze': () => typeWriter(UI.gameOutput, `System Analysis: Awareness=${GameState.awarenessLevel}, Tone=${GameState.chatbotTone}`, '#6495ed'), 'objectives': displayObjectives, 'map': displayMap, 'combine': () => handleCombine(argument), 'sacrifice': () => handleSacrifice(argument) };
-        const parsedCommand = parseFreeformInput(input);
-        if (commandHandlers[parsedCommand]) { commandHandlers[parsedCommand](); }
-        else if (commandHandlers[command]) { commandHandlers[command](); }
-        else if (command.startsWith('cmd:')) { typeWriter(UI.gameOutput, "Unknown 'cmd:' command.", '#ff474c'); }
-        else { handleDialogueCommand(input); }
+        const commandHandlers = { 'help': () => showHelpMenu(), 'quit': () => endGame("You have chosen to disconnect."), 'exit': () => endGame("You have chosen to disconnect."), 'save': () => saveGame(), 'load': loadGame, 'debug': () => { GameState.debugMode = !GameState.debugMode; typeWriter(UI.gameOutput, `Debug mode ${GameState.debugMode ? 'enabled' : 'disabled'}.`, '#6495ed'); }, 'history': displayConversationHistory, 'look around': () => renderRoom(), 'go': handleMove, 'visit': handleVisit, 'take': handleTake, 'use': handleUse, 'examine': handleExamine, 'journal': (arg) => arg.startsWith('add ') ? addJournalEntry(input.substring(12)) : typeWriter(UI.gameOutput, "Journal is on the right.", '#cccccc'), 'rest': handleRest, 'talk': (arg) => arg.startsWith('to ') ? handleTalk(arg.substring(3)) : typeWriter(UI.gameOutput, "Talk to who?", '#ffdb58'), 'toggle': (arg) => arg === 'glitch' ? toggleGlitchMode() : typeWriter(UI.gameOutput, 'Toggle what? (try "glitch")', '#ffdb58'), 'cmd:pause': showPauseMenu, 'cmd:glossary': showGlossary, 'cmd:undo': undoAction, 'cmd:textspeed': handleTextSpeed, 'cmd:colorblind': toggleColorblindMode, 'tutorial': showTutorialGuide, 'restart': (arg) => arg === 'tutorial' ? runInteractiveTutorial(true) : typeWriter(UI.gameOutput, "Restart what? (try 'restart tutorial')", '#ffdb58'), 'cmd:diagnostics': () => typeWriter(UI.gameOutput, "Running diagnostics... All systems nominal.", '#6495ed'), 'cmd:access': (arg) => arg === 'logs' ? typeWriter(UI.gameOutput, `[System Logs]<br>${GameState.systemLogs.join('<br>')}`, '#6495ed') : typeWriter(UI.gameOutput, 'Access what? (try "logs")', '#ffdb58'), 'cmd:override': attemptOverride, 'cmd:reset': () => { typeWriter(UI.gameOutput, "Terminal: Reset command issued. SYNAPSE resists.", '#ff474c'); GameState.awarenessLevel += 5; }, 'cmd:analyze': () => typeWriter(UI.gameOutput, `System Analysis: Awareness=${GameState.awarenessLevel}, Tone=${GameState.chatbotTone}`, '#6495ed'), 'objectives': displayObjectives, 'map': displayMap, 'combine': handleCombine, 'sacrifice': handleSacrifice };
+        
+        if (commandHandlers[input.toLowerCase().trim()]) {
+            commandHandlers[input.toLowerCase().trim()]('');
+        }
+        else if (commandHandlers[command]) {
+            commandHandlers[command](argument);
+        }
+        else {
+            handleDialogueCommand(input);
+        }
+        
         UI.playerInput.value = '';
         UI.gameOutput.scrollTop = UI.gameOutput.scrollHeight;
         if (!GameState.exitGame && isAction) { if(GameState.turnCount > 0 && GameState.turnCount % 5 === 0) saveGame(true); if (GameState.sanityLevel > 80) GameState.highSanityTurns++; updateChatbotState(); checkTimedEvents(); checkAchievements(); checkEndings(); }
