@@ -219,6 +219,7 @@
     let commandHistoryIndex = -1;
     let resolveTutorialInput = null;
     let autocompleteIndex = -1;
+    let synth; // For audio
     
     // --- GAME DATA ---
     let rooms = {};
@@ -603,7 +604,9 @@
                     commandHistoryIndex = commandHistory.length; 
                     UI.playerInput.value = ''; 
                 } 
-            } 
+            } else {
+                autocompleteIndex = -1; // Reset autocomplete on other key presses
+            }
         });
 
         function getCommandSuggestions(partialInput) {
@@ -633,8 +636,7 @@
             if (suggestions.length === 1) {
                 UI.playerInput.value = suggestions[0];
             } else if (suggestions.length > 1) {
-                autocompleteIndex++;
-                if (autocompleteIndex >= suggestions.length) autocompleteIndex = 0;
+                autocompleteIndex = (autocompleteIndex + 1) % suggestions.length;
                 UI.playerInput.value = suggestions[autocompleteIndex];
                 typeWriter(UI.gameOutput, `Suggestions: ${suggestions.join(', ')}`, '#cccccc');
             } else {
