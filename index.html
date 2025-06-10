@@ -218,7 +218,6 @@
     let commandHistory = [];
     let commandHistoryIndex = -1;
     let resolveTutorialInput = null;
-    let autocompleteIndex = -1;
     let synth; // For audio
     
     // --- GAME DATA ---
@@ -609,11 +608,11 @@
             }
         });
 
-        function getCommandSuggestions(partialInput) {
+        function handleAutocomplete() {
+            const partialInput = UI.playerInput.value.toLowerCase();
+            if (!partialInput) return;
             const staticCommands = ['help', 'quit', 'exit', 'save', 'load', 'debug', 'history', 'look around', 'exits', 'inventory', 'toggle glitch', 'journal view', 'rest', 'tutorial', 'restart tutorial', 'cmd:pause', 'cmd:glossary', 'cmd:undo', 'cmd:textspeed fast', 'cmd:textspeed normal', 'cmd:textspeed slow', 'cmd:colorblind', 'cmd:diagnostics', 'cmd:access logs', 'cmd:override', 'cmd:reset', 'cmd:analyze', 'map', 'objectives'];
-            
             let suggestions = staticCommands.filter(c => c.startsWith(partialInput));
-
             const room = rooms[GameState.currentRoom];
             if (room) {
                 if (partialInput.startsWith('go ')) { suggestions.push(...Object.keys(room.exits).map(exit => `go ${exit}`).filter(c => c.startsWith(partialInput))); }
@@ -623,22 +622,13 @@
             if (partialInput.startsWith('use ')) { suggestions.push(...GameState.inventory.map(item => `use ${item.name}`).filter(c => c.startsWith(partialInput))); }
             if (partialInput.startsWith('combine ')) { const parts = partialInput.split(' '); if(parts.length < 4) { suggestions.push(...GameState.inventory.map(item => `combine ${parts[1]} with ${item.name}`).filter(c => c.startsWith(partialInput))); } }
             if (partialInput.startsWith('sacrifice ')) { suggestions.push(...GameState.inventory.map(item => `sacrifice ${item.name}`).filter(c => c.startsWith(partialInput))); }
-
-            return [...new Set(suggestions)];
-        }
-
-        function handleAutocomplete() {
-            const partialInput = UI.playerInput.value.toLowerCase();
-            if (!partialInput) return;
-
-            const suggestions = getCommandSuggestions(partialInput);
+            suggestions = [...new Set(suggestions)];
 
             if (suggestions.length === 1) {
                 UI.playerInput.value = suggestions[0];
             } else if (suggestions.length > 1) {
                 autocompleteIndex = (autocompleteIndex + 1) % suggestions.length;
                 UI.playerInput.value = suggestions[autocompleteIndex];
-                typeWriter(UI.gameOutput, `Suggestions: ${suggestions.join(', ')}`, '#cccccc');
             } else {
                 autocompleteIndex = -1;
             }
