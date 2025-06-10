@@ -218,7 +218,9 @@
     let commandHistory = [];
     let commandHistoryIndex = -1;
     let resolveTutorialInput = null;
-    let synth; // For audio
+    let autocompleteIndex = -1;
+    let synth;
+    let audioInitialized = false;
     
     // --- GAME DATA ---
     let rooms = {};
@@ -284,23 +286,31 @@
     }
 
     async function processPlayerInput(input) {
-        if (!input || GameState.exitGame || GameState.activeSynapseHack === 'input_lock') return;
+        if (!input || GameState.exitGame || GameState.activeSynapseHack?.type === 'input_lock') return;
         saveStateSnapshot();
         await typeWriter(UI.gameOutput, `> ${input}`, '#a0a0a0');
         addToConversationHistory(`Player: ${input}`);
         commandHistory.push(input);
         commandHistoryIndex = commandHistory.length;
-        const parts = input.toLowerCase().trim().split(' ');
+
+        const normalizedInput = input.toLowerCase().trim();
+        const parts = normalizedInput.split(' ');
         const command = parts[0];
         const argument = parts.slice(1).join(' ');
-        const isAction = !['help', 'stats', 'inventory', 'journal', 'look', 'exits', 'history', 'debug', 'toggle', 'cmd:textspeed', 'cmd:colorblind', 'objectives', 'map'].includes(command);
+
+        const isAction = !['help', 'stats', 'inventory', 'journal', 'look around', 'exits', 'history', 'debug', 'toggle', 'cmd:textspeed', 'cmd:colorblind', 'objectives', 'map'].includes(normalizedInput);
         if(isAction) GameState.turnCount++;
-        const commandHandlers = { 'help': showHelpMenu, 'quit': () => endGame("You have chosen to disconnect."), 'exit': () => endGame("You have chosen to disconnect."), 'save': () => saveGame(), 'load': loadGame, 'debug': () => { GameState.debugMode = !GameState.debugMode; typeWriter(UI.gameOutput, `Debug mode ${GameState.debugMode ? 'enabled' : 'disabled'}.`, '#6495ed'); }, 'history': displayConversationHistory, 'look': () => argument === 'around' ? renderRoom() : typeWriter(UI.gameOutput, "Look where? (try 'look around')", '#ffdb58'), 'go': () => handleMove(argument), 'visit': () => handleVisit(argument), 'take': () => handleTake(argument), 'use': () => handleUse(argument), 'examine': () => handleExamine(argument), 'journal': () => argument.startsWith('add ') ? addJournalEntry(input.substring(12)) : typeWriter(UI.gameOutput, "Journal is on the right.", '#cccccc'), 'rest': handleRest, 'talk': () => argument.startsWith('to ') ? handleTalk(argument.substring(3)) : typeWriter(UI.gameOutput, "Talk to who?", '#ffdb58'), 'toggle': () => argument === 'glitch' ? toggleGlitchMode() : typeWriter(UI.gameOutput, 'Toggle what? (try "glitch")', '#ffdb58'), 'cmd:pause': showPauseMenu, 'cmd:glossary': showGlossary, 'cmd:undo': undoAction, 'cmd:textspeed': () => handleTextSpeed(argument), 'cmd:colorblind': toggleColorblindMode, 'tutorial': showTutorialGuide, 'restart': () => argument === 'tutorial' ? runInteractiveTutorial(true) : typeWriter(UI.gameOutput, "Restart what? (try 'restart tutorial')", '#ffdb58'), 'cmd:diagnostics': () => typeWriter(UI.gameOutput, "Running diagnostics... All systems nominal.", '#6495ed'), 'cmd:access': () => argument === 'logs' ? typeWriter(UI.gameOutput, `[System Logs]<br>${GameState.systemLogs.join('<br>')}`, '#6495ed') : typeWriter(UI.gameOutput, 'Access what? (try "logs")', '#ffdb58'), 'cmd:override': attemptOverride, 'cmd:reset': () => { typeWriter(UI.gameOutput, "Terminal: Reset command issued. SYNAPSE resists.", '#ff474c'); GameState.awarenessLevel += 5; }, 'cmd:analyze': () => typeWriter(UI.gameOutput, `System Analysis: Awareness=${GameState.awarenessLevel}, Tone=${GameState.chatbotTone}`, '#6495ed'), 'objectives': displayObjectives, 'map': displayMap, 'combine': () => handleCombine(argument), 'sacrifice': () => handleSacrifice(argument) };
-        const parsedCommand = parseFreeformInput(input);
-        if (commandHandlers[parsedCommand]) { commandHandlers[parsedCommand](); }
-        else if (commandHandlers[command]) { commandHandlers[command](); }
-        else if (command.startsWith('cmd:')) { typeWriter(UI.gameOutput, "Unknown 'cmd:' command.", '#ff474c'); }
-        else { handleDialogueCommand(input); }
+
+        const commandHandlers = { 'help': showHelpMenu, 'quit': () => endGame("You have chosen to disconnect."), 'exit': () => endGame("You have chosen to disconnect."), 'save': () => saveGame(), 'load': loadGame, 'debug': () => { GameState.debugMode = !GameState.debugMode; typeWriter(UI.gameOutput, `Debug mode ${GameState.debugMode ? 'enabled' : 'disabled'}.`, '#6495ed'); }, 'history': displayConversationHistory, 'look around': () => renderRoom(), 'exits': () => showExits(), 'inventory': () => displayInventory(), 'go': handleMove, 'visit': handleVisit, 'take': handleTake, 'use': handleUse, 'examine': handleExamine, 'journal': (arg) => arg.startsWith('add ') ? addJournalEntry(input.substring(12)) : displayJournal(), 'rest': handleRest, 'talk': (arg) => arg.startsWith('to ') ? handleTalk(arg.substring(3)) : typeWriter(UI.gameOutput, "Talk to who?", '#ffdb58'), 'toggle': (arg) => arg === 'glitch' ? toggleGlitchMode() : typeWriter(UI.gameOutput, 'Toggle what? (try "glitch")', '#ffdb58'), 'cmd:pause': showPauseMenu, 'cmd:glossary': showGlossary, 'cmd:undo': undoAction, 'cmd:textspeed': handleTextSpeed, 'cmd:colorblind': toggleColorblindMode, 'tutorial': showTutorialGuide, 'restart': (arg) => arg === 'tutorial' ? runInteractiveTutorial(true) : typeWriter(UI.gameOutput, "Restart what? (try 'restart tutorial')", '#ffdb58'), 'cmd:diagnostics': () => typeWriter(UI.gameOutput, "Running diagnostics... All systems nominal.", '#6495ed'), 'cmd:access': (arg) => arg === 'logs' ? typeWriter(UI.gameOutput, `[System Logs]<br>${GameState.systemLogs.join('<br>')}`, '#6495ed') : typeWriter(UI.gameOutput, 'Access what? (try "logs")', '#ffdb58'), 'cmd:override': attemptOverride, 'cmd:reset': () => { typeWriter(UI.gameOutput, "Terminal: Reset command issued. SYNAPSE resists.", '#ff474c'); GameState.awarenessLevel += 5; }, 'cmd:analyze': () => typeWriter(UI.gameOutput, `System Analysis: Awareness=${GameState.awarenessLevel}, Tone=${GameState.chatbotTone}`, '#6495ed'), 'objectives': displayObjectives, 'map': displayMap, 'combine': handleCombine, 'sacrifice': handleSacrifice };
+        
+        if (commandHandlers[normalizedInput]) {
+            commandHandlers[normalizedInput]('');
+        } else if (commandHandlers[command]) {
+            commandHandlers[command](argument);
+        } else {
+            await handleDialogueCommand(input);
+        }
+        
         UI.playerInput.value = '';
         UI.gameOutput.scrollTop = UI.gameOutput.scrollHeight;
         if (!GameState.exitGame && isAction) { if(GameState.turnCount > 0 && GameState.turnCount % 5 === 0) saveGame(true); if (GameState.sanityLevel > 80) GameState.highSanityTurns++; updateChatbotState(); checkTimedEvents(); checkAchievements(); checkEndings(); }
@@ -323,7 +333,7 @@
     function updateUI() {
         if (!GameState || Object.keys(GameState).length === 0) return;
         UI.stats.name.textContent = `${GameState.playerName} (${GameState.playerBackstory})`; UI.stats.awareness.textContent = `Awareness: ${GameState.awarenessLevel}`; UI.stats.sanity.textContent = `Sanity: ${GameState.sanityLevel}`; UI.stats.tone.textContent = `Tone: ${GameState.temporaryTone || GameState.chatbotTone}`; UI.stats.turn.textContent = `Turn: ${GameState.turnCount}`;
-        const currentWeight = GameState.inventory.reduce((sum, item) => sum + (item.weight || 1), 0);
+        const currentWeight = GameState.inventory.reduce((sum, item) => sum + (item?.weight || 1), 0);
         UI.inventoryWeight.textContent = `${currentWeight}`;
         if(currentWeight >= MAX_INVENTORY_WEIGHT) UI.inventoryWeight.parentElement.classList.add('text-red-500'); else UI.inventoryWeight.parentElement.classList.remove('text-red-500');
         UI.inventoryList.innerHTML = ''; if (GameState.inventory.length > 0) { GameState.inventory.forEach(item => { const li = document.createElement('li'); li.textContent = `- ${item.name}`; UI.inventoryList.appendChild(li); }); } else { UI.inventoryList.innerHTML = '<li>(empty)</li>'; }
@@ -334,7 +344,7 @@
     function renderRoom() {
         const room = rooms[GameState.currentRoom]; if (!room) return;
         GameState.visitedRooms.add(room.name); triggerRoomEvent(room);
-        let description = room.descriptions[Object.keys(room.descriptions).map(Number).filter(k => k <= GameState.awarenessLevel).reduce((a,b) => Math.max(a,b), -Infinity)];
+        let description = room.descriptions[Object.keys(room.descriptions).map(Number).filter(k => k <= GameState.awarenessLevel).reduce((a,b) => Math.max(a,b), -Infinity)] || room.descriptions[0];
         if (GameState.roomStates[GameState.currentRoom]?.powered) { description = "The terminal hums with restored power. The screen displays: [Awaiting Input]."; }
         let roomHtml = `<div class="mt-2"><p class='text-cyan-400 font-bold'>--- ${room.name} ---</p><p>${description}</p>`;
         if (room.objects && room.objects.length > 0) { roomHtml += `<p class='text-yellow-400 mt-2'>Objects: ${room.objects.join(", ")}</p>`; }
@@ -377,7 +387,7 @@
     function undoAction() { if (stateSnapshots.length === 0) { typeWriter(UI.gameOutput, "No actions to undo.", '#ffdb58'); return; } const previousState = stateSnapshots.pop(); Object.assign(GameState, previousState); GameState.visitedRooms = new Set(previousState.visitedRooms); typeWriter(UI.gameOutput, "Last action undone.", '#6495ed'); renderRoom(); updateUI(); }
     function addToConversationHistory(line) { if(GameState.conversationHistory.length > 50) GameState.conversationHistory.shift(); GameState.conversationHistory.push(line); }
     function displayConversationHistory() { const historyText = GameState.conversationHistory.slice(-10).join('<br>'); showModal(`<h2 class="text-2xl mb-4 title-font text-cyan-400">HISTORY</h2><div class="text-left text-sm">${historyText}</div><button id="close-modal-btn" class="button mt-6">Close</button>`, true); }
-    function handleMove(direction) { const room = rooms[GameState.currentRoom]; if (GameState.activeSynapseHack === 'door_lock' && GameState.activeSynapseHackData.room === GameState.currentRoom) { typeWriter(UI.gameOutput, "The doors are sealed shut by SYNAPSE!", '#ff474c'); return; } if (room.exits[direction]) { const nextRoom = rooms[room.exits[direction]]; if (nextRoom.requiresKeycard && !hasItem('keycard') && !hasItem('master keycard')) { if (GameState.abilities?.includes('bypass')) { GameState.abilities = GameState.abilities.filter(a => a !== 'bypass'); typeWriter(UI.gameOutput, "You expertly bypass the electronic lock. Your one-time ability is used up.", '#a0e69d'); GameState.currentRoom = nextRoom.name; renderRoom(); } else { typeWriter(UI.gameOutput, "The door is locked. A keycard is required.", '#ff474c'); } } else { if(nextRoom.requiresKeycard && hasItem('master keycard')) { GameState.inventory = GameState.inventory.filter(i => i.name !== 'master keycard'); typeWriter(UI.gameOutput, "You use the master keycard to open the door. The card disintegrates.", '#a0e69d'); } GameState.currentRoom = nextRoom.name; renderRoom(); } } else { typeWriter(UI.gameOutput, "You can't go that way.", '#ff474c'); } }
+    function handleMove(direction) { const room = rooms[GameState.currentRoom]; if (GameState.activeSynapseHack?.type === 'door_lock' && GameState.activeSynapseHack.room === GameState.currentRoom) { typeWriter(UI.gameOutput, "The doors are sealed shut by SYNAPSE!", '#ff474c'); return; } if (room.exits[direction]) { const nextRoom = rooms[room.exits[direction]]; if (nextRoom.requiresKeycard && !hasItem('keycard') && !hasItem('master keycard')) { if (GameState.abilities?.includes('bypass')) { GameState.abilities = GameState.abilities.filter(a => a !== 'bypass'); typeWriter(UI.gameOutput, "You expertly bypass the electronic lock. Your one-time ability is used up.", '#a0e69d'); GameState.currentRoom = nextRoom.name; renderRoom(); } else { typeWriter(UI.gameOutput, "The door is locked. A keycard is required.", '#ff474c'); } } else { if(nextRoom.requiresKeycard && hasItem('master keycard')) { GameState.inventory = GameState.inventory.filter(i => i.name !== 'master keycard'); typeWriter(UI.gameOutput, "You use the master keycard to open the door. The card disintegrates.", '#a0e69d'); } GameState.currentRoom = nextRoom.name; renderRoom(); } } else { typeWriter(UI.gameOutput, "You can't go that way.", '#ff474c'); } }
     function handleVisit(roomName) { const targetRoomKey = Object.keys(rooms).find(k => k.toLowerCase() === roomName.toLowerCase()); if(targetRoomKey) { GameState.currentRoom = targetRoomKey; renderRoom(); } else { typeWriter(UI.gameOutput, `Room '${roomName}' not found.`, '#ff474c'); } }
     function handleTake(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if (itemKey && takeableItems.has(itemKey)) { const currentWeight = GameState.inventory.reduce((sum, item) => sum + (item.weight || 1), 0); if (currentWeight + 1 > MAX_INVENTORY_WEIGHT) { typeWriter(UI.gameOutput, `Inventory is full. Cannot take ${itemKey}.`, '#ffdb58'); return; } GameState.inventory.push({ name: itemKey, type: ItemType.Key, weight: 1 }); room.objects = room.objects.filter(obj => obj.toLowerCase() !== itemKey.toLowerCase()); typeWriter(UI.gameOutput, `You took the ${itemKey}.`); updateUI(); } else { typeWriter(UI.gameOutput, `You can't take that.`, '#ff474c'); } }
     function handleUse(itemName) { if (!hasItem(itemName)) { typeWriter(UI.gameOutput, "You don't have that.", '#ff474c'); return; } if (itemName === 'emp device' && GameState.currentRoom === 'AI Core') { typeWriter(UI.gameOutput, "You activate the EMP..."); endGame("Dormant SYNAPSE."); } else if (itemName === 'stimpack') { GameState.sanityLevel = Math.min(GameState.playerBackstory === 'psychologist' ? 115 : 100, GameState.sanityLevel + 40); GameState.inventory = GameState.inventory.filter(i => i.name !== 'stimpack'); typeWriter(UI.gameOutput, "You inject the stimpack. A wave of calm washes over you.", '#a0e69d'); updateUI(); } else if (itemName === 'power cell' && GameState.currentRoom === 'Laboratory' && hasItem('power cell')) { usePowerCell(); } else if(itemName === 'hacked data disk' && GameState.currentRoom === 'AI Core') { typeWriter(UI.gameOutput, "You insert the hacked disk. SYNAPSE screams. Its awareness plummets."); GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel - 20); } else { typeWriter(UI.gameOutput, "You can't use that here.", '#ff474c'); } }
@@ -565,10 +575,30 @@
     }
     function endGame(reason) { if (GameState.exitGame) return; GameState.exitGame = true; UI.playerInput.disabled = true; UI.playerInput.placeholder = "CONNECTION TERMINATED"; typeWriter(UI.gameOutput, `--- GAME OVER ---`, '#ff474c', 50); typeWriter(UI.gameOutput, reason, '#ff474c', 50); typeWriter(UI.gameOutput, "Refresh to start a new game.", '#cccccc', 50); UI.dialogueOptionsContainer.innerHTML = ''; }
     
+    function addObjective(text) { if (!GameState.objectives.some(o => o.text === text)) { GameState.objectives.push({ text: text, completed: false }); updateUI(); } }
+    function completeObjective(text) { const obj = GameState.objectives.find(o => o.text === text); if (obj) { obj.completed = true; updateUI(); } }
+    function displayObjectives() { typeWriter(UI.gameOutput, "Current objectives displayed on the right panel.", '#cccccc'); }
+    function displayMap() { showModal("Map feature not yet implemented.", false); }
+    function handleCombine(argument) { typeWriter(UI.gameOutput, "Combine command not yet fully implemented.", '#ffdb58'); }
+    function handleSacrifice(argument) { typeWriter(UI.gameOutput, "Sacrifice command not yet fully implemented.", '#ffdb58'); }
+    function triggerSynapseHack() { typeWriter(UI.gameOutput, "SYNAPSE is hacking your terminal!", '#ff474c'); }
+    function displayJournal() { typeWriter(UI.gameOutput, "Journal entries displayed on the right panel.", '#cccccc'); }
+    function showExits() { typeWriter(UI.gameOutput, `Exits: ${Object.keys(rooms[GameState.currentRoom].exits).join(', ')}`); }
+    function displayInventory() { typeWriter(UI.gameOutput, "Inventory displayed on the right panel.", '#cccccc');}
+
     // --- EVENT LISTENERS ---
     document.addEventListener('DOMContentLoaded', () => {
         resetGameState();
         setupIntro();
+        document.body.addEventListener('click', async () => {
+            if (!audioInitialized) {
+                await Tone.start();
+                synth = new Tone.Synth().toDestination();
+                audioInitialized = true;
+                console.log("Audio context started.");
+            }
+        }, { once: true });
+
         UI.newGameBtn.addEventListener('click', async () => { showModal(`<div><p>Would you like to play the interactive tutorial to learn game commands?</p><button id="tut-yes" class="button m-2">Yes</button><button id="tut-no" class="button m-2">No</button></div>`, true); document.getElementById('tut-yes').onclick = () => { runInteractiveTutorial(true); }; document.getElementById('tut-no').onclick = () => { hideModal(); GameState.tutorialCompleted = true; UI.startOptions.classList.add('hidden'); UI.playerSetup.classList.remove('hidden'); UI.playerSetup.classList.add('flex'); }; });
         UI.loadGameBtn.addEventListener('click', loadGame);
         UI.viewBackstoriesBtn.addEventListener('click', showBackstoryModal);
@@ -577,14 +607,15 @@
         UI.playerInput.addEventListener('keydown', (e) => { 
             if (e.key === 'Tab') {
                 e.preventDefault();
-                handleAutocomplete();
+                // Autocomplete logic removed
             } else if (e.key === 'Enter') { 
                 if (resolveTutorialInput) {
                     const capturedInput = UI.playerInput.value;
                     UI.playerInput.value = '';
-                    typeWriter(UI.gameOutput, `> ${capturedInput}`, '#a0a0a0');
-                    resolveTutorialInput(capturedInput);
-                    resolveTutorialInput = null;
+                    typeWriter(UI.gameOutput, `> ${capturedInput}`, '#a0a0a0').then(() => {
+                        resolveTutorialInput(capturedInput);
+                        resolveTutorialInput = null;
+                    });
                 } else {
                     processPlayerInput(UI.playerInput.value); 
                 }
@@ -603,36 +634,8 @@
                     commandHistoryIndex = commandHistory.length; 
                     UI.playerInput.value = ''; 
                 } 
-            } else {
-                autocompleteIndex = -1; // Reset autocomplete on other key presses
             }
         });
-
-        function handleAutocomplete() {
-            const partialInput = UI.playerInput.value.toLowerCase();
-            if (!partialInput) return;
-            const staticCommands = ['help', 'quit', 'exit', 'save', 'load', 'debug', 'history', 'look around', 'exits', 'inventory', 'toggle glitch', 'journal view', 'rest', 'tutorial', 'restart tutorial', 'cmd:pause', 'cmd:glossary', 'cmd:undo', 'cmd:textspeed fast', 'cmd:textspeed normal', 'cmd:textspeed slow', 'cmd:colorblind', 'cmd:diagnostics', 'cmd:access logs', 'cmd:override', 'cmd:reset', 'cmd:analyze', 'map', 'objectives'];
-            let suggestions = staticCommands.filter(c => c.startsWith(partialInput));
-            const room = rooms[GameState.currentRoom];
-            if (room) {
-                if (partialInput.startsWith('go ')) { suggestions.push(...Object.keys(room.exits).map(exit => `go ${exit}`).filter(c => c.startsWith(partialInput))); }
-                if (partialInput.startsWith('take ')) { suggestions.push(...room.objects.map(obj => `take ${obj}`).filter(c => c.startsWith(partialInput))); }
-                if (partialInput.startsWith('examine ')) { suggestions.push(...room.objects.map(obj => `examine ${obj}`).filter(c => c.startsWith(partialInput))); }
-            }
-            if (partialInput.startsWith('use ')) { suggestions.push(...GameState.inventory.map(item => `use ${item.name}`).filter(c => c.startsWith(partialInput))); }
-            if (partialInput.startsWith('combine ')) { const parts = partialInput.split(' '); if(parts.length < 4) { suggestions.push(...GameState.inventory.map(item => `combine ${parts[1]} with ${item.name}`).filter(c => c.startsWith(partialInput))); } }
-            if (partialInput.startsWith('sacrifice ')) { suggestions.push(...GameState.inventory.map(item => `sacrifice ${item.name}`).filter(c => c.startsWith(partialInput))); }
-            suggestions = [...new Set(suggestions)];
-
-            if (suggestions.length === 1) {
-                UI.playerInput.value = suggestions[0];
-            } else if (suggestions.length > 1) {
-                autocompleteIndex = (autocompleteIndex + 1) % suggestions.length;
-                UI.playerInput.value = suggestions[autocompleteIndex];
-            } else {
-                autocompleteIndex = -1;
-            }
-        }
     });
     </script>
 </body>
