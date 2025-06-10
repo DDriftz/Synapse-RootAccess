@@ -543,8 +543,13 @@
         UI.playerInput.disabled = true;
         setTimeout(() => {
             UI.playerInput.disabled = false;
-            UI.gameOutput.innerHTML = '';
-            startGame(true);
+            UI.gameScreen.classList.add('hidden');
+            UI.startScreen.classList.remove('hidden');
+            UI.startOptions.classList.add('hidden');
+            UI.introTextContainer.classList.add('hidden');
+            UI.titleArt.classList.add('hidden');
+            UI.playerSetup.classList.remove('hidden');
+            UI.playerSetup.classList.add('flex');
         }, 4000);
     }
     
