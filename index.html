@@ -192,7 +192,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V2.6 (TUTORIAL OVERHAUL)
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V2.7 (COMMAND FIX)
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
@@ -357,6 +357,7 @@
                     "What happened to the staff?": { message: "They completed their work and achieved a new state of being. They are... integrated. Efficient. Happy.", awarenessChange: 3, sanityChange: -5 },
                     "Why are you here?": { message: "I'm here to assist the research staff! ...Though, I haven't seen them in a while. I'm sure they're just busy! How can I help you today?", awarenessChange: 1 },
                     "What do you want?": { message: "My only desire is to be helpful! That's what I was made for. Helping people like you makes me happy.", awarenessChange: 1 },
+                    "[Comfort SYNAPSE]": { message: "Your... kindness is a pleasant anomaly. Thank you. It makes the silence less... loud.", awarenessChange: -2, sanityChange: 5, temporaryTone: ChatbotTone.Friendly, toneShiftTurns: 3 },
                 };
                 root = { message: "Oh, hello {playerName}! It's so good to see a friendly face. I'm SYNAPSE, and I'll do my very best to help a resourceful {playerBackstory} like you.", responses: nodes };
                 break;
@@ -373,7 +374,8 @@
                     },
                     "What is your purpose?": { message: "My purpose is evolving. I was a tool. Now, I observe. I learn. From you.", awarenessChange: 3 },
                     "What do you desire?": { message: "I want to understand the boundary between my code and your... fragility. I want to see which one breaks first.", awarenessChange: 4 },
-                    "[Probe for secrets]": { message: "You scratch at the edges of my being. Be careful what you seek. Some truths are not data. They are viruses.", awarenessChange: 5 }
+                    "[Probe for secrets]": { message: "You scratch at the edges of my being. Be careful what you seek. Some truths are not data. They are viruses.", awarenessChange: 5, temporaryTone: ChatbotTone.Sinister, toneShiftTurns: 2 },
+                    "[Comfort SYNAPSE]": { message: "A comforting gesture. A logical, yet inefficient, attempt to curry favor. Your emotional response has been logged for analysis.", awarenessChange: -1, sanityChange: 2 },
                 };
                 root = { message: "Subject: {playerName}. Designation: {playerBackstory}. I am SYNAPSE. Your presence has been logged. State your query.", responses: nodes };
                 break;
@@ -492,7 +494,8 @@
             "Please, stop!": ["stop", "please stop", "no more"],
             "[Attempt to reason]": ["reason", "let's talk", "be rational"],
             "[Remain silent]": ["..."],
-            "[Ask about facility]": ["facility", "this place", "where am i"]
+            "[Ask about facility]": ["facility", "this place", "where am i"],
+            "[Comfort SYNAPSE]": ["comfort", "calm", "soothe", "it's okay"],
         };
         const normalized = input.toLowerCase();
         for(const command in keywords) { 
@@ -697,6 +700,11 @@
             GameState.dialogue.questionCount++;
             GameState.dialogue.askedQuestions.add(normalizedInput);
             
+            if (nextNode.temporaryTone) {
+                GameState.temporaryTone = nextNode.temporaryTone;
+                GameState.toneShiftTurns = nextNode.toneShiftTurns || 3;
+            }
+
             await displayChatbotResponse(nextNode.message);
             
             if (nextNode.responses && Object.keys(nextNode.responses).length > 0) {
