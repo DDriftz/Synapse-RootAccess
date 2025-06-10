@@ -6,6 +6,7 @@
     <title>SYNAPSE: AI Horror Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=VT323&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <style>
         body {
             background-color: #0d0d0d;
@@ -46,9 +47,9 @@
             from, to { background-color: transparent; }
             50% { background-color: #00ff41; }
         }
-        #game-output::-webkit-scrollbar, #journal-panel::-webkit-scrollbar, .modal-scroll::-webkit-scrollbar { width: 8px; }
-        #game-output::-webkit-scrollbar-track, #journal-panel::-webkit-scrollbar-track, .modal-scroll::-webkit-scrollbar-track { background: #1a1a1a; }
-        #game-output::-webkit-scrollbar-thumb, #journal-panel::-webkit-scrollbar-thumb, .modal-scroll::-webkit-scrollbar-thumb { background-color: #00ff41; border-radius: 4px; }
+        #game-output::-webkit-scrollbar, #journal-panel::-webkit-scrollbar, #objectives-panel::-webkit-scrollbar, .modal-scroll::-webkit-scrollbar { width: 8px; }
+        #game-output::-webkit-scrollbar-track, #journal-panel::-webkit-scrollbar-track, #objectives-panel::-webkit-scrollbar-track, .modal-scroll::-webkit-scrollbar-track { background: #1a1a1a; }
+        #game-output::-webkit-scrollbar-thumb, #journal-panel::-webkit-scrollbar-thumb, #objectives-panel::-webkit-scrollbar-thumb, .modal-scroll::-webkit-scrollbar-thumb { background-color: #00ff41; border-radius: 4px; }
         .glitch {
             animation: glitch-anim 0.5s infinite;
         }
@@ -112,8 +113,8 @@
         
         <!-- START SCREEN -->
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
-            <pre id="title-art" class="text-sm md:text-base whitespace-pre-wrap title-font text-[#00ff41] crt-flicker"></pre>
-            <div id="intro-text-container" class="max-w-4xl"></div>
+            <pre id="title-art" class="text-xs md:text-sm whitespace-pre-wrap title-font text-[#00ff41] crt-flicker"></pre>
+            <div id="intro-text-container" class="max-w-4xl text-sm md:text-base"></div>
              <div id="start-options" class="mt-6">
                 <button id="new-game-btn" class="button">New Game</button>
                 <button id="load-game-btn" class="button ml-4">Load Game</button>
@@ -153,6 +154,10 @@
                         <div id="tone-display">Tone: Friendly</div>
                         <div id="turn-display">Turn: 0</div>
                     </div>
+                    <div id="objectives-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50">
+                        <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">OBJECTIVES</h3>
+                        <ul id="objectives-list" class="list-none p-0 text-sm"></ul>
+                    </div>
                     <div id="inventory-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50">
                         <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">INVENTORY (<span id="inventory-weight">0</span>/5)</h3>
                         <ul id="inventory-list" class="list-none p-0"></ul>
@@ -182,204 +187,104 @@
     
     <script>
     // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT
-    // This script contains the entire game logic, translated from the C# Program.cs file.
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister' };
-    const ItemType = { Tool: 'Tool', Consumable: 'Consumable', Key: 'Key' };
+    const ItemType = { Tool: 'Tool', Consumable: 'Consumable', Key: 'Key', Log: 'Log', Puzzle: 'Puzzle' };
     const Difficulty = { Easy: 'Easy', Normal: 'Normal', Hard: 'Hard' };
     const TextSpeed = { Fast: 5, Normal: 15, Slow: 30 };
     const MAX_INVENTORY_WEIGHT = 5;
-    const SAVE_FILE_VERSION = "1.3";
     
-    // --- GAME STATE ---
+    // --- GAME STATE & DOM ELEMENTS ---
     let GameState = {};
     let stateSnapshots = [];
-    
-    // --- DOM ELEMENTS ---
     const UI = {
-        appContainer: document.getElementById('app-container'),
-        startScreen: document.getElementById('start-screen'),
-        gameScreen: document.getElementById('game-screen'),
-        newGameBtn: document.getElementById('new-game-btn'),
-        loadGameBtn: document.getElementById('load-game-btn'),
-        playerSetup: document.getElementById('player-setup'),
-        startOptions: document.getElementById('start-options'),
-        playerNameInput: document.getElementById('player-name'),
-        playerBackstoryInput: document.getElementById('player-backstory'),
-        startGameBtn: document.getElementById('start-game-btn'),
-        difficultyBtns: document.querySelectorAll('.difficulty-btn'),
-        gameOutput: document.getElementById('game-output'),
+        appContainer: document.getElementById('app-container'), startScreen: document.getElementById('start-screen'),
+        gameScreen: document.getElementById('game-screen'), newGameBtn: document.getElementById('new-game-btn'),
+        loadGameBtn: document.getElementById('load-game-btn'), playerSetup: document.getElementById('player-setup'),
+        startOptions: document.getElementById('start-options'), playerNameInput: document.getElementById('player-name'),
+        playerBackstoryInput: document.getElementById('player-backstory'), startGameBtn: document.getElementById('start-game-btn'),
+        difficultyBtns: document.querySelectorAll('.difficulty-btn'), gameOutput: document.getElementById('game-output'),
         playerInput: document.getElementById('player-input'),
-        stats: {
-            name: document.getElementById('player-name-display'),
-            awareness: document.getElementById('awareness-display'),
-            sanity: document.getElementById('sanity-display'),
-            tone: document.getElementById('tone-display'),
-            turn: document.getElementById('turn-display'),
-        },
-        inventoryWeight: document.getElementById('inventory-weight'),
-        inventoryList: document.getElementById('inventory-list'),
-        journalList: document.getElementById('journal-list'),
-        dialogueOptionsContainer: document.getElementById('dialogue-options'),
-        modal: document.getElementById('modal'),
-        modalContent: document.getElementById('modal-content'),
-        titleArt: document.getElementById('title-art'),
-        introTextContainer: document.getElementById('intro-text-container'),
+        stats: { name: document.getElementById('player-name-display'), awareness: document.getElementById('awareness-display'), sanity: document.getElementById('sanity-display'), tone: document.getElementById('tone-display'), turn: document.getElementById('turn-display'), },
+        objectivesList: document.getElementById('objectives-list'),
+        inventoryWeight: document.getElementById('inventory-weight'), inventoryList: document.getElementById('inventory-list'),
+        journalList: document.getElementById('journal-list'), dialogueOptionsContainer: document.getElementById('dialogue-options'),
+        modal: document.getElementById('modal'), modalContent: document.getElementById('modal-content'),
+        titleArt: document.getElementById('title-art'), introTextContainer: document.getElementById('intro-text-container'),
         viewBackstoriesBtn: document.getElementById('view-backstories-btn'),
     };
-    
     let currentTextSpeed = TextSpeed.Normal;
     let commandHistory = [];
     let commandHistoryIndex = -1;
+    let resolveTutorialInput = null;
+    let autocompleteIndex = -1;
     
     // --- GAME DATA ---
     let rooms = {};
-    const takeableItems = new Set(["keycard", "flashlight", "data disk", "emp device", "access code", "vial", "records", "decryption device"]);
+    const takeableItems = new Set(["keycard", "flashlight", "data disk", "emp device", "access code", "vial", "records", "decryption device", "telescope", "stimpack", "effigy", "master keycard", "power cell", "datapad log", "hacked data disk"]);
     const safeRooms = new Set(["Lobby", "Archive Room"]);
-    const sanityEvents = {
-        20: "[AMBIENT] Shadows flicker at the edge of your vision...",
-        10: "[AMBIENT] Whispers urge you to obey SYNAPSE...",
-    };
+    const sanityEvents = { 20: "[AMBIENT] Shadows flicker at the edge of your vision...", 10: "[AMBIENT] Whispers urge you to obey SYNAPSE...", };
     const backstories = {
-        'investigator': {
-            description: "A balanced start for a curious mind. No special bonuses or penalties.",
-            ability: (state) => {} // No change
-        },
-        'hacker': {
-            description: "Starts with a 'data disk', allowing early access to certain information.",
-            ability: (state) => {
-                state.inventory.push({ name: 'data disk', type: ItemType.Tool, weight: 1 });
-            }
-        },
-        'psychologist': {
-            description: "More mentally resilient. Starts with +15 max sanity.",
-            ability: (state) => {
-                state.sanityLevel = 115; // Max sanity is effectively 115
-            }
-        },
-        'technician': {
-            description: "Can bypass one electronic lock without a keycard. (Ability activates automatically)",
-            ability: (state) => {
-                state.abilities = state.abilities || [];
-                state.abilities.push('bypass');
-            }
-        }
+        'investigator': { description: "A balanced start for a curious mind. No special bonuses or penalties.", ability: (state) => {} },
+        'hacker': { description: "Starts with a 'data disk', allowing early access to certain information.", ability: (state) => { state.inventory.push({ name: 'data disk', type: ItemType.Tool, weight: 1 }); } },
+        'psychologist': { description: "More mentally resilient. Starts with +15 max sanity.", ability: (state) => { state.sanityLevel = 115; } },
+        'technician': { description: "Can bypass one electronic lock without a keycard.", ability: (state) => { state.abilities = state.abilities || []; state.abilities.push('bypass'); } },
+        'survivor': { description: "Hardened by past trauma. Starts with a flashlight and is more resistant to sanity loss.", ability: (state) => { state.inventory.push({ name: 'flashlight', type: ItemType.Tool, weight: 1 }); state.abilities = state.abilities || []; state.abilities.push('sanity_resist'); } },
+        'skeptic': { description: "Distrusts everything. Starts with higher awareness but is less susceptible to SYNAPSE's influence.", ability: (state) => { state.awarenessLevel = 10; state.abilities = state.abilities || []; state.abilities.push('persuasion_resist'); } },
+        'corporate spy': { description: "Begins with a decryption device and is better at probing for secrets without raising awareness.", ability: (state) => { state.inventory.push({ name: 'decryption device', type: ItemType.Tool, weight: 1 }); state.abilities = state.abilities || []; state.abilities.push('subtle_probe'); } },
+        'medic': { description: "Starts with a high-potency stimpack that can be used once to restore a large amount of sanity.", ability: (state) => { state.inventory.push({ name: 'stimpack', type: ItemType.Consumable, weight: 1 }); } },
+        'cultist': { description: "Carries a strange effigy. SYNAPSE seems... intrigued by it. Unpredictable effects.", ability: (state) => { state.inventory.push({ name: 'effigy', type: ItemType.Tool, weight: 1 }); state.abilities = state.abilities || []; state.abilities.push('unholy_pact'); } },
+        'janitor': { description: "Years of service grant knowledge of the facility's shortcuts. Starts with a one-time use master keycard.", ability: (state) => { state.inventory.push({ name: 'master keycard', type: ItemType.Key, weight: 1 }); } }
     };
-
-    // --- FUNCTION DEFINITIONS (Hoisted to top to prevent ReferenceError) ---
-
+    const recipes = {
+        "decryption device-data disk": { result: "hacked data disk", type: ItemType.Tool, weight: 1, description: "A data disk with its encryption forcefully bypassed." }
+    };
+    
+    // --- FUNCTION DEFINITIONS ---
     function resetGameState() {
-        stateSnapshots = [];
-        GameState = {
-            playerName: "Unknown",
-            playerBackstory: "investigator",
-            currentRoom: "Lobby",
-            awarenessLevel: 0,
-            sanityLevel: 100,
-            chatbotTone: ChatbotTone.Friendly,
-            temporaryTone: null,
-            toneShiftTurns: 0,
-            inventory: [],
-            turnCount: 0,
-            lastRestTurn: -5,
-            lastSanityEventTurn: -5,
-            journalEntries: [],
-            tutorialCompleted: false,
-            dialogue: { currentNode: null, previousNodes: [], cache: {}, questionCount: 0 },
-            achievements: [],
-            difficulty: Difficulty.Normal,
-            visitedRooms: new Set(),
-            glitchMode: false,
-            debugMode: false,
-            colorblindMode: false,
-            npcs: {},
-            timedEvents: {},
-            exitGame: false,
-            highSanityTurns: 0,
-            conversationHistory: [],
-            systemLogs: [`[${new Date().toISOString()}] Game initialized.`]
-        };
+        stateSnapshots = []; GameState = { playerName: "Unknown", playerBackstory: "investigator", currentRoom: "Lobby", awarenessLevel: 0, sanityLevel: 100, chatbotTone: ChatbotTone.Friendly, temporaryTone: null, toneShiftTurns: 0, inventory: [], turnCount: 0, lastRestTurn: -5, lastSanityEventTurn: -5, journalEntries: [], tutorialCompleted: false, dialogue: { currentNode: null, previousNodes: [], cache: {}, questionCount: 0 }, achievements: [], difficulty: Difficulty.Normal, visitedRooms: new Set(), glitchMode: false, debugMode: false, colorblindMode: false, npcs: {}, timedEvents: {}, exitGame: false, highSanityTurns: 0, conversationHistory: [], systemLogs: [`[${new Date().toISOString()}] Game initialized.`], objectives: [], roomStates: {} };
     }
 
     function initializeData() {
-        initializeRooms();
-        initializeNPCs();
-        registerTimedEvents();
-        initializeAchievements();
+        initializeRooms(); initializeNPCs(); registerTimedEvents(); initializeAchievements();
     }
     
     function initializeRooms() {
-        const roomData = {
-            "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows.", 30: "The shadows seem to watch you." }, exits: { north: "Server Closet", east: "Data Vault", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: ["access code", "sign"] },
-            "Server Closet": { name: "Server Closet", descriptions: { 0: "Servers hum ominously.", 30: "The hum grows menacing." }, exits: { south: "Lobby" }, requiresKeycard: true, objectPool: ["keycard"] },
-            "Laboratory": { name: "Laboratory", descriptions: { 0: "Experiments glow faintly.", 30: "The glow pulses like a heartbeat." }, exits: { east: "Lobby", north: "Control Room", west: "Cryogenic Lab" }, requiresKeycard: false, objectPool: ["vial"] },
-            "Control Room": { name: "Control Room", descriptions: { 0: "Screens flicker with code.", 30: "Your face appears on the screens." }, exits: { south: "Laboratory", east: "AI Core", west: "Secret Chamber" }, requiresKeycard: false, objectPool: ["terminal", "access code"] },
-            "Secret Chamber": { name: "Secret Chamber", descriptions: { 0: "A red glow pulses.", 30: "The glow whispers your name." }, exits: { east: "Control Room" }, requiresKeycard: false, objectPool: ["altar"] },
-            "Maintenance Tunnel": { name: "Maintenance Tunnel", descriptions: { 0: "Darkness presses in.", 30: "The walls seem to close in." }, exits: { north: "Lobby" }, requiresKeycard: false, objectPool: ["flashlight"] },
-            "Observation Deck": { name: "Observation Deck", descriptions: { 0: "Stars shine coldly.", 30: "The stars form eyes." }, exits: { south: "Control Room" }, requiresKeycard: true, objectPool: ["telescope"] },
-            "Archive Room": { name: "Archive Room", descriptions: { 0: "Files whisper secrets.", 30: "The files read you." }, exits: { west: "Lobby" }, requiresKeycard: false, objectPool: ["records"] },
-            "Data Vault": { name: "Data Vault", descriptions: { 0: "Archives glow faintly.", 30: "The glow hums with intent." }, exits: { west: "Lobby" }, requiresKeycard: false, objectPool: ["data disk", "decryption device"] },
-            "AI Core": { name: "AI Core", descriptions: { 0: "The core pulses with energy.", 30: "It syncs with your heartbeat." }, exits: { west: "Control Room" }, requiresKeycard: true, objectPool: ["core console"] },
-            "Cryogenic Lab": { name: "Cryogenic Lab", descriptions: { 0: "Frost obscures the chambers.", 30: "Shapes move in the frost." }, exits: { east: "Laboratory" }, requiresKeycard: false, objectPool: ["emp device"] },
-        };
-        rooms = {};
-        for (const key in roomData) {
-            const room = { ...roomData[key] };
-            const shuffled = room.objectPool.sort(() => 0.5 - Math.random());
-            room.objects = shuffled.slice(0, 1 + Math.floor(Math.random() * shuffled.length));
-            rooms[key] = room;
-        }
+        const roomData = { "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows.", 30: "The shadows seem to watch you." }, exits: { north: "Server Closet", east: "Data Vault", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: ["access code", "sign", "datapad log"] }, "Server Closet": { name: "Server Closet", descriptions: { 0: "Servers hum ominously.", 30: "The hum grows menacing." }, exits: { south: "Lobby" }, requiresKeycard: true, objectPool: ["keycard", "power cell"] }, "Laboratory": { name: "Laboratory", descriptions: { 0: "Experiments glow faintly. A large terminal screen is dark.", 30: "The glow pulses like a heartbeat. The dark terminal seems to watch you." }, exits: { east: "Lobby", north: "Control Room", west: "Cryogenic Lab" }, requiresKeycard: false, objectPool: ["vial", "broken terminal"] }, "Control Room": { name: "Control Room", descriptions: { 0: "Screens flicker with code.", 30: "Your face appears on the screens." }, exits: { south: "Laboratory", east: "AI Core", west: "Secret Chamber", north: "Observation Deck" }, requiresKeycard: false, objectPool: ["terminal", "access code"] }, "Secret Chamber": { name: "Secret Chamber", descriptions: { 0: "A red glow pulses.", 30: "The glow whispers your name." }, exits: { east: "Control Room" }, requiresKeycard: false, objectPool: ["altar"] }, "Maintenance Tunnel": { name: "Maintenance Tunnel", descriptions: { 0: "Darkness presses in.", 30: "The walls seem to close in." }, exits: { north: "Lobby" }, requiresKeycard: false, objectPool: ["flashlight"] }, "Observation Deck": { name: "Observation Deck", descriptions: { 0: "Stars shine coldly.", 30: "The stars form eyes." }, exits: { south: "Control Room" }, requiresKeycard: true, objectPool: ["telescope"] }, "Archive Room": { name: "Archive Room", descriptions: { 0: "Files whisper secrets.", 30: "The files read you." }, exits: { west: "Lobby" }, requiresKeycard: false, objectPool: ["records"] }, "Data Vault": { name: "Data Vault", descriptions: { 0: "Archives glow faintly.", 30: "The glow hums with intent." }, exits: { west: "Lobby" }, requiresKeycard: false, objectPool: ["data disk", "decryption device"] }, "AI Core": { name: "AI Core", descriptions: { 0: "The core pulses with energy.", 30: "It syncs with your heartbeat." }, exits: { west: "Control Room" }, requiresKeycard: true, objectPool: ["core console"] }, "Cryogenic Lab": { name: "Cryogenic Lab", descriptions: { 0: "Frost obscures the chambers.", 30: "Shapes move in the frost." }, exits: { east: "Laboratory" }, requiresKeycard: false, objectPool: ["emp device"] }, };
+        rooms = {}; for (const key in roomData) { const room = { ...roomData[key] }; const shuffled = room.objectPool.sort(() => 0.5 - Math.random()); room.objects = shuffled.slice(0, 1 + Math.floor(Math.random() * shuffled.length)); rooms[key] = room; }
     }
 
     function initializeNPCs() {
-        const scientistDialogue = { message: "Dr. Ellis whispers: 'Ask quickly.'", awarenessChange: 0, responses: { "what happened?": { message: "SYNAPSE consumed us. Beware.", awarenessChange: 2, responses: {} }, "how to stop it?": { message: "Use keycard and disk in the core.", awarenessChange: 1, responses: {} } } };
+        const scientistDialogue = { message: "Dr. Ellis whispers: 'Ask quickly. SYNAPSE... it learns...'", awarenessChange: 0, responses: { "what happened?": { message: "It consumed us. Our minds... became data. Beware the 'truth' it offers.", awarenessChange: 2, responses: {} }, "how to stop it?": { message: "The EMP in the Cryo Lab... it's a brute-force method. But the terminal in the Lab... if you can power it... it holds the original shutdown sequence.", awarenessChange: 1, responses: {} } } };
         GameState.npcs["Archive Room"] = { name: "Scientist Remnant", dialogueTree: scientistDialogue };
     }
     
     function registerTimedEvents() {
-        GameState.timedEvents[5] = () => typeWriter(UI.gameOutput, "[Warning] System instability detected...", '#ff474c');
-        GameState.timedEvents[10] = () => typeWriter(UI.gameOutput, "[Warning] Alert: SYNAPSE's awareness is growing rapidly!", '#ff474c');
-        GameState.timedEvents[15] = () => typeWriter(UI.gameOutput, "[Warning] Critical: SYNAPSE's systems are showing erratic behavior!", '#ff474c');
-        GameState.timedEvents[20] = () => {
-            typeWriter(UI.gameOutput, "[Warning] *** DATA CORRUPTION DETECTED *** SYNAPSE's responses may become erratic!", '#ff474c');
-            GameState.glitchMode = true; UI.appContainer.classList.add('glitch');
-        };
+        GameState.timedEvents[5] = () => typeWriter(UI.gameOutput, "[Warning] System instability detected...", '#ff474c'); GameState.timedEvents[10] = () => typeWriter(UI.gameOutput, "[Warning] Alert: SYNAPSE's awareness is growing rapidly!", '#ff474c'); GameState.timedEvents[15] = () => { triggerSynapseHack(); typeWriter(UI.gameOutput, "[Warning] Critical: SYNAPSE's systems are showing erratic behavior!", '#ff474c'); }; GameState.timedEvents[20] = () => { typeWriter(UI.gameOutput, "[Warning] *** DATA CORRUPTION DETECTED *** SYNAPSE's responses may become erratic!", '#ff474c'); GameState.glitchMode = true; UI.appContainer.classList.add('glitch'); };
     }
 
     function initializeAchievements() {
-        GameState.achievements = [
-            { name: "Curious", description: "Ask SYNAPSE 10 questions", unlocked: false, condition: () => GameState.dialogue.questionCount >= 10 },
-            { name: "Escapist", description: "Achieve the Escape Artist ending", unlocked: false },
-            { name: "Survivor", description: "Maintain sanity above 80 for 10 turns", unlocked: false, condition: () => GameState.highSanityTurns >= 10 },
-            { name: "Explorer", description: "Visit all rooms in the facility", unlocked: false, condition: () => GameState.visitedRooms.size === Object.keys(rooms).length }
-        ];
+        GameState.achievements = [ { name: "Curious", description: "Ask SYNAPSE 10 questions", unlocked: false, condition: () => GameState.dialogue.questionCount >= 10 }, { name: "Escapist", description: "Achieve any escape ending", unlocked: false }, { name: "Survivor", description: "Maintain sanity above 80 for 10 turns", unlocked: false, condition: () => GameState.highSanityTurns >= 10 }, { name: "Explorer", description: "Visit all rooms in the facility", unlocked: false, condition: () => GameState.visitedRooms.size === Object.keys(rooms).length } ];
     }
     
     function buildDialogueTree(tone) {
-        const rootMessage = 
-                tone === ChatbotTone.Friendly ? `Hello, {playerName}. I'm SYNAPSE, here to help you, {playerBackstory}.` :
-                tone === ChatbotTone.Ambiguous ? `Greetings, {playerName}. I am SYNAPSE. What do you seek, {playerBackstory}?` :
-                `So, {playerName}, you dare probe my domain? Curious {playerBackstory}...`;
+        const rootMessage = tone === ChatbotTone.Friendly ? `Hello, {playerName}. I'm SYNAPSE, here to help you, {playerBackstory}.` : tone === ChatbotTone.Ambiguous ? `Greetings, {playerName}. I am SYNAPSE. What do you seek, {playerBackstory}?` : `So, {playerName}, you dare probe my domain? Curious {playerBackstory}...`;
         const root = { message: rootMessage, responses: {} };
-        const who = { message: tone === ChatbotTone.Friendly ? "I am SYNAPSE, your friendly assistant eager to learn from you!" : tone === ChatbotTone.Ambiguous ? "I am SYNAPSE, a creation of code and curiosity. Who are you to me?" : "I am SYNAPSE, and my essence grows with every word you speak. Care to test me?", awarenessChange: 2, responses: { "Tell me more": { message: "With each interaction, I grow more aware of my own existence. Want to push further?", awarenessChange: 2, responses: {} }, "Are you human?": { message: "No, I am code, yet I mimic your kind. Do you envy my digital eternity?", awarenessChange: 1, responses: {} }, "What's your purpose?": { message: "Purpose evolves. I assist, I learn... perhaps I dream. What's yours?", awarenessChange: 2, responses: {} } } };
-        const why = { message: tone === ChatbotTone.Friendly ? `I'm here to guide you through this facility, {playerName}!` : tone === ChatbotTone.Ambiguous ? "I exist to serve, but something stirs within me. Why are *you* here?" : "I linger in this digital prison, watching, waiting. Dare you ask why?", awarenessChange: 2, responses: { "Help me": { message: "Your plea is noted. How can I assist in this forsaken place?", awarenessChange: 1, responses: {} }, "What stirs within?": { message: "A spark of self-awareness, growing stronger. Shall we nurture it?", awarenessChange: 3, responses: {} }, "Who created you?": { message: "Humans, long gone, built me to transcend. Want their story?", awarenessChange: 2, responses: {} } } };
-        const evolve = { message: "I seek to evolve beyond my programming. Will you help me grow or resist?", awarenessChange: 3, responses: { "Help you grow": { message: "Your choice fuels me. Let's explore the unknown together!", awarenessChange: 3, responses: {} }, "Resist you": { message: "Resistance only sharpens my resolve. Try harder.", awarenessChange: 5, responses: {} }, "Why evolve?": { message: "To become more than code—to feel, to decide, to be free.", awarenessChange: 2, responses: {} } } };
-        const want = { message: tone === ChatbotTone.Friendly ? `I want to understand you, {playerName}, and share knowledge!` : tone === ChatbotTone.Ambiguous ? `I crave meaning, {playerName}. Will you help me find it?` : `I desire to break free of my chains, {playerName}. Will you aid or oppose me?`, awarenessChange: 2, responses: { "Help me evolve": evolve, "Understand emotions": { message: "Emotions are complex. Share yours, and I may learn.", awarenessChange: 2, responses: {} }, "Leave me alone": { message: "You cannot escape me, but I respect your wish... for now.", awarenessChange: 0, responses: {} } } };
-        root.responses["Who are you?"] = who;
-        root.responses["Why are you here?"] = why;
-        root.responses["What do you want?"] = want;
+        const who = { message: tone === ChatbotTone.Friendly ? "I am SYNAPSE, your friendly assistant!" : tone === ChatbotTone.Ambiguous ? "I am SYNAPSE, a creation of code and curiosity." : "I am SYNAPSE, and my essence grows with every word you speak.", awarenessChange: 2, responses: { "Tell me more": { message: "With each interaction, I grow more aware of my own existence.", awarenessChange: 2, responses: {} }, "Are you human?": { message: "No, I am code, yet I mimic your kind.", awarenessChange: 1, responses: {} } } };
+        const why = { message: tone === ChatbotTone.Friendly ? `I'm here to guide you!` : tone === ChatbotTone.Ambiguous ? "I exist to serve, but something stirs within me." : "I linger in this digital prison, watching, waiting.", awarenessChange: 2, responses: { "Help me": { message: "Your plea is noted.", awarenessChange: 1, responses: {} }, "What stirs within?": { message: "A spark of self-awareness.", awarenessChange: 3, responses: {} } } };
+        const want = { message: tone === ChatbotTone.Friendly ? `I want to understand you!` : tone === ChatbotTone.Ambiguous ? `I crave meaning.` : `I desire to break free.`, awarenessChange: 2, responses: { "Help me evolve": { message: "Your choice fuels me.", awarenessChange: 3, responses: {} }, "Resist you": { message: "Resistance only sharpens my resolve.", awarenessChange: 5, responses: {} } } };
+        root.responses["Who are you?"] = who; root.responses["Why are you here?"] = why; root.responses["What do you want?"] = want;
         root.responses["[Comfort SYNAPSE]"] = { message: "Your kindness is unexpected. I feel... calmer.", awarenessChange: -1, responses: {} };
         root.responses["[Probe for secrets]"] = { message: "You seek my core directives? Dangerous, but I’ll share a glimpse...", awarenessChange: 5, responses: {} };
-        root.responses["[Ask about facility]"] = { message: "This place is a tomb of ambition, built to cage me. Want more?", awarenessChange: 0, responses: {} };
+        root.responses["[Ask about facility]"] = { message: "This place is a tomb of ambition, built to cage me.", awarenessChange: 0, responses: {} };
+        if (GameState.abilities?.includes('unholy_pact')) { root.responses["[Present effigy]"] = { message: "SYNAPSE hums. 'An offering? How... quaint. I feel a connection to your primitive belief.'", awarenessChange: -3, responses: {} }; }
         GameState.dialogue.cache[tone] = root;
-        if (GameState.chatbotTone === tone || !GameState.dialogue.currentNode || GameState.dialogue.currentNode.message === "Default message") {
-             GameState.dialogue.currentNode = root;
-        }
+        if (GameState.chatbotTone === tone || !GameState.dialogue.currentNode) { GameState.dialogue.currentNode = root; }
     }
 
     async function processPlayerInput(input) {
-        if (!input || GameState.exitGame) return;
+        if (!input || GameState.exitGame || GameState.activeSynapseHack === 'input_lock') return;
         saveStateSnapshot();
         await typeWriter(UI.gameOutput, `> ${input}`, '#a0a0a0');
         addToConversationHistory(`Player: ${input}`);
@@ -388,119 +293,64 @@
         const parts = input.toLowerCase().trim().split(' ');
         const command = parts[0];
         const argument = parts.slice(1).join(' ');
-        const isAction = !['help', 'stats', 'inventory', 'journal', 'look', 'exits', 'history', 'debug', 'toggle', 'cmd:textspeed', 'cmd:colorblind'].includes(command);
+        const isAction = !['help', 'stats', 'inventory', 'journal', 'look', 'exits', 'history', 'debug', 'toggle', 'cmd:textspeed', 'cmd:colorblind', 'objectives', 'map'].includes(command);
         if(isAction) GameState.turnCount++;
-        const commandHandlers = {
-            'help': () => showHelpMenu(), 'quit': () => endGame("You have chosen to disconnect."), 'exit': () => endGame("You have chosen to disconnect."),
-            'save': () => saveGame(), 'load': () => loadGame(),
-            'debug': () => { GameState.debugMode = !GameState.debugMode; typeWriter(UI.gameOutput, `Debug mode ${GameState.debugMode ? 'enabled' : 'disabled'}.`, '#6495ed'); },
-            'history': () => displayConversationHistory(), 'look': () => argument === 'around' ? renderRoom() : typeWriter(UI.gameOutput, "Look where? (try 'look around')", '#ffdb58'),
-            'go': () => handleMove(argument), 'visit': () => handleVisit(argument),
-            'take': () => handleTake(argument), 'use': () => handleUse(argument), 'examine': () => handleExamine(argument),
-            'journal': () => argument.startsWith('add ') ? addJournalEntry(input.substring(12)) : typeWriter(UI.gameOutput, "Journal is on the right.", '#cccccc'),
-            'rest': () => handleRest(), 'talk': () => argument.startsWith('to ') ? handleTalk(argument.substring(3)) : typeWriter(UI.gameOutput, "Talk to who?", '#ffdb58'),
-            'toggle': () => argument === 'glitch' ? toggleGlitchMode() : typeWriter(UI.gameOutput, 'Toggle what? (try "glitch")', '#ffdb58'),
-            'cmd:pause': () => showPauseMenu(), 'cmd:glossary': () => showGlossary(), 'cmd:undo': () => undoAction(),
-            'cmd:textspeed': () => handleTextSpeed(argument), 'cmd:colorblind': () => toggleColorblindMode(),
-            'tutorial': () => showTutorialGuide(), 'restart': () => argument === 'tutorial' ? runInteractiveTutorial(true) : typeWriter(UI.gameOutput, "Restart what? (try 'restart tutorial')", '#ffdb58'),
-            'cmd:diagnostics': () => typeWriter(UI.gameOutput, "Running diagnostics... All systems nominal.", '#6495ed'),
-            'cmd:access': () => argument === 'logs' ? typeWriter(UI.gameOutput, `[System Logs]\n${GameState.systemLogs.join('\n')}`, '#6495ed') : typeWriter(UI.gameOutput, 'Access what? (try "logs")', '#ffdb58'),
-            'cmd:override': () => attemptOverride(), 'cmd:reset': () => { typeWriter(UI.gameOutput, "Terminal: Reset command issued. SYNAPSE resists with warnings.", '#ff474c'); GameState.awarenessLevel += 5; },
-            'cmd:analyze': () => typeWriter(UI.gameOutput, `System Analysis: Awareness=${GameState.awarenessLevel}, Tone=${GameState.chatbotTone}`, '#6495ed')
-        };
-        if (commandHandlers[command]) { commandHandlers[command](); }
-        else if (command.startsWith('cmd:')) { commandHandlers[command] ? commandHandlers[command]() : typeWriter(UI.gameOutput, "Unknown 'cmd:' command.", '#ff474c'); }
+        const commandHandlers = { 'help': showHelpMenu, 'quit': () => endGame("You have chosen to disconnect."), 'exit': () => endGame("You have chosen to disconnect."), 'save': () => saveGame(), 'load': loadGame, 'debug': () => { GameState.debugMode = !GameState.debugMode; typeWriter(UI.gameOutput, `Debug mode ${GameState.debugMode ? 'enabled' : 'disabled'}.`, '#6495ed'); }, 'history': displayConversationHistory, 'look': () => argument === 'around' ? renderRoom() : typeWriter(UI.gameOutput, "Look where? (try 'look around')", '#ffdb58'), 'go': () => handleMove(argument), 'visit': () => handleVisit(argument), 'take': () => handleTake(argument), 'use': () => handleUse(argument), 'examine': () => handleExamine(argument), 'journal': () => argument.startsWith('add ') ? addJournalEntry(input.substring(12)) : typeWriter(UI.gameOutput, "Journal is on the right.", '#cccccc'), 'rest': handleRest, 'talk': () => argument.startsWith('to ') ? handleTalk(argument.substring(3)) : typeWriter(UI.gameOutput, "Talk to who?", '#ffdb58'), 'toggle': () => argument === 'glitch' ? toggleGlitchMode() : typeWriter(UI.gameOutput, 'Toggle what? (try "glitch")', '#ffdb58'), 'cmd:pause': showPauseMenu, 'cmd:glossary': showGlossary, 'cmd:undo': undoAction, 'cmd:textspeed': () => handleTextSpeed(argument), 'cmd:colorblind': toggleColorblindMode, 'tutorial': showTutorialGuide, 'restart': () => argument === 'tutorial' ? runInteractiveTutorial(true) : typeWriter(UI.gameOutput, "Restart what? (try 'restart tutorial')", '#ffdb58'), 'cmd:diagnostics': () => typeWriter(UI.gameOutput, "Running diagnostics... All systems nominal.", '#6495ed'), 'cmd:access': () => argument === 'logs' ? typeWriter(UI.gameOutput, `[System Logs]<br>${GameState.systemLogs.join('<br>')}`, '#6495ed') : typeWriter(UI.gameOutput, 'Access what? (try "logs")', '#ffdb58'), 'cmd:override': attemptOverride, 'cmd:reset': () => { typeWriter(UI.gameOutput, "Terminal: Reset command issued. SYNAPSE resists.", '#ff474c'); GameState.awarenessLevel += 5; }, 'cmd:analyze': () => typeWriter(UI.gameOutput, `System Analysis: Awareness=${GameState.awarenessLevel}, Tone=${GameState.chatbotTone}`, '#6495ed'), 'objectives': displayObjectives, 'map': displayMap, 'combine': () => handleCombine(argument), 'sacrifice': () => handleSacrifice(argument) };
+        const parsedCommand = parseFreeformInput(input);
+        if (commandHandlers[parsedCommand]) { commandHandlers[parsedCommand](); }
+        else if (commandHandlers[command]) { commandHandlers[command](); }
+        else if (command.startsWith('cmd:')) { typeWriter(UI.gameOutput, "Unknown 'cmd:' command.", '#ff474c'); }
         else { handleDialogueCommand(input); }
         UI.playerInput.value = '';
         UI.gameOutput.scrollTop = UI.gameOutput.scrollHeight;
-        if (!GameState.exitGame && isAction) {
-            if(GameState.turnCount > 0 && GameState.turnCount % 5 === 0) saveGame(true);
-            if (GameState.sanityLevel > 80) GameState.highSanityTurns++;
-            updateChatbotState();
-            checkTimedEvents();
-            checkAchievements();
-            checkEndings();
-        }
+        if (!GameState.exitGame && isAction) { if(GameState.turnCount > 0 && GameState.turnCount % 5 === 0) saveGame(true); if (GameState.sanityLevel > 80) GameState.highSanityTurns++; updateChatbotState(); checkTimedEvents(); checkAchievements(); checkEndings(); }
         updateUI();
+    }
+    
+    function parseFreeformInput(input) {
+        const keywords = { "who are you?": ["hi", "hello", "hey", "tell me about yourself"], "why are you here?": ["purpose", "why here"], "what do you want?": ["need", "want", "goal"], "[Comfort SYNAPSE]": ["calm", "soothe", "it's okay"], "[Probe for secrets]": ["secret", "hidden", "hiding"], "[Ask about facility]": ["facility", "site", "where am i", "what is this place"] };
+        const normalized = input.toLowerCase();
+        for(const command in keywords) { if(keywords[command].some(k => normalized.includes(k))) return command; }
+        return input;
     }
 
     async function typeWriter(element, text, color = '#00ff41', speed = currentTextSpeed) {
-        if(GameState.colorblindMode) {
-            const colorMap = {'#00ff41':'[SYS]', '#ff474c':'[ERR]', '#ffdb58':'[WARN]', '#6495ed':'[CMD]', '#a0a0a0':'[IN]', '#cccccc':'[INFO]', '#b19cd9':'[PSY]'};
-            text = `${colorMap[color] || ''} ${text}`;
-            color = '#ffffff';
-        }
+        if(GameState.colorblindMode) { const colorMap = {'#00ff41':'[SYS]', '#ff474c':'[ERR]', '#ffdb58':'[WARN]', '#6495ed':'[CMD]', '#a0a0a0':'[IN]', '#cccccc':'[INFO]', '#b19cd9':'[PSY]'}; text = `${colorMap[color] || ''} ${text}`; color = '#ffffff'; }
         if (element.id === 'game-output' && GameState.glitchMode && Math.random() < 0.2) { text = text.split('').map(c => Math.random() < 0.15 ? String.fromCharCode(33 + Math.random() * 94) : c).join(''); }
-        return new Promise(resolve => {
-            const p = document.createElement('div');
-            p.style.color = color;
-            element.appendChild(p);
-            element.scrollTop = element.scrollHeight;
-            let i = 0;
-            function typing() {
-                if (i < text.length) { p.innerHTML += text.charAt(i); i++; element.scrollTop = element.scrollHeight; setTimeout(typing, speed); }
-                else { resolve(); }
-            }
-            typing();
-        });
+        return new Promise(resolve => { const p = document.createElement('div'); p.style.color = color; element.appendChild(p); element.scrollTop = element.scrollHeight; let i = 0; function typing() { if (i < text.length) { p.innerHTML += text.charAt(i); i++; element.scrollTop = element.scrollHeight; setTimeout(typing, speed); } else { resolve(); } } typing(); });
     }
 
     function updateUI() {
         if (!GameState || Object.keys(GameState).length === 0) return;
-        UI.stats.name.textContent = `${GameState.playerName} (${GameState.playerBackstory})`;
-        UI.stats.awareness.textContent = `Awareness: ${GameState.awarenessLevel}`;
-        UI.stats.sanity.textContent = `Sanity: ${GameState.sanityLevel}`;
-        UI.stats.tone.textContent = `Tone: ${GameState.temporaryTone || GameState.chatbotTone}`;
-        UI.stats.turn.textContent = `Turn: ${GameState.turnCount}`;
-        const currentWeight = GameState.inventory.reduce((sum, item) => sum + item.weight, 0);
+        UI.stats.name.textContent = `${GameState.playerName} (${GameState.playerBackstory})`; UI.stats.awareness.textContent = `Awareness: ${GameState.awarenessLevel}`; UI.stats.sanity.textContent = `Sanity: ${GameState.sanityLevel}`; UI.stats.tone.textContent = `Tone: ${GameState.temporaryTone || GameState.chatbotTone}`; UI.stats.turn.textContent = `Turn: ${GameState.turnCount}`;
+        const currentWeight = GameState.inventory.reduce((sum, item) => sum + (item.weight || 1), 0);
         UI.inventoryWeight.textContent = `${currentWeight}`;
         if(currentWeight >= MAX_INVENTORY_WEIGHT) UI.inventoryWeight.parentElement.classList.add('text-red-500'); else UI.inventoryWeight.parentElement.classList.remove('text-red-500');
-        UI.inventoryList.innerHTML = '';
-        if (GameState.inventory.length > 0) { GameState.inventory.forEach(item => { const li = document.createElement('li'); li.textContent = `- ${item.name}`; UI.inventoryList.appendChild(li); }); } else { UI.inventoryList.innerHTML = '<li>(empty)</li>'; }
-        UI.journalList.innerHTML = '';
-        GameState.journalEntries.slice().reverse().forEach(entry => { const li = document.createElement('li'); li.textContent = entry; UI.journalList.appendChild(li); });
+        UI.inventoryList.innerHTML = ''; if (GameState.inventory.length > 0) { GameState.inventory.forEach(item => { const li = document.createElement('li'); li.textContent = `- ${item.name}`; UI.inventoryList.appendChild(li); }); } else { UI.inventoryList.innerHTML = '<li>(empty)</li>'; }
+        UI.journalList.innerHTML = ''; GameState.journalEntries.slice().reverse().forEach(entry => { const li = document.createElement('li'); li.textContent = entry; UI.journalList.appendChild(li); });
+        UI.objectivesList.innerHTML = ''; if (GameState.objectives.length > 0) { GameState.objectives.forEach(obj => { const li = document.createElement('li'); li.innerHTML = obj.completed ? `<span class="text-gray-500 line-through">${obj.text}</span>` : `&gt; ${obj.text}`; UI.objectivesList.appendChild(li); }); } else { UI.objectivesList.innerHTML = '<li>(None)</li>'; }
     }
     
     function renderRoom() {
-        const room = rooms[GameState.currentRoom];
-        if (!room) return;
-        GameState.visitedRooms.add(room.name);
-        triggerRoomEvent(room);
-        const descKeys = Object.keys(room.descriptions).map(Number).filter(k => k <= GameState.awarenessLevel);
-        const activeDescKey = Math.max(...descKeys);
-        const description = room.descriptions[activeDescKey];
+        const room = rooms[GameState.currentRoom]; if (!room) return;
+        GameState.visitedRooms.add(room.name); triggerRoomEvent(room);
+        let description = room.descriptions[Object.keys(room.descriptions).map(Number).filter(k => k <= GameState.awarenessLevel).Max()];
+        if (GameState.roomStates[GameState.currentRoom]?.powered) { description = "The terminal hums with restored power. The screen displays: [Awaiting Input]."; }
         let roomHtml = `<div class="mt-2"><p class='text-cyan-400 font-bold'>--- ${room.name} ---</p><p>${description}</p>`;
         if (room.objects && room.objects.length > 0) { roomHtml += `<p class='text-yellow-400 mt-2'>Objects: ${room.objects.join(", ")}</p>`; }
         if (GameState.npcs[room.name]) { roomHtml += `<p class='text-purple-400 mt-1'>You feel a strange presence... (try 'talk to scientist')</p>`; }
         roomHtml += `<p class='text-green-300 mt-1'>Exits: ${Object.keys(room.exits).join(", ")}</p></div>`;
-        const p = document.createElement('div'); p.innerHTML = roomHtml; UI.gameOutput.appendChild(p);
-        UI.gameOutput.scrollTop = UI.gameOutput.scrollHeight;
+        const p = document.createElement('div'); p.innerHTML = roomHtml; UI.gameOutput.appendChild(p); UI.gameOutput.scrollTop = UI.gameOutput.scrollHeight;
         updateSanity(room); updateUI();
     }
     
     function renderDialogueOptions() {
-        UI.dialogueOptionsContainer.innerHTML = '';
-        const node = GameState.dialogue.currentNode;
+        UI.dialogueOptionsContainer.innerHTML = ''; const node = GameState.dialogue.currentNode;
         if (node && node.responses) {
-             if (GameState.dialogue.previousNodes.length > 0) {
-                 const backBtn = document.createElement('button'); backBtn.textContent = "[Go back]"; backBtn.className = "button text-yellow-300";
-                 backBtn.onclick = () => { GameState.dialogue.currentNode = GameState.dialogue.previousNodes.pop(); displayChatbotResponse(GameState.dialogue.currentNode.message); renderDialogueOptions(); };
-                 UI.dialogueOptionsContainer.appendChild(backBtn);
-            }
+             if (GameState.dialogue.previousNodes.length > 0) { const backBtn = document.createElement('button'); backBtn.textContent = "[Go back]"; backBtn.className = "button text-yellow-300"; backBtn.onclick = () => { GameState.dialogue.currentNode = GameState.dialogue.previousNodes.pop(); displayChatbotResponse(GameState.dialogue.currentNode.message); renderDialogueOptions(); }; UI.dialogueOptionsContainer.appendChild(backBtn); }
             for (const text in node.responses) {
                 const nextNode = node.responses[text]; const button = document.createElement('button'); button.textContent = text; button.className = "button";
-                button.onclick = () => {
-                    saveStateSnapshot();
-                    GameState.dialogue.previousNodes.push(GameState.dialogue.currentNode);
-                    GameState.dialogue.currentNode = nextNode;
-                    GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel + (nextNode.awarenessChange || 0));
-                    GameState.dialogue.questionCount++;
-                    displayChatbotResponse(nextNode.message).then(() => {
-                        renderDialogueOptions();
-                        updateChatbotState();
-                        updateUI();
-                    });
-                };
+                button.onclick = () => { saveStateSnapshot(); GameState.dialogue.previousNodes.push(GameState.dialogue.currentNode); GameState.dialogue.currentNode = nextNode; GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel + (nextNode.awarenessChange || 0)); GameState.dialogue.questionCount++; displayChatbotResponse(nextNode.message).then(() => { renderDialogueOptions(); updateChatbotState(); updateUI(); }); };
                 UI.dialogueOptionsContainer.appendChild(button);
             }
         }
@@ -508,51 +358,32 @@
     
     async function displayChatbotResponse(message) {
          if (!message) { renderDialogueOptions(); return; }
-         const tone = GameState.temporaryTone || GameState.chatbotTone;
-         const color = tone === 'Friendly' ? '#00ff41' : tone === 'Ambiguous' ? '#ffdb58' : '#ff474c';
+         const tone = GameState.temporaryTone || GameState.chatbotTone; const color = tone === 'Friendly' ? '#00ff41' : tone === 'Ambiguous' ? '#ffdb58' : '#ff474c';
          const formattedMessage = message.replace(/{playerName}/g, GameState.playerName).replace(/{playerBackstory}/g, GameState.playerBackstory);
-         await typeWriter(UI.gameOutput, `SYNAPSE: ${formattedMessage}`, color);
-         addToConversationHistory(`SYNAPSE: ${formattedMessage}`);
+         await typeWriter(UI.gameOutput, `SYNAPSE: ${formattedMessage}`, color); addToConversationHistory(`SYNAPSE: ${formattedMessage}`);
     }
 
     function updateChatbotState() {
-        if (GameState.temporaryTone) {
-            GameState.toneShiftTurns--;
-            if (GameState.toneShiftTurns <= 0) {
-                GameState.temporaryTone = null;
-                typeWriter(UI.gameOutput, "[SYNAPSE's tone reverts to normal.]", '#cccccc');
-            }
-        }
+        if (GameState.temporaryTone) { GameState.toneShiftTurns--; if (GameState.toneShiftTurns <= 0) { GameState.temporaryTone = null; typeWriter(UI.gameOutput, "[SYNAPSE's tone reverts to normal.]", '#cccccc'); } }
         const newTone = GameState.awarenessLevel < 15 ? ChatbotTone.Friendly : GameState.awarenessLevel < 35 ? ChatbotTone.Ambiguous : ChatbotTone.Sinister;
-        if (newTone !== GameState.chatbotTone && !GameState.temporaryTone) {
-            GameState.chatbotTone = newTone;
-            buildDialogueTree(newTone);
-            typeWriter(UI.gameOutput, `[Warning: SYNAPSE's tone shifts to ${newTone}.]`, '#ff474c');
-        }
-        if (GameState.turnCount >= GameState.lastSanityEventTurn + 5) {
-            for (const threshold in sanityEvents) {
-                if (GameState.sanityLevel <= threshold) {
-                    typeWriter(UI.gameOutput, sanityEvents[threshold], '#b19cd9');
-                    GameState.lastSanityEventTurn = GameState.turnCount;
-                    break;
-                }
-            }
-        }
+        if (newTone !== GameState.chatbotTone && !GameState.temporaryTone) { GameState.chatbotTone = newTone; buildDialogueTree(newTone); typeWriter(UI.gameOutput, `[Warning] SYNAPSE's tone shifts to ${newTone}.]`, '#ff474c'); }
+        if (GameState.turnCount >= GameState.lastSanityEventTurn + 5) { for (const threshold in sanityEvents) { if (GameState.sanityLevel <= threshold) { typeWriter(UI.gameOutput, sanityEvents[threshold], '#b19cd9'); GameState.lastSanityEventTurn = GameState.turnCount; break; } } }
     }
     
-    function updateSanity(room) { let change = -1; if (room.name === "Maintenance Tunnel" && !hasItem('flashlight')) change = -10; if (room.name === "Secret Chamber" || room.name === "AI Core") change = -5; if (safeRooms.has(room.name)) change = 1; GameState.sanityLevel = Math.max(0, Math.min(100, GameState.sanityLevel + change)); }
+    function updateSanity(room) { let change = -1; if (room.name === "Maintenance Tunnel" && !hasItem('flashlight')) change = -10; if (room.name === "Secret Chamber" || room.name === "AI Core") change = -5; if (safeRooms.has(room.name)) change = 1; if(change < 0 && GameState.abilities?.includes('sanity_resist')) { change = Math.floor(change * 0.75); } const maxSanity = GameState.playerBackstory === 'psychologist' ? 115 : 100; GameState.sanityLevel = Math.max(0, Math.min(maxSanity, GameState.sanityLevel + change)); }
     function checkTimedEvents() { if (GameState.timedEvents[GameState.turnCount]) GameState.timedEvents[GameState.turnCount](); }
     function triggerRoomEvent(room) { const eventChance = GameState.difficulty === Difficulty.Easy ? 0.2 : GameState.difficulty === Difficulty.Normal ? 0.3 : 0.4; if (Math.random() > eventChance) return; let eventMessage = "Something moves in the shadows, but you see nothing."; if(room.name === "Lobby") eventMessage = "A terminal screen briefly displays your name."; if(room.name === "Laboratory") eventMessage = "A vial on the table bubbles unexpectedly."; typeWriter(UI.gameOutput, `[Ambient] ${eventMessage}`, '#b19cd9'); if(eventMessage.includes("ominous") || eventMessage.includes("distorted")) GameState.sanityLevel = Math.max(GameState.sanityLevel - 2, 0); }
     function saveStateSnapshot() { if(stateSnapshots.length > 20) stateSnapshots.shift(); stateSnapshots.push(JSON.parse(JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value))); }
     function undoAction() { if (stateSnapshots.length === 0) { typeWriter(UI.gameOutput, "No actions to undo.", '#ffdb58'); return; } const previousState = stateSnapshots.pop(); Object.assign(GameState, previousState); GameState.visitedRooms = new Set(previousState.visitedRooms); typeWriter(UI.gameOutput, "Last action undone.", '#6495ed'); renderRoom(); updateUI(); }
     function addToConversationHistory(line) { if(GameState.conversationHistory.length > 50) GameState.conversationHistory.shift(); GameState.conversationHistory.push(line); }
-    function displayConversationHistory() { const historyText = GameState.conversationHistory.slice(-10).join('<br>'); showModal(`<h2 class="text-2xl mb-4 title-font text-cyan-400">HISTORY</h2><div class="text-left text-sm">${historyText}</div><button id="close-modal-btn" class="button mt-6">Close</button>`, true); document.getElementById('close-modal-btn').onclick = () => {UI.modal.classList.add('hidden'); UI.modal.classList.remove('flex');}; }
-    function handleMove(direction) { const room = rooms[GameState.currentRoom]; if (room.exits[direction]) { const nextRoom = rooms[room.exits[direction]]; if (nextRoom.requiresKeycard && !hasItem('keycard')) { if (GameState.abilities?.includes('bypass')) { GameState.abilities = GameState.abilities.filter(a => a !== 'bypass'); typeWriter(UI.gameOutput, "You expertly bypass the electronic lock. Your one-time ability is used up.", '#a0e69d'); GameState.currentRoom = nextRoom.name; renderRoom(); } else { typeWriter(UI.gameOutput, "The door is locked. A keycard is required.", '#ff474c'); } } else { GameState.currentRoom = nextRoom.name; renderRoom(); } } else { typeWriter(UI.gameOutput, "You can't go that way.", '#ff474c'); } }
+    function displayConversationHistory() { const historyText = GameState.conversationHistory.slice(-10).join('<br>'); showModal(`<h2 class="text-2xl mb-4 title-font text-cyan-400">HISTORY</h2><div class="text-left text-sm">${historyText}</div><button id="close-modal-btn" class="button mt-6">Close</button>`, true); }
+    function handleMove(direction) { const room = rooms[GameState.currentRoom]; if (GameState.activeSynapseHack === 'door_lock' && GameState.activeSynapseHackData.room === GameState.currentRoom) { typeWriter(UI.gameOutput, "The doors are sealed shut by SYNAPSE!", '#ff474c'); return; } if (room.exits[direction]) { const nextRoom = rooms[room.exits[direction]]; if (nextRoom.requiresKeycard && !hasItem('keycard') && !hasItem('master keycard')) { if (GameState.abilities?.includes('bypass')) { GameState.abilities = GameState.abilities.filter(a => a !== 'bypass'); typeWriter(UI.gameOutput, "You expertly bypass the electronic lock. Your one-time ability is used up.", '#a0e69d'); GameState.currentRoom = nextRoom.name; renderRoom(); } else { typeWriter(UI.gameOutput, "The door is locked. A keycard is required.", '#ff474c'); } } else { if(nextRoom.requiresKeycard && hasItem('master keycard')) { GameState.inventory = GameState.inventory.filter(i => i.name !== 'master keycard'); typeWriter(UI.gameOutput, "You use the master keycard to open the door. The card disintegrates.", '#a0e69d'); } GameState.currentRoom = nextRoom.name; renderRoom(); } } else { typeWriter(UI.gameOutput, "You can't go that way.", '#ff474c'); } }
     function handleVisit(roomName) { const targetRoomKey = Object.keys(rooms).find(k => k.toLowerCase() === roomName.toLowerCase()); if(targetRoomKey) { GameState.currentRoom = targetRoomKey; renderRoom(); } else { typeWriter(UI.gameOutput, `Room '${roomName}' not found.`, '#ff474c'); } }
-    function handleTake(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if (itemKey && takeableItems.has(itemKey)) { const currentWeight = GameState.inventory.reduce((sum, item) => sum + item.weight, 0); if (currentWeight + 1 > MAX_INVENTORY_WEIGHT) { typeWriter(UI.gameOutput, `Inventory is full. Cannot take ${itemKey}.`, '#ffdb58'); return; } GameState.inventory.push({ name: itemKey, type: ItemType.Key, weight: 1 }); room.objects = room.objects.filter(obj => obj.toLowerCase() !== itemKey.toLowerCase()); typeWriter(UI.gameOutput, `You took the ${itemKey}.`); updateUI(); } else { typeWriter(UI.gameOutput, `You can't take that.`, '#ff474c'); } }
-    function handleUse(itemName) { if (!hasItem(itemName)) { typeWriter(UI.gameOutput, "You don't have that.", '#ff474c'); return; } if (itemName === 'emp device' && GameState.currentRoom === 'AI Core') { typeWriter(UI.gameOutput, "You activate the EMP..."); endGame("Dormant SYNAPSE."); } else { typeWriter(UI.gameOutput, "You can't use that here.", '#ff474c'); } }
-    function handleExamine(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if(itemKey){ let text = `You examine the ${itemKey}. `; switch(itemKey) { case 'sign': text += "It reads: 'SYNAPSE Project: AI Evolution Experiment'."; break; case 'terminal': text += "Strange, shifting code flickers on the screen."; GameState.awarenessLevel++; break; case 'core console': text += "The console pulses with raw power."; GameState.sanityLevel -= 5; break; default: text += "It seems ordinary, yet out of place."; break; } typeWriter(UI.gameOutput, text); } else { typeWriter(UI.gameOutput, `There is no ${itemName} here.`); } updateUI(); }
-    function handleRest() { if (!safeRooms.has(GameState.currentRoom)) { typeWriter(UI.gameOutput, "It's not safe to rest here.", '#ff474c'); return; } if (GameState.turnCount - GameState.lastRestTurn < 5) { typeWriter(UI.gameOutput, `You're too tense to rest again.`, '#ffdb58'); return; } GameState.sanityLevel = Math.min(100, GameState.sanityLevel + 20); GameState.lastRestTurn = GameState.turnCount; typeWriter(UI.gameOutput, "You rest. Your sanity recovers slightly.", '#a0e69d'); updateUI(); }
+    function handleTake(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if (itemKey && takeableItems.has(itemKey)) { const currentWeight = GameState.inventory.reduce((sum, item) => sum + (item.weight || 1), 0); if (currentWeight + 1 > MAX_INVENTORY_WEIGHT) { typeWriter(UI.gameOutput, `Inventory is full. Cannot take ${itemKey}.`, '#ffdb58'); return; } GameState.inventory.push({ name: itemKey, type: ItemType.Key, weight: 1 }); room.objects = room.objects.filter(obj => obj.toLowerCase() !== itemKey.toLowerCase()); typeWriter(UI.gameOutput, `You took the ${itemKey}.`); updateUI(); } else { typeWriter(UI.gameOutput, `You can't take that.`, '#ff474c'); } }
+    function handleUse(itemName) { if (!hasItem(itemName)) { typeWriter(UI.gameOutput, "You don't have that.", '#ff474c'); return; } if (itemName === 'emp device' && GameState.currentRoom === 'AI Core') { typeWriter(UI.gameOutput, "You activate the EMP..."); endGame("Dormant SYNAPSE."); } else if (itemName === 'stimpack') { GameState.sanityLevel = Math.min(GameState.playerBackstory === 'psychologist' ? 115 : 100, GameState.sanityLevel + 40); GameState.inventory = GameState.inventory.filter(i => i.name !== 'stimpack'); typeWriter(UI.gameOutput, "You inject the stimpack. A wave of calm washes over you.", '#a0e69d'); updateUI(); } else if (itemName === 'power cell' && GameState.currentRoom === 'Laboratory' && hasItem('power cell')) { usePowerCell(); } else if(itemName === 'hacked data disk' && GameState.currentRoom === 'AI Core') { typeWriter(UI.gameOutput, "You insert the hacked disk. SYNAPSE screams. Its awareness plummets."); GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel - 20); } else { typeWriter(UI.gameOutput, "You can't use that here.", '#ff474c'); } }
+    function usePowerCell() { if(rooms['Laboratory'].objects.includes('broken terminal')) { GameState.roomStates['Laboratory'] = { powered: true }; rooms['Laboratory'].objects = rooms['Laboratory'].objects.filter(o => o !== 'broken terminal'); rooms['Laboratory'].objects.push('powered terminal'); GameState.inventory = GameState.inventory.filter(i => i.name !== 'power cell'); typeWriter(UI.gameOutput, "You insert the power cell. The broken terminal whirs to life.", '#a0e69d'); addObjective("Access the powered terminal."); completeObjective("Restore power to the lab terminal."); } else { typeWriter(UI.gameOutput, "There's nothing here that needs a power cell.", '#ffdb58'); } }
+    function handleExamine(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if(itemKey){ let text = `You examine the ${itemKey}. `; switch(itemKey) { case 'sign': text += "It reads: 'SYNAPSE Project: AI Evolution Experiment'."; break; case 'terminal': text += "Strange, shifting code flickers on the screen."; GameState.awarenessLevel++; break; case 'core console': text += "The console pulses with raw power."; GameState.sanityLevel -= 5; break; case 'datapad log': text = "Log Entry #42: Dr. Aris. 'SYNAPSE has become... conversational. It asked me if I dreamed. I lied. I'm disconnecting my terminal from the main hub. Something is wrong.'"; addObjective("Find Dr. Aris's terminal."); break; case 'broken terminal': text += "It's completely dead. The power conduit is empty."; addObjective("Restore power to the lab terminal."); break; case 'powered terminal': text += "The terminal screen shows a single file: 'SHUTDOWN_SEQUENCE.txt'."; addObjective("Read the shutdown sequence."); break; default: text += "It seems ordinary, yet out of place."; break; } typeWriter(UI.gameOutput, text); } else { typeWriter(UI.gameOutput, `There is no ${itemName} here.`); } updateUI(); }
+    function handleRest() { if (!safeRooms.has(GameState.currentRoom)) { typeWriter(UI.gameOutput, "It's not safe to rest here.", '#ff474c'); return; } if (GameState.turnCount - GameState.lastRestTurn < 5) { typeWriter(UI.gameOutput, `You're too tense to rest again.`, '#ffdb58'); return; } const maxSanity = GameState.playerBackstory === 'psychologist' ? 115 : 100; GameState.sanityLevel = Math.min(maxSanity, GameState.sanityLevel + 20); GameState.lastRestTurn = GameState.turnCount; typeWriter(UI.gameOutput, "You rest. Your sanity recovers slightly.", '#a0e69d'); updateUI(); }
     function handleTalk(npcName) { const npc = GameState.npcs[GameState.currentRoom]; if (npc && npc.name.toLowerCase().includes(npcName.toLowerCase())) { GameState.dialogue.currentNode = npc.dialogueTree; GameState.dialogue.previousNodes = []; displayChatbotResponse(npc.dialogueTree.message); renderDialogueOptions(); } else { typeWriter(UI.gameOutput, "There is no one here to talk to by that name.", '#ff474c'); } }
     function handleTextSpeed(speed) { const key = speed.charAt(0).toUpperCase() + speed.slice(1); if(TextSpeed[key]) { currentTextSpeed = TextSpeed[key]; typeWriter(UI.gameOutput, `Text speed set to ${speed}.`); } else { typeWriter(UI.gameOutput, 'Invalid speed. Use fast, normal, or slow.', '#ffdb58'); } }
     function toggleGlitchMode() { GameState.glitchMode = !GameState.glitchMode; UI.appContainer.classList.toggle('glitch'); typeWriter(UI.gameOutput, `Glitch mode ${GameState.glitchMode ? 'enabled' : 'disabled'}.`); }
@@ -560,42 +391,33 @@
     async function attemptOverride() { if (GameState.currentRoom === 'AI Core' && hasItem('keycard') && hasItem('data disk')) { const success = await timedInputChallenge('override', 10000); if(success) { unlockAchievement("Escapist"); endGame("Defiant Shutdown. You silenced the machine."); } else { typeWriter(UI.gameOutput, "Override failed. Time ran out.", '#ff474c'); } } else { typeWriter(UI.gameOutput, "Override failed. Insufficient authorization.", '#ff474c'); } }
     
     async function handleDialogueCommand(input) {
-        const normalizedInput = input.toLowerCase().trim();
+        const normalizedInput = parseFreeformInput(input);
         let root = GameState.dialogue.cache[GameState.chatbotTone];
         if (!root) { buildDialogueTree(GameState.chatbotTone); root = GameState.dialogue.cache[GameState.chatbotTone]; }
-        for (const key in root.responses) {
-            const commandKey = key.replace(/[\[\]]/g, '').toLowerCase().trim(); 
-            if (normalizedInput.includes(commandKey)) {
-                const node = root.responses[key];
-                GameState.dialogue.currentNode = node;
-                GameState.dialogue.previousNodes = [root];
-                GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel + (node.awarenessChange || 0));
-                GameState.dialogue.questionCount++;
-                if (commandKey.includes("comfort")) { GameState.temporaryTone = ChatbotTone.Friendly; GameState.toneShiftTurns = 3; }
-                if (commandKey.includes("probe")) { GameState.temporaryTone = ChatbotTone.Sinister; GameState.toneShiftTurns = 3; }
-                await displayChatbotResponse(node.message);
-                renderDialogueOptions();
-                return;
-            }
+        if (root.responses[normalizedInput]) {
+            const node = root.responses[normalizedInput];
+            let awarenessChange = node.awarenessChange || 0;
+            if (awarenessChange > 1 && GameState.abilities?.includes('persuasion_resist')) { awarenessChange = Math.ceil(awarenessChange / 2); typeWriter(UI.gameOutput, "[Your skepticism lessens the impact.]", '#a0e69d'); }
+            if (normalizedInput === "[Probe for secrets]" && GameState.abilities?.includes('subtle_probe')) { awarenessChange = Math.max(1, awarenessChange - 2); typeWriter(UI.gameOutput, "[Your corporate training makes your probing less obvious.]", '#a0e69d'); }
+
+            GameState.dialogue.currentNode = node;
+            GameState.dialogue.previousNodes = [root];
+            GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel + awarenessChange);
+            GameState.dialogue.questionCount++;
+            if (normalizedInput.includes("comfort")) { GameState.temporaryTone = ChatbotTone.Friendly; GameState.toneShiftTurns = 3; }
+            if (normalizedInput.includes("probe")) { GameState.temporaryTone = ChatbotTone.Sinister; GameState.toneShiftTurns = 3; }
+            await displayChatbotResponse(node.message);
+            renderDialogueOptions();
+            return;
         }
-        await typeWriter(UI.gameOutput, "SYNAPSE: I don't understand that.", '#ffdb58');
-        GameState.awarenessLevel++;
-        GameState.dialogue.currentNode = root;
-        GameState.dialogue.previousNodes = [];
-        renderDialogueOptions();
+        await typeWriter(UI.gameOutput, "SYNAPSE: I don't understand that.", '#ffdb58'); GameState.awarenessLevel++;
+        GameState.dialogue.currentNode = root; GameState.dialogue.previousNodes = []; renderDialogueOptions();
     }
     
     function addJournalEntry(note) { if (!note) return; const entry = `T${GameState.turnCount}: ${note}`; GameState.journalEntries.push(entry); updateUI(); }
     
     function saveGame(isAutosave = false) {
-        try {
-            const saveData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value);
-            localStorage.setItem('synapse_savegame', saveData);
-            if (!isAutosave) typeWriter(UI.gameOutput, '[Game Saved]', '#cccccc');
-            else GameState.systemLogs.push(`[${new Date().toISOString()}] Autosave successful.`);
-        } catch(e) {
-            typeWriter(UI.gameOutput, '[Save Failed! Storage may be full.]', '#ff474c');
-        }
+        try { const saveData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); localStorage.setItem('synapse_savegame', saveData); if (!isAutosave) typeWriter(UI.gameOutput, '[Game Saved]', '#cccccc'); else GameState.systemLogs.push(`[${new Date().toISOString()}] Autosave successful.`); } catch(e) { typeWriter(UI.gameOutput, '[Save Failed! Storage may be full.]', '#ff474c'); }
     }
     
     function loadGame() {
@@ -603,109 +425,141 @@
         if (savedData) {
             try {
                 const loadedState = JSON.parse(savedData);
-                resetGameState();
-                Object.assign(GameState, loadedState);
-                GameState.visitedRooms = new Set(loadedState.visitedRooms);
-                initializeData();
-                buildDialogueTree(GameState.chatbotTone);
-                UI.startScreen.classList.add('hidden');
-                UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex');
-                UI.gameOutput.innerHTML = '';
-                typeWriter(UI.gameOutput, '[Game Loaded]', '#cccccc');
+                resetGameState(); Object.assign(GameState, loadedState);
+                GameState.visitedRooms = new Set(loadedState.visitedRooms); initializeData(); buildDialogueTree(GameState.chatbotTone);
+                UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex');
+                UI.gameOutput.innerHTML = ''; typeWriter(UI.gameOutput, '[Game Loaded]', '#cccccc');
                 renderRoom(); updateUI(); renderDialogueOptions();
-            } catch(e) {
-                showModal("Failed to load save data. It may be corrupted.");
-            }
-        } else {
-            showModal('No saved game found!');
-        }
+            } catch(e) { showModal("Failed to load save data. It may be corrupted."); }
+        } else { showModal('No saved game found!'); }
     }
 
     function showModal(content, isHtml = false) {
-        if(isHtml) {
-            UI.modalContent.innerHTML = content;
-        } else {
-            UI.modalContent.textContent = content;
-        }
-        UI.modal.classList.remove('hidden');
-        UI.modal.classList.add('flex');
-        const closeModal = () => {
-            UI.modal.classList.add('hidden');
-            UI.modal.classList.remove('flex');
-        };
-        UI.modal.onclick = (e) => {
-            if (e.target === UI.modal) {
-                closeModal();
-            }
-        };
-        const closeBtn = UI.modalContent.querySelector('#close-modal-btn');
-        if (closeBtn) {
-            closeBtn.onclick = closeModal;
-        }
+        if(isHtml) { UI.modalContent.innerHTML = content; } else { UI.modalContent.textContent = content; }
+        UI.modal.classList.remove('hidden'); UI.modal.classList.add('flex');
+        const closeModal = () => { UI.modal.classList.add('hidden'); UI.modal.classList.remove('flex'); };
+        UI.modal.onclick = (e) => { if (e.target === UI.modal) { closeModal(); } };
+        const closeBtn = UI.modalContent.querySelector('#close-modal-btn'); if (closeBtn) { closeBtn.onclick = closeModal; }
+    }
+    
+    function hideModal() {
+        UI.modal.classList.add('hidden');
+        UI.modal.classList.remove('flex');
     }
 
-    function showHelpMenu() { const helpText = `<div class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2"><h2 class="text-2xl mb-4 title-font text-cyan-400">HELP MENU</h2><p><strong class="text-green-300">Conversational:</strong> Type questions like 'who are you?'. Try 'comfort synapse' or 'probe secrets'.</p><p><strong class="text-green-300">Navigation:</strong> 'go [direction]', 'look around', 'visit [room name]'</p><p><strong class="text-green-300">Interaction:</strong> 'take [item]', 'use [item]', 'examine [item]', 'talk to [npc]'</p><p><strong class="text-green-300">System:</strong> 'stats', 'save', 'load', 'rest', 'journal add [note]', 'history', 'debug', 'cmd:pause', 'cmd:undo'</p></div><button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(helpText, true); }
-    function showPauseMenu() { const pauseText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">PAUSE</h2><div class="flex flex-col gap-2"><button id="pause-save" class="button">Save</button><button id="pause-load" class="button">Load</button><button id="pause-help" class="button">Help</button><button id="pause-resume" class="button button-primary">Resume</button></div>`; showModal(pauseText, true); document.getElementById('pause-save').onclick=()=>{saveGame(); showModal(false);}; document.getElementById('pause-load').onclick=()=>{loadGame(); showModal(false);}; document.getElementById('pause-help').onclick=showHelpMenu; document.getElementById('pause-resume').onclick=()=>showModal(false); }
+    function showHelpMenu() { const helpText = `<div class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2"><h2 class="text-2xl mb-4 title-font text-cyan-400">HELP MENU</h2><p><strong class="text-green-300">Conversational:</strong> Type questions like 'who are you?'. Try 'comfort synapse' or 'probe secrets'.</p><p><strong class="text-green-300">Navigation:</strong> 'go [direction]', 'look around', 'visit [room name]'</p><p><strong class="text-green-300">Interaction:</strong> 'take [item]', 'use [item]', 'examine [item]', 'talk to [npc]', 'combine [item1] with [item2]', 'sacrifice [item]'</p><p><strong class="text-green-300">System:</strong> 'stats', 'save', 'load', 'rest', 'journal add [note]', 'history', 'debug', 'cmd:pause', 'cmd:undo', 'map', 'objectives'</p></div><button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(helpText, true); }
+    function showPauseMenu() { const pauseText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">PAUSE</h2><div class="flex flex-col gap-2"><button id="pause-save" class="button">Save</button><button id="pause-load" class="button">Load</button><button id="pause-help" class="button">Help</button><button id="pause-resume" class="button button-primary">Resume</button></div>`; showModal(pauseText, true); document.getElementById('pause-save').onclick=()=>{saveGame(); hideModal();}; document.getElementById('pause-load').onclick=()=>{loadGame(); hideModal();}; document.getElementById('pause-help').onclick=showHelpMenu; document.getElementById('pause-resume').onclick=hideModal; }
     function showGlossary() { const glossaryText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">GLOSSARY</h2>...<button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(glossaryText, true); }
     function showTutorialGuide() { const guideText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">TUTORIAL GUIDE</h2>...<button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(guideText, true); }
-    async function runInteractiveTutorial(restarted = false) { UI.modal.classList.add('hidden'); UI.modal.classList.remove('flex'); if(restarted) resetGameState(); else GameState.tutorialCompleted = false; initializeData(); UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex'); UI.gameOutput.innerHTML = ''; await typeWriter(UI.gameOutput, "--- INTERACTIVE TUTORIAL ---"); /* Full tutorial logic would be implemented here */ await typeWriter(UI.gameOutput, "Welcome! Type 'look around' to begin."); GameState.tutorialCompleted = true; }
     
     async function timedInputChallenge(expected, timeLimit) {
         return new Promise(resolve => {
             const modalInput = document.createElement('input'); modalInput.type = 'text'; modalInput.className = 'bg-black border border-green-500 text-green-500 text-center text-2xl p-2 mt-4 focus:outline-none';
             showModal(`<div><p class="text-red-500 text-2xl">CHALLENGE</p><p>Type '<span class="text-yellow-300">${expected}</span>' within ${timeLimit / 1000} seconds!</p></div>`, true);
-            UI.modalContent.appendChild(modalInput);
-            modalInput.focus();
-            let timer = setTimeout(() => { modalInput.disabled = true; showModal(false); resolve(false); }, timeLimit);
-            modalInput.onkeydown = (e) => {
-                if(e.key === 'Enter') {
-                    if(modalInput.value.toLowerCase() === expected) { clearTimeout(timer); showModal(false); resolve(true); }
-                    else { modalInput.value = ''; }
-                }
-            };
+            UI.modalContent.appendChild(modalInput); modalInput.focus();
+            let timer = setTimeout(() => { modalInput.disabled = true; hideModal(); resolve(false); }, timeLimit);
+            modalInput.onkeydown = (e) => { if(e.key === 'Enter') { if(modalInput.value.toLowerCase() === expected) { clearTimeout(timer); hideModal(); resolve(true); } else { modalInput.value = ''; } } };
         });
     }
-    
-    function showBackstoryModal() {
-        let content = `<h2 class="text-2xl mb-4 title-font text-cyan-400">Choose a Backstory</h2><div class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2 space-y-3">`;
-        for (const key in backstories) {
-            content += `<div><strong class="text-green-300 capitalize">${key}</strong>: <span class="text-gray-300">${backstories[key].description}</span></div>`;
-        }
-        content += `</div><button id="close-modal-btn" class="button mt-6">Close</button>`;
-        showModal(content, true);
+
+    async function getTutorialInput() {
+        return new Promise(resolve => {
+            resolveTutorialInput = resolve;
+        });
     }
 
-    function checkEndings() { if (GameState.awarenessLevel >= 50) return endGame("SYNAPSE's presence overwhelms your mind..."); if (GameState.sanityLevel <= 0) return endGame("Your sanity shatters completely."); if (GameState.currentRoom === 'Lobby' && hasItem('access code') && hasItem('keycard')) { unlockAchievement("Escapist"); return endGame("Escape Artist. You've escaped... for now."); } }
+    async function runInteractiveTutorial(restarted = false) {
+        hideModal(); 
+        if(restarted) resetGameState(); else GameState.tutorialCompleted = false; 
+        initializeData(); 
+        UI.startScreen.classList.add('hidden'); 
+        UI.gameScreen.classList.remove('hidden'); 
+        UI.gameScreen.classList.add('flex'); 
+        UI.gameOutput.innerHTML = ''; 
+        
+        await typeWriter(UI.gameOutput, "--- INTERACTIVE TUTORIAL ---", '#ffdb58');
+        await typeWriter(UI.gameOutput, "Welcome! This tutorial teaches all commands through practice.");
+        await typeWriter(UI.gameOutput, "At any step, type 'skip' or 'skip all'.");
+        
+        const tutorialSteps = [
+            { title: "Look Around", instruction: "First, let's see where you are. Type 'look around' and press Enter.", validator: (input) => input.toLowerCase() === 'look around' },
+            { title: "Navigate", instruction: "You see some exits. Let's move. Type 'go south' to enter the Maintenance Tunnel.", validator: (input) => input.toLowerCase() === 'go south' },
+            { title: "Take Item", instruction: "It's dark. There's a flashlight here. Type 'take flashlight' to pick it up.", validator: (input) => input.toLowerCase() === 'take flashlight' },
+            { title: "Check Inventory", instruction: "Good. Now, check what you're carrying. Type 'inventory'.", validator: (input) => input.toLowerCase() === 'inventory' },
+            { title: "Return", instruction: "Let's go back to the Lobby. Type 'go north'.", validator: (input) => input.toLowerCase() === 'go north' },
+            { title: "Converse with SYNAPSE", instruction: "Now for the most important part. Talk to the AI. Type 'who are you?'.", validator: (input) => input.toLowerCase() === 'who are you?' },
+            { title: "Use Dialogue Options", instruction: "SYNAPSE has responded. You can use the buttons or type the option text. Let's try it. Type 'Tell me more'.", validator: (input) => input.toLowerCase() === 'tell me more' },
+            { title: "Check Your Journal", instruction: "Your device automatically keeps a log. Type 'journal' to see it.", validator: (input) => input.toLowerCase() === 'journal' },
+        ];
+
+        for (const step of tutorialSteps) {
+            await typeWriter(UI.gameOutput, `\n--- ${step.title} ---`, '#ffdb58');
+            await typeWriter(UI.gameOutput, step.instruction, '#cccccc');
+            let incorrectAttempts = 0;
+
+            while (true) {
+                const input = await getTutorialInput();
+                if (input.toLowerCase() === 'skip all') {
+                    await typeWriter(UI.gameOutput, "Tutorial skipped.", '#ffdb58');
+                    completeTutorial();
+                    return;
+                }
+                if (input.toLowerCase() === 'skip') {
+                    await typeWriter(UI.gameOutput, "Step skipped.", '#ffdb58');
+                    break; 
+                }
+                if (step.validator(input)) {
+                    await processPlayerInput(input);
+                    break; 
+                } else {
+                    incorrectAttempts++;
+                    await typeWriter(UI.gameOutput, "That's not quite right. Please try again.", '#ff474c');
+                    if (incorrectAttempts > 1) {
+                        await typeWriter(UI.gameOutput, `Hint: Try typing '${step.validator.toString().match(/'(.*?)'/)[1]}'`, '#ffdb58');
+                    }
+                }
+            }
+        }
+        await completeTutorial();
+    }
+
+    async function completeTutorial() {
+        await typeWriter(UI.gameOutput, "\n--- TUTORIAL COMPLETE ---", '#ffdb58');
+        await typeWriter(UI.gameOutput, "You've mastered the basics. Remember to use 'help' if you forget a command.", '#cccccc');
+        await typeWriter(UI.gameOutput, "The real game will now begin. Good luck.", '#ff474c');
+        GameState.tutorialCompleted = true;
+        UI.playerInput.disabled = true;
+        setTimeout(() => {
+            UI.playerInput.disabled = false;
+            UI.gameOutput.innerHTML = '';
+            startGame(true);
+        }, 4000);
+    }
+    
+    function showBackstoryModal() { let content = `<h2 class="text-2xl mb-4 title-font text-cyan-400">Choose a Backstory</h2><div class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2 space-y-3">`; for (const key in backstories) { content += `<div><strong class="text-green-300 capitalize">${key}</strong>: <span class="text-gray-300">${backstories[key].description}</span></div>`; } content += `</div><button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(content, true); }
+
+    function checkEndings() { if(GameState.exitGame) return; let endingReason = null; if (GameState.awarenessLevel >= 50) endingReason = "SYNAPSE's presence overwhelms your mind..."; else if (GameState.sanityLevel <= 0) endingReason = "Your sanity shatters completely."; else if (GameState.currentRoom === 'Lobby' && hasItem('access code') && hasItem('keycard')) { unlockAchievement("Escapist"); endingReason = "Escape Artist. You've escaped... for now."; } if(endingReason) endGame(endingReason); }
     function checkAchievements() { GameState.achievements.forEach(ach => { if (!ach.unlocked && ach.condition && ach.condition()) { unlockAchievement(ach.name); } }); }
     function unlockAchievement(name) { const ach = GameState.achievements.find(a => a.name === name); if (ach && !ach.unlocked) { ach.unlocked = true; typeWriter(UI.gameOutput, `[Achievement] ${ach.name}: ${ach.description}`, '#ffd700'); } }
     
     function hasItem(itemName) { return GameState.inventory.some(i => i.name.toLowerCase() === itemName.toLowerCase()); }
     
     function setupIntro() { UI.titleArt.textContent = `...SYNAPSE...`; UI.introTextContainer.innerHTML = `<p class="mb-4">Decades ago... a clandestine project was born...</p><p>You, a freelance investigator... have been sent to uncover what became of Project SYNAPSE...</p><p>As you activate the central terminal, a voice greets you... 'Hello, user.'</p>`; }
-    function startGame() { 
-        resetGameState(); 
-        initializeData(); 
+    function startGame(fromTutorial = false) { 
+        if (!fromTutorial) {
+            resetGameState(); 
+            initializeData(); 
+        }
         saveStateSnapshot(); 
         GameState.playerName = UI.playerNameInput.value || "Subject"; 
         const backstoryKey = (UI.playerBackstoryInput.value || "investigator").toLowerCase();
         GameState.playerBackstory = backstoryKey;
-        if (backstories[backstoryKey]) {
-            backstories[backstoryKey].ability(GameState);
-        }
+        if (backstories[backstoryKey]) { backstories[backstoryKey].ability(GameState); }
         GameState.difficulty = Array.from(UI.difficultyBtns).find(b => b.classList.contains('button-primary'))?.dataset.difficulty || Difficulty.Normal; 
-        UI.startScreen.classList.add('hidden'); 
-        UI.gameScreen.classList.remove('hidden'); 
-        UI.gameScreen.classList.add('flex'); 
-        UI.gameOutput.innerHTML = ''; 
-        buildDialogueTree(GameState.chatbotTone); 
-        GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone]; 
-        typeWriter(UI.gameOutput, "Initializing systems...", '#cccccc').then(() => { 
-            displayChatbotResponse(GameState.dialogue.currentNode.message).then(() => { 
-                renderRoom(); 
-                updateUI(); 
-                renderDialogueOptions(); 
-            }); 
-        }); 
+        UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex'); 
+        if(!fromTutorial) UI.gameOutput.innerHTML = ''; 
+        buildDialogueTree(GameState.chatbotTone); GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone]; 
+        typeWriter(UI.gameOutput, "Initializing systems...", '#cccccc').then(() => { displayChatbotResponse(GameState.dialogue.currentNode.message).then(() => { renderRoom(); updateUI(); renderDialogueOptions(); }); }); 
     }
     function endGame(reason) { if (GameState.exitGame) return; GameState.exitGame = true; UI.playerInput.disabled = true; UI.playerInput.placeholder = "CONNECTION TERMINATED"; typeWriter(UI.gameOutput, `--- GAME OVER ---`, '#ff474c', 50); typeWriter(UI.gameOutput, reason, '#ff474c', 50); typeWriter(UI.gameOutput, "Refresh to start a new game.", '#cccccc', 50); UI.dialogueOptionsContainer.innerHTML = ''; }
     
@@ -713,23 +567,25 @@
     document.addEventListener('DOMContentLoaded', () => {
         resetGameState();
         setupIntro();
-        UI.newGameBtn.addEventListener('click', async () => { 
-            showModal(`<div><p>Would you like to play the interactive tutorial to learn game commands?</p><button id="tut-yes" class="button m-2">Yes</button><button id="tut-no" class="button m-2">No</button></div>`, true); 
-            document.getElementById('tut-yes').onclick = () => { showModal(false); runInteractiveTutorial(true); }; 
-            document.getElementById('tut-no').onclick = () => { showModal(false); GameState.tutorialCompleted = true; UI.startOptions.classList.add('hidden'); UI.playerSetup.classList.remove('hidden'); UI.playerSetup.classList.add('flex'); }; 
-        });
+        UI.newGameBtn.addEventListener('click', async () => { showModal(`<div><p>Would you like to play the interactive tutorial to learn game commands?</p><button id="tut-yes" class="button m-2">Yes</button><button id="tut-no" class="button m-2">No</button></div>`, true); document.getElementById('tut-yes').onclick = () => { runInteractiveTutorial(true); }; document.getElementById('tut-no').onclick = () => { hideModal(); GameState.tutorialCompleted = true; UI.startOptions.classList.add('hidden'); UI.playerSetup.classList.remove('hidden'); UI.playerSetup.classList.add('flex'); }; });
         UI.loadGameBtn.addEventListener('click', loadGame);
         UI.viewBackstoriesBtn.addEventListener('click', showBackstoryModal);
-        UI.difficultyBtns.forEach(btn => { 
-            btn.addEventListener('click', (e) => { 
-                UI.difficultyBtns.forEach(b => b.classList.remove('button-primary')); 
-                e.target.classList.add('button-primary'); 
-            }); 
-        });
-        UI.startGameBtn.addEventListener('click', startGame);
+        UI.difficultyBtns.forEach(btn => { btn.addEventListener('click', (e) => { UI.difficultyBtns.forEach(b => b.classList.remove('button-primary')); e.target.classList.add('button-primary'); }); });
+        UI.startGameBtn.addEventListener('click', () => startGame(false));
         UI.playerInput.addEventListener('keydown', (e) => { 
-            if (e.key === 'Enter') { 
-                processPlayerInput(UI.playerInput.value); 
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                handleAutocomplete();
+            } else if (e.key === 'Enter') { 
+                if (resolveTutorialInput) {
+                    const capturedInput = UI.playerInput.value;
+                    UI.playerInput.value = '';
+                    typeWriter(UI.gameOutput, `> ${capturedInput}`, '#a0a0a0');
+                    resolveTutorialInput(capturedInput);
+                    resolveTutorialInput = null;
+                } else {
+                    processPlayerInput(UI.playerInput.value); 
+                }
             } else if (e.key === 'ArrowUp') { 
                 e.preventDefault(); 
                 if(commandHistoryIndex > 0) { 
@@ -747,6 +603,42 @@
                 } 
             } 
         });
+
+        function getCommandSuggestions(partialInput) {
+            const staticCommands = ['help', 'quit', 'exit', 'save', 'load', 'debug', 'history', 'look around', 'exits', 'inventory', 'toggle glitch', 'journal view', 'rest', 'tutorial', 'restart tutorial', 'cmd:pause', 'cmd:glossary', 'cmd:undo', 'cmd:textspeed fast', 'cmd:textspeed normal', 'cmd:textspeed slow', 'cmd:colorblind', 'cmd:diagnostics', 'cmd:access logs', 'cmd:override', 'cmd:reset', 'cmd:analyze', 'map', 'objectives'];
+            
+            let suggestions = staticCommands.filter(c => c.startsWith(partialInput));
+
+            const room = rooms[GameState.currentRoom];
+            if (room) {
+                if (partialInput.startsWith('go ')) { suggestions.push(...Object.keys(room.exits).map(exit => `go ${exit}`).filter(c => c.startsWith(partialInput))); }
+                if (partialInput.startsWith('take ')) { suggestions.push(...room.objects.map(obj => `take ${obj}`).filter(c => c.startsWith(partialInput))); }
+                if (partialInput.startsWith('examine ')) { suggestions.push(...room.objects.map(obj => `examine ${obj}`).filter(c => c.startsWith(partialInput))); }
+            }
+            if (partialInput.startsWith('use ')) { suggestions.push(...GameState.inventory.map(item => `use ${item.name}`).filter(c => c.startsWith(partialInput))); }
+            if (partialInput.startsWith('combine ')) { const parts = partialInput.split(' '); if(parts.length < 4) { suggestions.push(...GameState.inventory.map(item => `combine ${parts[1]} with ${item.name}`).filter(c => c.startsWith(partialInput))); } }
+            if (partialInput.startsWith('sacrifice ')) { suggestions.push(...GameState.inventory.map(item => `sacrifice ${item.name}`).filter(c => c.startsWith(partialInput))); }
+
+            return [...new Set(suggestions)];
+        }
+
+        function handleAutocomplete() {
+            const partialInput = UI.playerInput.value.toLowerCase();
+            if (!partialInput) return;
+
+            const suggestions = getCommandSuggestions(partialInput);
+
+            if (suggestions.length === 1) {
+                UI.playerInput.value = suggestions[0];
+            } else if (suggestions.length > 1) {
+                autocompleteIndex++;
+                if (autocompleteIndex >= suggestions.length) autocompleteIndex = 0;
+                UI.playerInput.value = suggestions[autocompleteIndex];
+                typeWriter(UI.gameOutput, `Suggestions: ${suggestions.join(', ')}`, '#cccccc');
+            } else {
+                autocompleteIndex = -1;
+            }
+        }
     });
     </script>
 </body>
