@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=VT323&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <!-- FAVICON: Paste your Base64 string here -->
+    <link id="favicon" rel="icon" type="image/png" href="YOUR_BASE64_ICON_STRING_HERE">
     <style>
         body {
             background-color: #0d0d0d;
@@ -113,6 +115,8 @@
         
         <!-- START SCREEN -->
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
+            <!-- IN-PAGE LOGO: Paste your Base64 string here -->
+            <img id="game-logo" src="YOUR_BASE64_ICON_STRING_HERE" alt="SYNAPSE Logo" class="h-24 mb-4 rounded-lg shadow-lg shadow-[#00ff41]/20">
             <pre id="title-art" class="text-xs md:text-sm whitespace-pre-wrap title-font text-[#00ff41] crt-flicker"></pre>
             <div id="intro-text-container" class="max-w-4xl text-sm md:text-base"></div>
              <div id="start-options" class="mt-6">
@@ -344,7 +348,9 @@
     function renderRoom() {
         const room = rooms[GameState.currentRoom]; if (!room) return;
         GameState.visitedRooms.add(room.name); triggerRoomEvent(room);
-        let description = room.descriptions[Object.keys(room.descriptions).map(Number).filter(k => k <= GameState.awarenessLevel).reduce((a,b) => Math.max(a,b), -Infinity)] || room.descriptions[0];
+        const validKeys = Object.keys(room.descriptions).map(Number).filter(k => k <= GameState.awarenessLevel);
+        const activeDescKey = validKeys.length > 0 ? Math.max(...validKeys) : 0;
+        let description = room.descriptions[activeDescKey] || room.descriptions[0];
         if (GameState.roomStates[GameState.currentRoom]?.powered) { description = "The terminal hums with restored power. The screen displays: [Awaiting Input]."; }
         let roomHtml = `<div class="mt-2"><p class='text-cyan-400 font-bold'>--- ${room.name} ---</p><p>${description}</p>`;
         if (room.objects && room.objects.length > 0) { roomHtml += `<p class='text-yellow-400 mt-2'>Objects: ${room.objects.join(", ")}</p>`; }
@@ -538,7 +544,7 @@
     async function completeTutorial() {
         await typeWriter(UI.gameOutput, "\n--- TUTORIAL COMPLETE ---", '#ffdb58');
         await typeWriter(UI.gameOutput, "You've mastered the basics. Remember to use 'help' if you forget a command.", '#cccccc');
-        await typeWriter(UI.gameOutput, "The real game will now begin. Good luck.", '#ff474c');
+        await typeWriter(UI.gameOutput, "Returning you to character creation...", '#cccccc');
         GameState.tutorialCompleted = true;
         UI.playerInput.disabled = true;
         setTimeout(() => {
@@ -597,10 +603,14 @@
         setupIntro();
         document.body.addEventListener('click', async () => {
             if (!audioInitialized) {
-                await Tone.start();
-                synth = new Tone.Synth().toDestination();
-                audioInitialized = true;
-                console.log("Audio context started.");
+                try {
+                    await Tone.start();
+                    synth = new Tone.Synth().toDestination();
+                    audioInitialized = true;
+                    console.log("Audio context started.");
+                } catch(e) {
+                    console.error("Audio context could not be started.", e);
+                }
             }
         }, { once: true });
 
@@ -616,11 +626,11 @@
             } else if (e.key === 'Enter') { 
                 if (resolveTutorialInput) {
                     const capturedInput = UI.playerInput.value;
-                    UI.playerInput.value = '';
-                    typeWriter(UI.gameOutput, `> ${capturedInput}`, '#a0a0a0').then(() => {
+                    if (capturedInput) { // only resolve if there's input, prevents race conditions
                         resolveTutorialInput(capturedInput);
                         resolveTutorialInput = null;
-                    });
+                        UI.playerInput.value = '';
+                    }
                 } else {
                     processPlayerInput(UI.playerInput.value); 
                 }
