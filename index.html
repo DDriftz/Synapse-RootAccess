@@ -10,11 +10,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Space+Mono&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent scrollbars on the body */
+        }
         body {
             background-color: #0d0d0d;
             color: #00ff41;
             font-family: 'Space Mono', monospace;
-            font-size: 18px;
         }
         #title, .title-font {
             font-family: 'Major Mono Display', monospace;
@@ -110,9 +116,9 @@
         }
     </style>
 </head>
-<body class="bg-black text-[#00ff41] p-4 md:p-8 flex items-center justify-center min-h-screen">
+<body class="bg-black text-[#00ff41] flex items-center justify-center min-h-screen">
 
-    <div id="app-container" class="w-full max-w-7xl h-[90vh] border-2 border-[#00ff41]/50 rounded-lg shadow-2xl shadow-[#00ff41]/20 bg-black/75 p-4 flex flex-col crt-effect">
+    <div id="app-container" class="w-full h-screen bg-black/75 p-4 flex flex-col crt-effect">
         
         <!-- START SCREEN -->
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
