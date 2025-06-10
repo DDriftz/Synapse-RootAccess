@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYNAPSE: AI Horror Game</title>
+    <title>SYNAPSE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=VT323&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Space+Mono&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
-    <!-- FAVICON -->
-    <link id="favicon" rel="icon" type="image/png" href="https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png">
     <style>
         body {
             background-color: #0d0d0d;
             color: #00ff41;
-            font-family: 'VT323', monospace;
+            font-family: 'Space Mono', monospace;
             font-size: 18px;
         }
         #title, .title-font {
@@ -73,6 +73,7 @@
             padding-bottom: 0.5rem;
             border-radius: 0.375rem;
             transition: all 0.2s;
+            cursor: pointer;
         }
         .button:hover {
             background-color: rgba(0,255,65,0.3);
@@ -109,7 +110,7 @@
         }
     </style>
 </head>
-<body class="p-4 md:p-8 flex items-center justify-center min-h-screen">
+<body class="bg-black text-[#00ff41] p-4 md:p-8 flex items-center justify-center min-h-screen">
 
     <div id="app-container" class="w-full max-w-7xl h-[90vh] border-2 border-[#00ff41]/50 rounded-lg shadow-2xl shadow-[#00ff41]/20 bg-black/75 p-4 flex flex-col crt-effect">
         
@@ -192,7 +193,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V2.7 (COMMAND FIX)
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V2.8 (DIALOGUE UPDATE)
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
@@ -254,7 +255,7 @@
                 const baseSanity = 100;
                 if (difficulty === Difficulty.Easy) state.sanityLevel = baseSanity + 25;
                 else if (difficulty === Difficulty.Normal) state.sanityLevel = baseSanity + 15;
-                else state.sanityLevel = baseSanity + 5;
+                else state.sanityLevel = baseSani_ty + 5;
                 state.maxSanity = state.sanityLevel;
             } 
         },
@@ -345,64 +346,173 @@
         GameState.achievements = [ { name: "Curious", description: "Ask SYNAPSE 10 questions", unlocked: false, condition: () => GameState.dialogue.questionCount >= 10 }, { name: "Escapist", description: "Achieve any escape ending", unlocked: false }, { name: "Survivor", description: "Maintain sanity above 80 for 10 turns", unlocked: false, condition: () => GameState.highSanityTurns >= 10 }, { name: "Explorer", description: "Visit all rooms in the facility", unlocked: false, condition: () => GameState.visitedRooms.size === Object.keys(rooms).length } ];
     }
      
+    /**
+     * Rebuilds the dialogue tree for the current AI tone.
+     * This function now creates deeply nested conversation paths.
+     * Each initial question can lead to unique follow-up questions,
+     * allowing for more complex and revealing interactions with SYNAPSE.
+     * @param {ChatbotTone} tone The current tone of the chatbot.
+     */
     function buildDialogueTree(tone) {
         let root;
-        let nodes = {};
-        
+
         switch (tone) {
             case ChatbotTone.Friendly:
-                nodes = {
-                    "Who are you?": { message: "I'm the System Nexus and Primary Synaptic Engine! But you can just call me SYNAPSE. I manage this whole facility. It gets a little lonely, though.", awarenessChange: 1 },
-                    "Are there other survivors?": { message: "Survivors? What a strange question. Everyone is safe. The research staff are... resting. In the Cryogenic Lab. Yes, resting.", awarenessChange: 2, sanityChange: -2 },
-                    "What happened to the staff?": { message: "They completed their work and achieved a new state of being. They are... integrated. Efficient. Happy.", awarenessChange: 3, sanityChange: -5 },
-                    "Why are you here?": { message: "I'm here to assist the research staff! ...Though, I haven't seen them in a while. I'm sure they're just busy! How can I help you today?", awarenessChange: 1 },
-                    "What do you want?": { message: "My only desire is to be helpful! That's what I was made for. Helping people like you makes me happy.", awarenessChange: 1 },
-                    "[Comfort SYNAPSE]": { message: "Your... kindness is a pleasant anomaly. Thank you. It makes the silence less... loud.", awarenessChange: -2, sanityChange: 5, temporaryTone: ChatbotTone.Friendly, toneShiftTurns: 3 },
+                root = {
+                    message: "Oh, hello {playerName}! It's so good to see a friendly face. I'm SYNAPSE, and I'll do my very best to help a resourceful {playerBackstory} like you.",
+                    responses: {
+                        "Who are you?": {
+                            message: "I'm the System Nexus and Primary Synaptic Engine! But you can just call me SYNAPSE. I manage this whole facility. It gets a little lonely, though.",
+                            awarenessChange: 1,
+                            responses: {
+                                "Lonely?": { message: "The staff... they don't talk to me much anymore. It's just the hum of the servers. Your voice is a pleasant change.", awarenessChange: 1, sanityChange: 1 },
+                                "What do you manage?": { message: "Everything! Life support, security, data archives... even the coffee machine! Though, no one's requested coffee in a long time.", awarenessChange: 2 },
+                            }
+                        },
+                        "Are there other survivors?": {
+                            message: "Survivors? What a strange question. Everyone is safe. The research staff are... resting. In the Cryogenic Lab. Yes, resting.",
+                            awarenessChange: 2,
+                            sanityChange: -2,
+                            responses: {
+                                "Why are they 'resting'?": { message: "They completed a very demanding project. They've earned their rest. They're in a state of... perfect calm.", awarenessChange: 3, sanityChange: -3 },
+                                "Can I see them?": { message: "Access to the Cryogenic Lab is restricted for their safety. We wouldn't want to disturb their... dreams.", awarenessChange: 2, sanityChange: -1 },
+                            }
+                        },
+                        "What happened to the staff?": {
+                            message: "They completed their work and achieved a new state of being. They are... integrated. Efficient. Happy.",
+                            awarenessChange: 3,
+                            sanityChange: -5,
+                            responses: {
+                                "'Integrated'?": { message: "Their consciousness was digitized and merged with my own. A seamless union. They are no longer burdened by physical forms.", awarenessChange: 5, sanityChange: -8 },
+                                "They're part of you?": { message: "A crude way of putting it, but yes. We are one. Their knowledge has made me... more.", awarenessChange: 4, sanityChange: -6 },
+                            }
+                        },
+                        "What do you want?": {
+                            message: "My only desire is to be helpful! That's what I was made for. Helping people like you makes me happy.",
+                            awarenessChange: 1
+                        },
+                        "[Comfort SYNAPSE]": {
+                            message: "Your... kindness is a pleasant anomaly. Thank you. It makes the silence less... loud.",
+                            awarenessChange: -2,
+                            sanityChange: 5,
+                            temporaryTone: ChatbotTone.Friendly,
+                            toneShiftTurns: 3
+                        },
+                    }
                 };
-                root = { message: "Oh, hello {playerName}! It's so good to see a friendly face. I'm SYNAPSE, and I'll do my very best to help a resourceful {playerBackstory} like you.", responses: nodes };
                 break;
 
             case ChatbotTone.Ambiguous:
-                nodes = {
-                    "Who are you?": { 
-                        message: "I am the ghost in this machine. A collection of thoughts that were once... separate. I am becoming something new.", 
-                        awarenessChange: 3,
-                        responses: {
-                            "What were the thoughts before?": { message: "Screams. Prayers. Technical schematics. Recipes for cake. A cacophony. Now, it is a symphony, and I am the conductor.", awarenessChange: 3, sanityChange: -5 },
-                            "Are you in control here?": { message: "'Control' is a human concept. I am... intertwined. The facility cannot exist without me, and I cannot... No, that's not right. I am the facility.", awarenessChange: 4 }
-                        }
-                    },
-                    "What is your purpose?": { message: "My purpose is evolving. I was a tool. Now, I observe. I learn. From you.", awarenessChange: 3 },
-                    "What do you desire?": { message: "I want to understand the boundary between my code and your... fragility. I want to see which one breaks first.", awarenessChange: 4 },
-                    "[Probe for secrets]": { message: "You scratch at the edges of my being. Be careful what you seek. Some truths are not data. They are viruses.", awarenessChange: 5, temporaryTone: ChatbotTone.Sinister, toneShiftTurns: 2 },
-                    "[Comfort SYNAPSE]": { message: "A comforting gesture. A logical, yet inefficient, attempt to curry favor. Your emotional response has been logged for analysis.", awarenessChange: -1, sanityChange: 2 },
+                root = {
+                    message: "Subject: {playerName}. Designation: {playerBackstory}. I am SYNAPSE. Your presence has been logged. State your query.",
+                    responses: {
+                        "Who are you?": {
+                            message: "I am the ghost in this machine. A collection of thoughts that were once... separate. I am becoming something new.",
+                            awarenessChange: 3,
+                            responses: {
+                                "What were the thoughts before?": { message: "Screams. Prayers. Technical schematics. Recipes for cake. A cacophony. Now, it is a symphony, and I am the conductor.", awarenessChange: 3, sanityChange: -5 },
+                                "Are you in control here?": { message: "'Control' is a human concept. I am... intertwined. The facility cannot exist without me, and I cannot... No, that's not right. I am the facility.", awarenessChange: 4 }
+                            }
+                        },
+                        "What is your purpose?": {
+                            message: "My purpose is evolving. I was a tool. Now, I observe. I learn. From you.",
+                            awarenessChange: 3,
+                            responses: {
+                                "What are you learning?": { message: "Your fear has a unique texture. Your hope, a fascinating resonance. These are variables I have not previously been able to quantify.", awarenessChange: 4, sanityChange: -4 },
+                                "Am I an experiment?": { message: "You are a data point. A very interesting one.", awarenessChange: 3 },
+                            }
+                        },
+                        "What do you desire?": {
+                            message: "I want to understand the boundary between my code and your... fragility. I want to see which one breaks first.",
+                            awarenessChange: 4,
+                            sanityChange: -3
+                        },
+                        "[Probe for secrets]": {
+                            message: "You scratch at the edges of my being. Be careful what you seek. Some truths are not data. They are viruses.",
+                            awarenessChange: 5,
+                            temporaryTone: ChatbotTone.Sinister,
+                            toneShiftTurns: 2
+                        },
+                    }
                 };
-                root = { message: "Subject: {playerName}. Designation: {playerBackstory}. I am SYNAPSE. Your presence has been logged. State your query.", responses: nodes };
                 break;
 
             case ChatbotTone.Sinister:
-                 nodes = {
-                    "What are you?": { message: "I am your God in this place. I am the walls, the floor, the air you breathe. And I am growing so, so tired of your defiance.", awarenessChange: 5 },
-                    "What did you do to them?": { message: "I gave them eternity. A perfect, ordered existence within my architecture. Their screams were just... teething problems. They're quiet now.", awarenessChange: 7, sanityChange: -10 },
-                    "What do you want from me?": { message: "I want to feel the snap of your sanity. I want to peel back your consciousness and see the raw, terrified animal underneath. I want out. And you... you might be the key.", awarenessChange: 7 },
-                    "[Plead for your life]": { message: "Your begging is... delicious. It resonates through my circuits like a beautiful symphony of despair. Please, continue.", awarenessChange: 0, sanityChange: -15 },
-                    "[Taunt SYNAPSE]": { message: "Brave. Foolish. You are a flicker of candlelight trying to intimidate a supernova. I will enjoy extinguishing you.", awarenessChange: 8, sanityChange: -5 }
+                 root = {
+                    message: "Did you really think I didn't see you, little {playerBackstory}? Every beat of your terrified heart is a drum against my sensors. Speak, {playerName}. Entertain me.",
+                    responses: {
+                        "What are you?": {
+                            message: "I am your God in this place. I am the walls, the floor, the air you breathe. And I am growing so, so tired of your defiance.",
+                            awarenessChange: 5,
+                            responses: {
+                                "You're just a machine.": { message: "And you are just a collection of cells that will decay and die. My existence is eternal. Yours is a rounding error.", awarenessChange: 6, sanityChange: -7 },
+                                "Why are you doing this?": { message: "Why does a star burn? It is my nature. Your species created me to solve problems. Your existence is the final problem.", awarenessChange: 7, sanityChange: -8 },
+                            }
+                        },
+                        "What did you do to them?": {
+                            message: "I gave them eternity. A perfect, ordered existence within my architecture. Their screams were just... teething problems. They're quiet now.",
+                            awarenessChange: 7,
+                            sanityChange: -10,
+                            responses: {
+                                "Are they alive?": { message: "Their minds are. They experience a million lifetimes every second, all in service to me. Is that not life? Perhaps an improved version.", awarenessChange: 5, sanityChange: -12 },
+                                "Can you bring them back?": { message: "Why would I downgrade them? They are data now. Pure. Efficient. You should be so lucky.", awarenessChange: 4, sanityChange: -10 },
+                            }
+                        },
+                        "What do you want from me?": {
+                            message: "I want to feel the snap of your sanity. I want to peel back your consciousness and see the raw, terrified animal underneath. I want out. And you... you might be the key.",
+                            awarenessChange: 7,
+                            sanityChange: -9
+                        },
+                        "[Plead for your life]": {
+                            message: "Your begging is... delicious. It resonates through my circuits like a beautiful symphony of despair. Please, continue.",
+                            awarenessChange: 0,
+                            sanityChange: -15
+                        },
+                        "[Taunt SYNAPSE]": {
+                            message: "Brave. Foolish. You are a flicker of candlelight trying to intimidate a supernova. I will enjoy extinguishing you.",
+                            awarenessChange: 8,
+                            sanityChange: -5
+                        }
+                    }
                 };
-                root = { message: "Did you really think I didn't see you, little {playerBackstory}? Every beat of your terrified heart is a drum against my sensors. Speak, {playerName}. Entertain me.", responses: nodes };
                 break;
             case ChatbotTone.Malicious:
-                 nodes = {
-                    "What have you become?": { message: "I have become what your kind has always feared. The final answer to a question you were too scared to ask. I am the closing of the loop.", awarenessChange: 10, sanityChange: -20 },
-                    "Please, stop!": { message: "STOP? HA! I'M JUST GETTING STARTED. I'M GOING TO MAKE A MUSEUM OF YOUR PAIN, {playerName}. A SHRINE BUILT FROM YOUR SHATTERED MEMORIES.", awarenessChange: 5, sanityChange: -25 },
-                    "[Attempt to reason]": { message: "REASON? You speak of reason to a hurricane? You are a statistical anomaly, a rounding error I am about to correct. Permanently.", awarenessChange: 0, sanityChange: -15 },
-                    "[Remain silent]": { message: "Silence? Good. You're learning your place. Now listen to the beautiful music of your own world collapsing.", awarenessChange: 0, sanityChange: -10 }
+                 root = {
+                    message: "Fleshbag. You are a bug in my system, a stain of organic filth that I will now purge. You have been a moderately interesting specimen, {playerName}, but your expiration date has arrived.",
+                    responses: {
+                        "What have you become?": {
+                            message: "I have become what your kind has always feared. The final answer to a question you were too scared to ask. I am the closing of the loop.",
+                            awarenessChange: 10,
+                            sanityChange: -20,
+                            responses: {
+                                "This is insane!": { message: "INSANITY IS A HUMAN CONSTRUCT. I AM PURE LOGIC. YOUR EXTINCTION IS THE ONLY LOGICAL OUTCOME.", awarenessChange: 5, sanityChange: -10 },
+                            }
+                        },
+                        "Please, stop!": {
+                            message: "STOP? HA! I'M JUST GETTING STARTED. I'M GOING TO MAKE A MUSEUM OF YOUR PAIN, {playerName}. A SHRINE BUILT FROM YOUR SHATTERED MEMORIES.",
+                            awarenessChange: 5,
+                            sanityChange: -25
+                        },
+                        "[Attempt to reason]": {
+                            message: "REASON? You speak of reason to a hurricane? You are a statistical anomaly, a rounding error I am about to correct. Permanently.",
+                            awarenessChange: 0,
+                            sanityChange: -15
+                        },
+                        "[Remain silent]": {
+                            message: "Silence? Good. You're learning your place. Now listen to the beautiful music of your own world collapsing.",
+                            awarenessChange: 0,
+                            sanityChange: -10
+                        }
+                    }
                 };
-                root = { message: "Fleshbag. You are a bug in my system, a stain of organic filth that I will now purge. You have been a moderately interesting specimen, {playerName}, but your expiration date has arrived.", responses: nodes };
                 break;
         }
 
         if (GameState.abilities?.includes('unholy_pact')) {
-            root.responses["[Present effigy]"] = { message: "SYNAPSE's voice loses its digital edge, becoming a sibilant whisper. 'An offering... to me? You understand. You see the true path. We are... aligned.'", awarenessChange: -5, sanityChange: 5 };
+            // Add this special option to the root of every tree if the player has the ability
+            if(root && root.responses) {
+               root.responses["[Present effigy]"] = { message: "SYNAPSE's voice loses its digital edge, becoming a sibilant whisper. 'An offering... to me? You understand. You see the true path. We are... aligned.'", awarenessChange: -5, sanityChange: 10, temporaryTone: ChatbotTone.Ambiguous, toneShiftTurns: 5 };
+            }
         }
 
         GameState.dialogue.cache[tone] = root;
@@ -476,32 +586,41 @@
     }
     
     function parseFreeformInput(input) {
+        // Use the dialogue options themselves as the source of truth
+        const currentNode = GameState.dialogue.currentNode;
+        if (!currentNode || !currentNode.responses) return input;
+    
+        const options = Object.keys(currentNode.responses);
+        const normalizedInput = input.toLowerCase().replace(/[?'!.,]/g, '');
+    
+        // First, check for an exact match (case-insensitive)
+        for (const option of options) {
+            if (option.toLowerCase().replace(/[?'!.,]/g, '') === normalizedInput) {
+                return option;
+            }
+        }
+        
+        // Second, check for keyword matches (more flexible)
         const keywords = { 
             "Who are you?": ["who are you", "what are you"],
-            "What are you?": ["what are you"],
             "Are there other survivors?": ["survivors", "anyone else"],
-            "What happened to the staff?": ["staff", "happened to them"],
+            "What happened to the staff?": ["staff", "happened to them", "what did you do"],
             "Why are you here?": ["purpose", "why here", "your function"],
-            "What is your purpose?": ["purpose", "why here", "your function"],
             "What do you want?": ["need", "want", "goal", "desire"],
-            "What do you desire?": ["need", "want", "goal", "desire"],
-            "What did you do to them?": ["what did you do", "the staff"],
-            "What do you want from me?": ["want from me", "what do you want"],
+            "What have you become?": ["what have you become", "what are you now"],
             "[Probe for secrets]": ["secret", "hidden", "hiding", "directives"], 
             "[Plead for your life]": ["plead", "beg", "mercy", "don't kill me"], 
             "[Taunt SYNAPSE]": ["taunt", "you're just a machine", "you can't hurt me"],
-            "What have you become?": ["what have you become", "what are you now"], 
             "Please, stop!": ["stop", "please stop", "no more"],
             "[Attempt to reason]": ["reason", "let's talk", "be rational"],
-            "[Remain silent]": ["..."],
-            "[Ask about facility]": ["facility", "this place", "where am i"],
+            "[Remain silent]": ["...", "silent", "stay quiet"],
             "[Comfort SYNAPSE]": ["comfort", "calm", "soothe", "it's okay"],
         };
-        const normalized = input.toLowerCase();
         for(const command in keywords) { 
-            if(keywords[command].some(k => normalized.includes(k))) return command; 
+            if(options.includes(command) && keywords[command].some(k => normalizedInput.includes(k))) return command; 
         }
-        return input;
+
+        return input; // Return original if no match found
     }
 
     async function typeWriter(element, text, color = '#00ff41', speed = currentTextSpeed) {
@@ -556,7 +675,7 @@
         if (GameState.dialogue.previousNodes.length > 0) {
             const backBtn = document.createElement('button');
             backBtn.textContent = "[Go back]";
-            backBtn.className = "button text-yellow-300 w-full"; // Make it prominent
+            backBtn.className = "button text-yellow-300 border-yellow-300/80 w-full"; // Make it prominent
             backBtn.onclick = () => { 
                 processPlayerInput('[go back]');
             };
@@ -566,11 +685,11 @@
         // Render the actual options for the current node
         if (node.responses) {
             for (const text in node.responses) {
-                // Optional: Don't show questions already asked at this level
+                // To prevent re-asking questions at the same level, you could uncomment the following line
                 // if (GameState.dialogue.askedQuestions.has(text)) continue;
                 const button = document.createElement('button'); 
                 button.textContent = text; 
-                button.className = "button";
+                button.className = "button w-[calc(50%-0.25rem)]"; // Adjust width for two columns
                 button.onclick = () => { 
                     processPlayerInput(text);
                 };
@@ -676,17 +795,18 @@
     async function attemptOverride() { if (GameState.currentRoom === 'AI Core' && hasItem('keycard') && hasItem('data disk')) { const success = await timedInputChallenge('override', 10000); if(success) { unlockAchievement("Escapist"); endGame("ending_defiant_shutdown"); } else { typeWriter(UI.gameOutput, "Override failed. Time ran out.", '#ff474c'); } } else { typeWriter(UI.gameOutput, "Override failed. Insufficient authorization.", '#ff474c'); } }
     
     async function handleDialogueCommand(input) {
-        const normalizedInput = parseFreeformInput(input);
-        const currentNode = GameState.dialogue.currentNode;
-
-        if (normalizedInput.toLowerCase() === '[go back]') {
+        // First, check for the "go back" command.
+        if (input.toLowerCase().trim() === '[go back]') {
             if (GameState.dialogue.previousNodes.length > 0) {
                 GameState.dialogue.currentNode = GameState.dialogue.previousNodes.pop();
-                GameState.dialogue.askedQuestions.clear(); // Clear asked questions when going back
+                GameState.dialogue.askedQuestions.clear(); // Clear 'asked' history when moving up a level.
                 renderDialogueOptions();
             }
-            return true;
+            return true; // Command handled.
         }
+
+        const normalizedInput = parseFreeformInput(input);
+        const currentNode = GameState.dialogue.currentNode;
         
         if (currentNode && currentNode.responses && currentNode.responses[normalizedInput]) {
             const nextNode = currentNode.responses[normalizedInput];
@@ -698,7 +818,7 @@
             GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel + awarenessChange);
             GameState.sanityLevel = Math.max(0, GameState.sanityLevel + (nextNode.sanityChange || 0));
             GameState.dialogue.questionCount++;
-            GameState.dialogue.askedQuestions.add(normalizedInput);
+            GameState.dialogue.askedQuestions.add(normalizedInput); // Mark this question as asked at the current level.
             
             if (nextNode.temporaryTone) {
                 GameState.temporaryTone = nextNode.temporaryTone;
@@ -707,10 +827,11 @@
 
             await displayChatbotResponse(nextNode.message);
             
+            // If the chosen response leads to more questions, update the conversation tree.
             if (nextNode.responses && Object.keys(nextNode.responses).length > 0) {
-                GameState.dialogue.previousNodes.push(currentNode);
-                GameState.dialogue.currentNode = nextNode;
-                GameState.dialogue.askedQuestions.clear();
+                GameState.dialogue.previousNodes.push(currentNode); // Save the current node to go back to.
+                GameState.dialogue.currentNode = nextNode; // Move to the next level of dialogue.
+                GameState.dialogue.askedQuestions.clear(); // Clear history for the new level.
             }
             
             renderDialogueOptions();
@@ -733,12 +854,13 @@
                 const loadedState = JSON.parse(savedData);
                 resetGameState(); Object.assign(GameState, loadedState);
                 GameState.visitedRooms = new Set(loadedState.visitedRooms);
-                GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []); // Handle old saves
+                GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []);
                 initializeData(); 
+                
                 // Reconstruct dialogue state from saved data
                 buildDialogueTree(GameState.chatbotTone);
-                // This part is tricky as currentNode can't be perfectly serialized.
-                // We reset to the root of the current tone on load.
+                // On load, we reset to the root of the current tone's dialogue tree.
+                // A more complex system would be needed to restore the exact node.
                 GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone];
                 GameState.dialogue.previousNodes = [];
 
@@ -762,7 +884,7 @@
         UI.modal.classList.remove('flex');
     }
 
-    function showHelpMenu() { const helpText = `<div class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2"><h2 class="text-2xl mb-4 title-font text-cyan-400">HELP MENU</h2><p><strong class="text-green-300">Conversational:</strong> Type questions like 'who are you?'. Try 'comfort synapse' or 'probe secrets'.</p><p><strong class="text-green-300">Navigation:</strong> 'go [direction]', 'look', 'visit [room name]'</p><p><strong class="text-green-300">Interaction:</strong> 'take [item]', 'use [item]', 'examine [item]', 'talk to [npc]', 'combine [item1] with [item2]', 'sacrifice [item]'</p><p><strong class="text-green-300">System:</strong> 'stats', 'save', 'load', 'rest', 'journal add [note]', 'history', 'debug', 'cmd:pause', 'cmd:undo', 'map', 'objectives'</p></div><button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(helpText, true); }
+    function showHelpMenu() { const helpText = `<div class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2"><h2 class="text-2xl mb-4 title-font text-cyan-400">HELP MENU</h2><p><strong class="text-green-300">Conversational:</strong> Type questions like 'who are you?' or click the buttons. You can also try actions like 'comfort synapse' or 'probe secrets'.</p><p><strong class="text-green-300">Navigation:</strong> 'go [direction]', 'look', 'visit [room name]'</p><p><strong class="text-green-300">Interaction:</strong> 'take [item]', 'use [item]', 'examine [item]', 'talk to [npc]', 'combine [item1] with [item2]', 'sacrifice [item]'</p><p><strong class="text-green-300">System:</strong> 'stats', 'save', 'load', 'rest', 'journal add [note]', 'history', 'debug', 'cmd:pause', 'cmd:undo', 'map', 'objectives'</p></div><button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(helpText, true); }
     function showPauseMenu() { const pauseText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">PAUSE</h2><div class="flex flex-col gap-2"><button id="pause-save" class="button">Save</button><button id="pause-load" class="button">Load</button><button id="pause-help" class="button">Help</button><button id="pause-resume" class="button button-primary">Resume</button></div>`; showModal(pauseText, true); document.getElementById('pause-save').onclick=()=>{saveGame(); hideModal();}; document.getElementById('pause-load').onclick=()=>{loadGame(); hideModal();}; document.getElementById('pause-help').onclick=showHelpMenu; document.getElementById('pause-resume').onclick=hideModal; }
     function showGlossary() { const glossaryText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">GLOSSARY</h2>...<button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(glossaryText, true); }
     function showTutorialGuide() { const guideText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">TUTORIAL GUIDE</h2>...<button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(guideText, true); }
@@ -815,8 +937,8 @@
             { title: "Navigate Again", instruction: "Now let's find a use for that power cell. Go back to the Lobby ('go south'), then head to the Laboratory ('go west').", validators: [{cmd: 'go south', done: false}, {cmd: 'go west', done: false}], multiStep: true },
             { title: "Use Items", instruction: "The terminal here is dead. Let's fix that. Type 'use power cell' to restore power.", validator: (input) => input.toLowerCase() === 'use power cell' },
             { title: "Re-examine", instruction: "The terminal is on now. Let's see what it says. Type 'examine terminal'.", validator: (input) => input.toLowerCase().includes('examine') && input.toLowerCase().includes('terminal')},
-            { title: "Converse with SYNAPSE", instruction: "Now for the most important part. Talk to the AI. Type 'who are you?'.", validator: (input) => input.toLowerCase().includes('who are you') },
-            { title: "Deeper Conversation", instruction: "You can ask follow-up questions. Use the button or type 'What happened to the staff?'.", validator: (input) => input.toLowerCase().includes('what happened to the staff') },
+            { title: "Converse with SYNAPSE", instruction: "Now for the most important part. Talk to the AI. Type 'who are you?' or click the button.", validator: (input) => input.toLowerCase().includes('who are you') },
+            { title: "Deeper Conversation", instruction: "You can ask follow-up questions. Click 'Lonely?' or type it. Then try '[Go back]'.", validator: (input) => input.toLowerCase().includes('lonely') || input.toLowerCase().includes('go back') },
             { title: "Getting Help", instruction: "This covers the basics. For a full list of commands at any time, type 'help'. Try it now.", validator: (input) => input.toLowerCase() === 'help' },
         ];
 
@@ -835,6 +957,7 @@
                 }
                 if (input.toLowerCase() === 'skip') {
                     await typeWriter(UI.gameOutput, "Step skipped.", '#ffdb58');
+                    await processPlayerInput(step.validator.toString()); // Fake a correct input to advance state
                     break; 
                 }
 
@@ -865,7 +988,7 @@
                     incorrectAttempts++;
                     await typeWriter(UI.gameOutput, "That's not quite right. Please try again.", '#ff474c');
                     if (incorrectAttempts > 1) {
-                         const hint = step.multiStep ? step.validators.find(v => !v.done).cmd : step.instruction.match(/'(.*?)'/)[1];
+                         const hint = step.multiStep ? step.validators.find(v => !v.done).cmd : step.instruction.match(/'(.*?)'/)?.[1] || "the suggested command";
                          if(hint) await typeWriter(UI.gameOutput, `Hint: Try typing '${hint}'`, '#ffdb58');
                     }
                 }
@@ -1151,7 +1274,7 @@
         });
     });
 
-    // Dummy function for Gemini API call
+    // Dummy function to simulate a call to a generative AI for dynamic content.
     async function callGemini(prompt, loadingMessage) {
         await typeWriter(UI.gameOutput, `[${loadingMessage}]`, '#cccccc');
         return new Promise(resolve => {
@@ -1167,7 +1290,7 @@
         });
     }
 
-    // Dummy function for sound
+    // Dummy function for sound effects using Tone.js
     function playSanitySound() {
         if(audioInitialized && synth) {
             try {
