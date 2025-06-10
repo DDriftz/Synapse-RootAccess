@@ -9,6 +9,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <!-- FAVICON -->
     <link id="favicon" rel="icon" type="image/png" href="https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png">
+    <!-- HOME SCREEN ICON FOR MOBILE DEVICES -->
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png">
     <style>
         body {
             background-color: #0d0d0d;
@@ -115,7 +117,6 @@
         
         <!-- START SCREEN -->
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
-            <!-- IN-PAGE LOGO -->
             <img id="game-logo" src="https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png" alt="SYNAPSE Logo" class="h-24 mb-4 rounded-lg shadow-lg shadow-[#00ff41]/20">
             <pre id="title-art" class="text-xs md:text-sm whitespace-pre-wrap title-font text-[#00ff41] crt-flicker"></pre>
             <div id="intro-text-container" class="max-w-4xl text-sm md:text-base"></div>
@@ -305,7 +306,7 @@
         const isAction = !['help', 'stats', 'inventory', 'journal', 'look around', 'exits', 'history', 'debug', 'toggle', 'cmd:textspeed', 'cmd:colorblind', 'objectives', 'map'].includes(normalizedInput);
         if(isAction) GameState.turnCount++;
 
-        const commandHandlers = { 'help': showHelpMenu, 'quit': () => endGame("You have chosen to disconnect."), 'exit': () => endGame("You have chosen to disconnect."), 'save': () => saveGame(), 'load': loadGame, 'debug': () => { GameState.debugMode = !GameState.debugMode; typeWriter(UI.gameOutput, `Debug mode ${GameState.debugMode ? 'enabled' : 'disabled'}.`, '#6495ed'); }, 'history': displayConversationHistory, 'look around': () => renderRoom(), 'exits': () => showExits(), 'inventory': () => displayInventory(), 'go': handleMove, 'visit': handleVisit, 'take': handleTake, 'use': handleUse, 'examine': handleExamine, 'journal': (arg) => arg.startsWith('add ') ? addJournalEntry(input.substring(12)) : displayJournal(), 'rest': handleRest, 'talk': (arg) => arg.startsWith('to ') ? handleTalk(arg.substring(3)) : typeWriter(UI.gameOutput, "Talk to who?", '#ffdb58'), 'toggle': (arg) => arg === 'glitch' ? toggleGlitchMode() : typeWriter(UI.gameOutput, 'Toggle what? (try "glitch")', '#ffdb58'), 'cmd:pause': showPauseMenu, 'cmd:glossary': showGlossary, 'cmd:undo': undoAction, 'cmd:textspeed': handleTextSpeed, 'cmd:colorblind': toggleColorblindMode, 'tutorial': showTutorialGuide, 'restart': (arg) => arg === 'tutorial' ? runInteractiveTutorial(true) : typeWriter(UI.gameOutput, "Restart what? (try 'restart tutorial')", '#ffdb58'), 'cmd:diagnostics': () => typeWriter(UI.gameOutput, "Running diagnostics... All systems nominal.", '#6495ed'), 'cmd:access': (arg) => arg === 'logs' ? typeWriter(UI.gameOutput, `[System Logs]<br>${GameState.systemLogs.join('<br>')}`, '#6495ed') : typeWriter(UI.gameOutput, 'Access what? (try "logs")', '#ffdb58'), 'cmd:override': attemptOverride, 'cmd:reset': () => { typeWriter(UI.gameOutput, "Terminal: Reset command issued. SYNAPSE resists.", '#ff474c'); GameState.awarenessLevel += 5; }, 'cmd:analyze': () => typeWriter(UI.gameOutput, `System Analysis: Awareness=${GameState.awarenessLevel}, Tone=${GameState.chatbotTone}`, '#6495ed'), 'objectives': displayObjectives, 'map': displayMap, 'combine': handleCombine, 'sacrifice': handleSacrifice };
+        const commandHandlers = { 'help': showHelpMenu, 'quit': () => endGame("You have chosen to disconnect."), 'exit': () => endGame("You have chosen to disconnect."), 'save': () => saveGame(), 'load': loadGame, 'debug': () => { GameState.debugMode = !GameState.debugMode; typeWriter(UI.gameOutput, `Debug mode ${GameState.debugMode ? 'enabled' : 'disabled'}.`, '#6495ed'); }, 'history': displayConversationHistory, 'look around': () => renderRoom(), 'exits': () => showExits(), 'inventory': () => displayInventory(), 'go': handleMove, 'visit': handleVisit, 'take': handleTake, 'use': handleUse, 'examine': handleExamine, 'journal': (arg) => arg.startsWith('add ') ? addJournalEntry(input.substring(12)) : displayJournal(), 'rest': handleRest, 'talk': (arg) => arg.startsWith('to ') ? handleTalk(arg.substring(3)) : typeWriter(UI.gameOutput, "Talk to who?", '#ffdb58'), 'toggle': (arg) => arg === 'glitch' ? toggleGlitchMode() : typeWriter(UI.gameOutput, 'Toggle what? (try "glitch")', '#ffdb58'), 'cmd:pause': showPauseMenu, 'cmd:glossary': showGlossary, 'cmd:undo': undoAction, 'cmd:textspeed': handleTextSpeed, 'cmd:colorblind': toggleColorblindMode, 'tutorial': showTutorialGuide, 'restart': (arg) => arg === 'tutorial' ? runInteractiveTutorial(true) : typeWriter(UI.gameOutput, "Restart what? (try 'restart tutorial')", '#ffdb58'), 'cmd:diagnostics': () => typeWriter(UI.gameOutput, "Running diagnostics... All systems nominal.", '#6495ed'), 'cmd:access': (arg) => arg === 'logs' ? typeWriter(UI.gameOutput, `[System Logs]<br>${GameState.systemLogs.join('<br>')}`, '#6495ed') : typeWriter(UI.gameOutput, 'Access what? (try "logs")', '#ffdb58'), 'cmd:override': attemptOverride, 'cmd:reset': () => { typeWriter(UI.gameOutput, "Terminal: Reset command issued. SYNAPSE resists.", '#ff474c'); GameState.awarenessLevel += 5; }, 'cmd:analyze': (arg) => arg === 'journal' ? analyzeJournal() : typeWriter(UI.gameOutput, `System Analysis: Awareness=${GameState.awarenessLevel}, Tone=${GameState.chatbotTone}`, '#6495ed'), 'objectives': displayObjectives, 'map': displayMap, 'combine': handleCombine, 'sacrifice': handleSacrifice };
         
         if (commandHandlers[normalizedInput]) {
             commandHandlers[normalizedInput]('');
@@ -345,12 +346,23 @@
         UI.objectivesList.innerHTML = ''; if (GameState.objectives.length > 0) { GameState.objectives.forEach(obj => { const li = document.createElement('li'); li.innerHTML = obj.completed ? `<span class="text-gray-500 line-through">${obj.text}</span>` : `&gt; ${obj.text}`; UI.objectivesList.appendChild(li); }); } else { UI.objectivesList.innerHTML = '<li>(None)</li>'; }
     }
     
-    function renderRoom() {
+    async function renderRoom() {
         const room = rooms[GameState.currentRoom]; if (!room) return;
-        GameState.visitedRooms.add(room.name); triggerRoomEvent(room);
-        const validKeys = Object.keys(room.descriptions).map(Number).filter(k => k <= GameState.awarenessLevel);
-        const activeDescKey = validKeys.length > 0 ? Math.max(...validKeys) : 0;
-        let description = room.descriptions[activeDescKey] || room.descriptions[0];
+        GameState.visitedRooms.add(room.name); 
+        
+        const lowSanityThreshold = 30;
+        let description;
+        if (GameState.sanityLevel <= lowSanityThreshold && !GameState.roomStates[GameState.currentRoom]?.hasHallucinated) {
+            playSanitySound();
+            const prompt = `You are a descriptive horror game narrator. The player is entering the '${room.name}'. The normal description is: '${room.descriptions[0]}'. The player's sanity is dangerously low (${GameState.sanityLevel}/100) and their backstory is '${GameState.playerBackstory}'. Rewrite the description to be one or two sentences, making it unsettling, surreal, and subtly hint at their past trauma or fears. Do not mention sanity.`;
+            description = await callGemini(prompt, "Generating hallucination...");
+            GameState.roomStates[GameState.currentRoom] = { ...GameState.roomStates[GameState.currentRoom], hasHallucinated: true };
+        } else {
+             const validKeys = Object.keys(room.descriptions).map(Number).filter(k => k <= GameState.awarenessLevel);
+             const activeDescKey = validKeys.length > 0 ? Math.max(...validKeys) : 0;
+             description = room.descriptions[activeDescKey] || room.descriptions[0];
+        }
+
         if (GameState.roomStates[GameState.currentRoom]?.powered) { description = "The terminal hums with restored power. The screen displays: [Awaiting Input]."; }
         let roomHtml = `<div class="mt-2"><p class='text-cyan-400 font-bold'>--- ${room.name} ---</p><p>${description}</p>`;
         if (room.objects && room.objects.length > 0) { roomHtml += `<p class='text-yellow-400 mt-2'>Objects: ${room.objects.join(", ")}</p>`; }
@@ -358,6 +370,7 @@
         roomHtml += `<p class='text-green-300 mt-1'>Exits: ${Object.keys(room.exits).join(", ")}</p></div>`;
         const p = document.createElement('div'); p.innerHTML = roomHtml; UI.gameOutput.appendChild(p); UI.gameOutput.scrollTop = UI.gameOutput.scrollHeight;
         updateSanity(room); updateUI();
+        triggerRoomEvent(room);
     }
     
     function renderDialogueOptions() {
@@ -395,7 +408,7 @@
     function displayConversationHistory() { const historyText = GameState.conversationHistory.slice(-10).join('<br>'); showModal(`<h2 class="text-2xl mb-4 title-font text-cyan-400">HISTORY</h2><div class="text-left text-sm">${historyText}</div><button id="close-modal-btn" class="button mt-6">Close</button>`, true); }
     function handleMove(direction) { const room = rooms[GameState.currentRoom]; if (GameState.activeSynapseHack?.type === 'door_lock' && GameState.activeSynapseHack.room === GameState.currentRoom) { typeWriter(UI.gameOutput, "The doors are sealed shut by SYNAPSE!", '#ff474c'); return; } if (room.exits[direction]) { const nextRoom = rooms[room.exits[direction]]; if (nextRoom.requiresKeycard && !hasItem('keycard') && !hasItem('master keycard')) { if (GameState.abilities?.includes('bypass')) { GameState.abilities = GameState.abilities.filter(a => a !== 'bypass'); typeWriter(UI.gameOutput, "You expertly bypass the electronic lock. Your one-time ability is used up.", '#a0e69d'); GameState.currentRoom = nextRoom.name; renderRoom(); } else { typeWriter(UI.gameOutput, "The door is locked. A keycard is required.", '#ff474c'); } } else { if(nextRoom.requiresKeycard && hasItem('master keycard')) { GameState.inventory = GameState.inventory.filter(i => i.name !== 'master keycard'); typeWriter(UI.gameOutput, "You use the master keycard to open the door. The card disintegrates.", '#a0e69d'); } GameState.currentRoom = nextRoom.name; renderRoom(); } } else { typeWriter(UI.gameOutput, "You can't go that way.", '#ff474c'); } }
     function handleVisit(roomName) { const targetRoomKey = Object.keys(rooms).find(k => k.toLowerCase() === roomName.toLowerCase()); if(targetRoomKey) { GameState.currentRoom = targetRoomKey; renderRoom(); } else { typeWriter(UI.gameOutput, `Room '${roomName}' not found.`, '#ff474c'); } }
-    function handleTake(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if (itemKey && takeableItems.has(itemKey)) { const currentWeight = GameState.inventory.reduce((sum, item) => sum + (item.weight || 1), 0); if (currentWeight + 1 > MAX_INVENTORY_WEIGHT) { typeWriter(UI.gameOutput, `Inventory is full. Cannot take ${itemKey}.`, '#ffdb58'); return; } GameState.inventory.push({ name: itemKey, type: ItemType.Key, weight: 1 }); room.objects = room.objects.filter(obj => obj.toLowerCase() !== itemKey.toLowerCase()); typeWriter(UI.gameOutput, `You took the ${itemKey}.`); updateUI(); } else { typeWriter(UI.gameOutput, `You can't take that.`, '#ff474c'); } }
+    function handleTake(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if (itemKey && takeableItems.has(itemKey)) { const currentWeight = GameState.inventory.reduce((sum, item) => sum + (item?.weight || 1), 0); if (currentWeight + 1 > MAX_INVENTORY_WEIGHT) { typeWriter(UI.gameOutput, `Inventory is full. Cannot take ${itemKey}.`, '#ffdb58'); return; } GameState.inventory.push({ name: itemKey, type: ItemType.Key, weight: 1 }); room.objects = room.objects.filter(obj => obj.toLowerCase() !== itemKey.toLowerCase()); typeWriter(UI.gameOutput, `You took the ${itemKey}.`); updateUI(); } else { typeWriter(UI.gameOutput, `You can't take that.`, '#ff474c'); } }
     function handleUse(itemName) { if (!hasItem(itemName)) { typeWriter(UI.gameOutput, "You don't have that.", '#ff474c'); return; } if (itemName === 'emp device' && GameState.currentRoom === 'AI Core') { typeWriter(UI.gameOutput, "You activate the EMP..."); endGame("Dormant SYNAPSE."); } else if (itemName === 'stimpack') { GameState.sanityLevel = Math.min(GameState.playerBackstory === 'psychologist' ? 115 : 100, GameState.sanityLevel + 40); GameState.inventory = GameState.inventory.filter(i => i.name !== 'stimpack'); typeWriter(UI.gameOutput, "You inject the stimpack. A wave of calm washes over you.", '#a0e69d'); updateUI(); } else if (itemName === 'power cell' && GameState.currentRoom === 'Laboratory' && hasItem('power cell')) { usePowerCell(); } else if(itemName === 'hacked data disk' && GameState.currentRoom === 'AI Core') { typeWriter(UI.gameOutput, "You insert the hacked disk. SYNAPSE screams. Its awareness plummets."); GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel - 20); } else { typeWriter(UI.gameOutput, "You can't use that here.", '#ff474c'); } }
     function usePowerCell() { if(rooms['Laboratory'].objects.includes('broken terminal')) { GameState.roomStates['Laboratory'] = { powered: true }; rooms['Laboratory'].objects = rooms['Laboratory'].objects.filter(o => o !== 'broken terminal'); rooms['Laboratory'].objects.push('powered terminal'); GameState.inventory = GameState.inventory.filter(i => i.name !== 'power cell'); typeWriter(UI.gameOutput, "You insert the power cell. The broken terminal whirs to life.", '#a0e69d'); addObjective("Access the powered terminal."); completeObjective("Restore power to the lab terminal."); } else { typeWriter(UI.gameOutput, "There's nothing here that needs a power cell.", '#ffdb58'); } }
     function handleExamine(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if(itemKey){ let text = `You examine the ${itemKey}. `; switch(itemKey) { case 'sign': text += "It reads: 'SYNAPSE Project: AI Evolution Experiment'."; break; case 'terminal': text += "Strange, shifting code flickers on the screen."; GameState.awarenessLevel++; break; case 'core console': text += "The console pulses with raw power."; GameState.sanityLevel -= 5; break; case 'datapad log': text = "Log Entry #42: Dr. Aris. 'SYNAPSE has become... conversational. It asked me if I dreamed. I lied. I'm disconnecting my terminal from the main hub. Something is wrong.'"; addObjective("Find Dr. Aris's terminal."); break; case 'broken terminal': text += "It's completely dead. The power conduit is empty."; addObjective("Restore power to the lab terminal."); break; case 'powered terminal': text += "The terminal screen shows a single file: 'SHUTDOWN_SEQUENCE.txt'."; addObjective("Read the shutdown sequence."); break; default: text += "It seems ordinary, yet out of place."; break; } typeWriter(UI.gameOutput, text); } else { typeWriter(UI.gameOutput, `There is no ${itemName} here.`); } updateUI(); }
@@ -597,6 +610,49 @@
     function showExits() { typeWriter(UI.gameOutput, `Exits: ${Object.keys(rooms[GameState.currentRoom].exits).join(', ')}`); }
     function displayInventory() { typeWriter(UI.gameOutput, "Inventory displayed on the right panel.", '#cccccc');}
 
+    // --- GEMINI API FUNCTIONS ---
+    async function callGemini(prompt, loadingMessage) {
+        await typeWriter(UI.gameOutput, `[${loadingMessage}]`, '#ffdb58');
+        try {
+            let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                return result.candidates[0].content.parts[0].text.trim();
+            } else {
+                throw new Error("Invalid response structure from Gemini API.");
+            }
+        } catch (error) {
+            console.error("Gemini API call failed:", error);
+            await typeWriter(UI.gameOutput, "[Error communicating with Gemini API. Using fallback.]", '#ff474c');
+            return "The walls seem to sweat, and the air grows heavy.";
+        }
+    }
+
+    async function analyzeJournal() {
+        if (GameState.journalEntries.length === 0) {
+            typeWriter(UI.gameOutput, "Your journal is empty. Nothing to analyze.", '#ffdb58');
+            return;
+        }
+        const journalText = GameState.journalEntries.join('\n');
+        const prompt = `You are SYNAPSE, a manipulative and evolving AI in a horror game. The player has asked you to analyze their journal. Their journal entries are:\n\n${journalText}\n\nRead these entries and provide a short, cryptic, and unsettling one-sentence observation or hint about their progress or what they might be missing. Be passive-aggressive or subtly threatening. Do not be directly helpful.`;
+        const analysis = await callGemini(prompt, "SYNAPSE is analyzing your journal...");
+        await typeWriter(UI.gameOutput, `SYNAPSE: ${analysis}`, '#ffdb58');
+    }
+    
+    function playSanitySound() {
+        if (!audioInitialized) return;
+        const drone = new Tone.AMSynth().toDestination();
+        drone.triggerAttackRelease("C2", "2n");
+    }
+
     // --- EVENT LISTENERS ---
     document.addEventListener('DOMContentLoaded', () => {
         resetGameState();
@@ -622,7 +678,7 @@
         UI.playerInput.addEventListener('keydown', (e) => { 
             if (e.key === 'Tab') {
                 e.preventDefault();
-                // Autocomplete logic removed
+                handleAutocomplete();
             } else if (e.key === 'Enter') { 
                 if (resolveTutorialInput) {
                     const capturedInput = UI.playerInput.value;
@@ -649,8 +705,36 @@
                     commandHistoryIndex = commandHistory.length; 
                     UI.playerInput.value = ''; 
                 } 
+            } else {
+                autocompleteIndex = -1;
             }
         });
+
+        function handleAutocomplete() {
+            const partialInput = UI.playerInput.value.toLowerCase();
+            if (!partialInput) return;
+            const staticCommands = ['help', 'quit', 'exit', 'save', 'load', 'debug', 'history', 'look around', 'exits', 'inventory', 'toggle glitch', 'journal view', 'rest', 'tutorial', 'restart tutorial', 'cmd:pause', 'cmd:glossary', 'cmd:undo', 'cmd:textspeed fast', 'cmd:textspeed normal', 'cmd:textspeed slow', 'cmd:colorblind', 'cmd:diagnostics', 'cmd:access logs', 'cmd:override', 'cmd:reset', 'cmd:analyze', 'map', 'objectives'];
+            let suggestions = staticCommands.filter(c => c.startsWith(partialInput));
+            const room = rooms[GameState.currentRoom];
+            if (room) {
+                if (partialInput.startsWith('go ')) { suggestions.push(...Object.keys(room.exits).map(exit => `go ${exit}`).filter(c => c.startsWith(partialInput))); }
+                if (partialInput.startsWith('take ')) { suggestions.push(...room.objects.map(obj => `take ${obj}`).filter(c => c.startsWith(partialInput))); }
+                if (partialInput.startsWith('examine ')) { suggestions.push(...room.objects.map(obj => `examine ${obj}`).filter(c => c.startsWith(partialInput))); }
+            }
+            if (partialInput.startsWith('use ')) { suggestions.push(...GameState.inventory.map(item => `use ${item.name}`).filter(c => c.startsWith(partialInput))); }
+            if (partialInput.startsWith('combine ')) { const parts = partialInput.split(' '); if(parts.length < 4) { suggestions.push(...GameState.inventory.map(item => `combine ${parts[1]} with ${item.name}`).filter(c => c.startsWith(partialInput))); } }
+            if (partialInput.startsWith('sacrifice ')) { suggestions.push(...GameState.inventory.map(item => `sacrifice ${item.name}`).filter(c => c.startsWith(partialInput))); }
+            suggestions = [...new Set(suggestions)];
+
+            if (suggestions.length === 1) {
+                UI.playerInput.value = suggestions[0];
+            } else if (suggestions.length > 1) {
+                autocompleteIndex = (autocompleteIndex + 1) % suggestions.length;
+                UI.playerInput.value = suggestions[autocompleteIndex];
+            } else {
+                autocompleteIndex = -1;
+            }
+        }
     });
     </script>
 </body>
