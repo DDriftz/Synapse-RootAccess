@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=VT323&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
-    <!-- FAVICON: Paste your Base64 string here -->
-    <link id="favicon" rel="icon" type="image/png" href="https://github.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/blob/main/Icon.png">
+    <!-- FAVICON -->
+    <link id="favicon" rel="icon" type="image/png" href="https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png">
     <style>
         body {
             background-color: #0d0d0d;
@@ -115,8 +115,8 @@
         
         <!-- START SCREEN -->
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
-            <!-- IN-PAGE LOGO: Paste your Base64 string here -->
-            <img id="game-logo" src="https://github.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/blob/main/Icon.png" alt="SYNAPSE Logo" class="h-24 mb-4 rounded-lg shadow-lg shadow-[#00ff41]/20">
+            <!-- IN-PAGE LOGO -->
+            <img id="game-logo" src="https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png" alt="SYNAPSE Logo" class="h-24 mb-4 rounded-lg shadow-lg shadow-[#00ff41]/20">
             <pre id="title-art" class="text-xs md:text-sm whitespace-pre-wrap title-font text-[#00ff41] crt-flicker"></pre>
             <div id="intro-text-container" class="max-w-4xl text-sm md:text-base"></div>
              <div id="start-options" class="mt-6">
@@ -626,10 +626,10 @@
             } else if (e.key === 'Enter') { 
                 if (resolveTutorialInput) {
                     const capturedInput = UI.playerInput.value;
-                    if (capturedInput) { // only resolve if there's input, prevents race conditions
+                    if (capturedInput) {
+                        UI.playerInput.value = '';
                         resolveTutorialInput(capturedInput);
                         resolveTutorialInput = null;
-                        UI.playerInput.value = '';
                     }
                 } else {
                     processPlayerInput(UI.playerInput.value); 
