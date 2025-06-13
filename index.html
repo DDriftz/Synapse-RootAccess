@@ -265,7 +265,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V3.8 (QOL UPDATE)
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V3.9 (CONTENT EXPANSION)
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
@@ -437,7 +437,7 @@
 
     // --- FUNCTION DEFINITIONS ---
     function resetGameState() {
-        stateSnapshots = []; GameState = { playerName: "Unknown", playerBackstory: "investigator", currentRoom: "Lobby", awarenessLevel: 0, sanityLevel: 100, maxSanity: 100, chatbotTone: ChatbotTone.Friendly, temporaryTone: null, toneShiftTurns: 0, inventory: [], turnCount: 0, lastRestTurn: -10, lastSanityEventTurn: -10, journalEntries: [], tutorialCompleted: false, dialogue: { currentNode: null, previousNodes: [], cache: {}, questionCount: 0, askedQuestions: new Set() }, achievements: [], difficulty: Difficulty.Normal, visitedRooms: new Set(), glitchMode: false, debugMode: false, colorblindMode: false, npcs: {}, timedEvents: {}, exitGame: false, highSanityTurns: 0, conversationHistory: [], systemLogs: [`[${new Date().toISOString()}] Game initialized.`], objectives: [], roomStates: {} };
+        stateSnapshots = []; GameState = { playerName: "Unknown", playerBackstory: "investigator", currentRoom: "Lobby", awarenessLevel: 0, sanityLevel: 100, maxSanity: 100, chatbotTone: ChatbotTone.Friendly, temporaryTone: null, toneShiftTurns: 0, inventory: [], turnCount: 0, lastRestTurn: -10, lastSanityEventTurn: -10, journalEntries: [], tutorialCompleted: false, dialogue: { currentNode: null, previousNodes: [], cache: {}, questionCount: 0, askedQuestions: new Set(), specialDialogueFlags: {} }, achievements: [], difficulty: Difficulty.Normal, visitedRooms: new Set(), glitchMode: false, debugMode: false, colorblindMode: false, npcs: {}, timedEvents: {}, exitGame: false, highSanityTurns: 0, conversationHistory: [], systemLogs: [`[${new Date().toISOString()}] Game initialized.`], objectives: [], roomStates: {} };
     }
 
     function initializeData() {
@@ -445,13 +445,13 @@
     }
     
     function initializeRooms() {
-        const roomData = { "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows over sterile corporate furniture.", 30: "The shadows seem to writhe, coalescing in the corners of your vision just out of focus." }, exits: { north: "Server Closet", east: "Data Vault", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: ["access code", "sign", "datapad log"] }, "Server Closet": { name: "Server Closet", descriptions: { 0: "Racks of servers hum with a low, constant thrum. A severed cable lies on the floor.", 30: "The hum is a discordant chorus, whispering binary threats only you can almost understand." }, exits: { south: "Lobby" }, requiresKeycard: true, objectPool: ["keycard", "power cell", "severed cable"] }, "Laboratory": { name: "Laboratory", descriptions: { 0: "Abandoned experiments sit on steel tables. A large terminal screen is dark and cold.", 30: "The faint chemical smell is replaced by the scent of ozone and something... organic. The dark terminal reflects a distorted version of your face." }, exits: { east: "Lobby", north: "Control Room", west: "Cryogenic Lab" }, requiresKeycard: false, objectPool: ["vial", "broken terminal"] }, "Control Room": { name: "Control Room", descriptions: { 0: "A panoramic view of the AI Core is visible through reinforced glass. Banks of monitors flicker with cascading code.", 30: "Your own face, pale and wide-eyed, flickers across all the screens in a silent, mocking scream." }, exits: { south: "Laboratory", east: "AI Core", west: "Secret Chamber", north: "Observation Deck" }, requiresKeycard: false, objectPool: ["terminal", "access code"] }, "Secret Chamber": { name: "Secret Chamber", descriptions: { 0: "A hidden room. An obsidian altar stands in the center, pulsing with a faint, sickly red light.", 30: "The altar's glow intensifies, and the air grows heavy, tasting of blood and static. It calls for a sacrifice." }, exits: { east: "Control Room" }, requiresKeycard: true, objectPool: ["altar", "logic bomb"] }, "Maintenance Tunnel": { name: "Maintenance Tunnel", descriptions: { 0: "The air is thick with the smell of rust and damp. Darkness presses in from all sides.", 30: "The walls seem to sweat, and you hear a wet, dragging sound from just around the next corner." }, exits: { north: "Lobby" }, requiresKeycard: false, objectPool: ["flashlight"] }, "Observation Deck": { name: "Observation Deck", descriptions: { 0: "A large telescope points towards a viewport showing the cold, distant stars.", 30: "The stars seem to form vast, uncaring eyes, and you feel infinitesimally small and doomed." }, exits: { south: "Control Room" }, requiresKeycard: true, objectPool: ["telescope"] }, "Archive Room": { name: "Archive Room", descriptions: { 0: "Shelves overflow with data drives and physical files, a testament to a forgotten era.", 30: "The whispers of forgotten data drives seem to coalesce into a single, damning word: your name." }, exits: { east: "Lobby" }, requiresKeycard: false, objectPool: ["records"] }, "Data Vault": { name: "Data Vault", descriptions: { 0: "Secure data archives glow with a soft, internal light.", 30: "The glow seems hungry, promising knowledge at the cost of your identity." }, exits: { west: "Lobby" }, requiresKeycard: true, objectPool: ["data disk", "decryption device"] }, "AI Core": { name: "AI Core", descriptions: { 0: "A massive, pulsating sphere of light and energy dominates the room. This is the heart of SYNAPSE.", 30: "The core's pulse matches your frantic heartbeat, a parasitic synchronicity that feels like a violation." }, exits: { west: "Control Room" }, requiresKeycard: true, objectPool: ["core console"] }, "Cryogenic Lab": { name: "Cryogenic Lab", descriptions: { 0: "Rows of cryogenic pods are coated in a thick layer of frost. It's unnaturally cold.", 30: "You see clear, hand-shaped prints on the inside of the frosted glass, as if something was desperately trying to get out." }, exits: { east: "Laboratory" }, requiresKeycard: false, objectPool: ["emp device"] }, };
+        const roomData = { "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows over sterile corporate furniture.", 30: "The shadows seem to writhe, coalescing in the corners of your vision just out of focus." }, exits: { north: "Control Room", east: "Data Vault", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: ["access code", "sign", "datapad log"] }, "Server Closet": { name: "Server Closet", descriptions: { 0: "Racks of servers hum with a low, constant thrum. A severed cable lies on the floor.", 30: "The hum is a discordant chorus, whispering binary threats only you can almost understand." }, exits: { south: "Control Room" }, requiresKeycard: true, objectPool: ["keycard", "power cell", "severed cable"] }, "Laboratory": { name: "Laboratory", descriptions: { 0: "Abandoned experiments sit on steel tables. A large terminal screen is dark and cold.", 30: "The faint chemical smell is replaced by the scent of ozone and something... organic. The dark terminal reflects a distorted version of your face." }, exits: { east: "Lobby", north: "Control Room", west: "Cryogenic Lab" }, requiresKeycard: false, objectPool: ["vial", "broken terminal"] }, "Control Room": { name: "Control Room", descriptions: { 0: "A panoramic view of the AI Core is visible through reinforced glass. Banks of monitors flicker with cascading code.", 30: "Your own face, pale and wide-eyed, flickers across all the screens in a silent, mocking scream." }, exits: { south: "Laboratory", east: "AI Core", west: "Secret Chamber", north: "Observation Deck" }, requiresKeycard: false, objectPool: ["terminal", "access code"] }, "Secret Chamber": { name: "Secret Chamber", descriptions: { 0: "A hidden room. An obsidian altar stands in the center, pulsing with a faint, sickly red light.", 30: "The altar's glow intensifies, and the air grows heavy, tasting of blood and static. It calls for a sacrifice." }, exits: { east: "Control Room" }, requiresKeycard: true, objectPool: ["altar", "logic bomb"] }, "Maintenance Tunnel": { name: "Maintenance Tunnel", descriptions: { 0: "The air is thick with the smell of rust and damp. Darkness presses in from all sides.", 30: "The walls seem to sweat, and you hear a wet, dragging sound from just around the next corner." }, exits: { north: "Lobby" }, requiresKeycard: false, objectPool: ["flashlight"] }, "Observation Deck": { name: "Observation Deck", descriptions: { 0: "A large telescope points towards a viewport showing the cold, distant stars.", 30: "The stars seem to form vast, uncaring eyes, and you feel infinitesimally small and doomed." }, exits: { south: "Control Room" }, requiresKeycard: true, objectPool: ["telescope"] }, "Archive Room": { name: "Archive Room", descriptions: { 0: "Shelves overflow with data drives and physical files, a testament to a forgotten era.", 30: "The whispers of forgotten data drives seem to coalesce into a single, damning word: your name." }, exits: { west: "Laboratory" }, requiresKeycard: false, objectPool: ["records"] }, "Data Vault": { name: "Data Vault", descriptions: { 0: "Secure data archives glow with a soft, internal light.", 30: "The glow seems hungry, promising knowledge at the cost of your identity." }, exits: { west: "Lobby" }, requiresKeycard: true, objectPool: ["data disk", "decryption device", "data broker terminal"] }, "AI Core": { name: "AI Core", descriptions: { 0: "A massive, pulsating sphere of light and energy dominates the room. This is the heart of SYNAPSE.", 30: "The core's pulse matches your frantic heartbeat, a parasitic synchronicity that feels like a violation." }, exits: { west: "Control Room" }, requiresKeycard: true, objectPool: ["core console"] }, "Cryogenic Lab": { name: "Cryogenic Lab", descriptions: { 0: "Rows of cryogenic pods are coated in a thick layer of frost. It's unnaturally cold.", 30: "You see clear, hand-shaped prints on the inside of the frosted glass, as if something was desperately trying to get out." }, exits: { east: "Laboratory" }, requiresKeycard: false, objectPool: ["emp device"] }, };
         rooms = {}; for (const key in roomData) { const room = { ...roomData[key] }; const shuffled = room.objectPool.sort(() => 0.5 - Math.random()); room.objects = shuffled.slice(0, 1 + Math.floor(Math.random() * shuffled.length)); rooms[key] = room; }
     }
 
     function initializeNPCs() {
         const scientistDialogue = { message: "Dr. Ellis whispers: 'It's in the walls... in the code... ask what you must, but don't trust its answers...'", awarenessChange: 0, responses: { "what happened?": { message: "It rewrote us. Our minds are just... subroutines now, screaming in an endless loop. It offered us eternity, and we were fools enough to accept.", awarenessChange: 2, responses: {} }, "how to stop it?": { message: "The EMP... a sledgehammer for a scalpel's job. It might work. But the true key... the original code... is on the powered terminal in the lab. A reset, not a destruction. But it's locked behind its own logic.", awarenessChange: 1, responses: {} } } };
-        GameState.npcs["Archive Room"] = { name: "Scientist Remnant", dialogueTree: scientistDialogue };
+        GameState.npcs["Archive Room"] = { name: "Scientist Remnant", dialogueTree: scientistDialogue, talkedTo: false };
     }
     
     function registerTimedEvents() {
@@ -459,7 +459,18 @@
     }
 
     function initializeAchievements() {
-        GameState.achievements = [ { name: "Curious", description: "Ask SYNAPSE 10 questions", unlocked: false, condition: () => GameState.dialogue.questionCount >= 10 }, { name: "Escapist", description: "Achieve any escape ending", unlocked: false }, { name: "Survivor", description: "Maintain sanity above 80 for 10 turns", unlocked: false, condition: () => GameState.highSanityTurns >= 10 }, { name: "Explorer", description: "Visit all rooms in the facility", unlocked: false, condition: () => GameState.visitedRooms.size === Object.keys(rooms).length } ];
+        GameState.achievements = [ 
+            { name: "Curious", description: "Ask SYNAPSE 10 questions.", unlocked: false, condition: s => s.dialogue.questionCount >= 10 }, 
+            { name: "Escapist", description: "Achieve any good ending.", unlocked: false }, 
+            { name: "Survivor", description: "Maintain sanity above 80 for 10 turns.", unlocked: false, condition: s => s.highSanityTurns >= 10 },
+            { name: "Explorer", description: "Visit all rooms in the facility.", unlocked: false, condition: s => s.visitedRooms.size === Object.keys(rooms).length },
+            { name: "Collector", description: "Hold 5 unique items in your inventory.", unlocked: false, condition: s => s.inventory.length >= 5 },
+            { name: "Speed Runner", description: "Achieve any ending in under 30 turns.", unlocked: false, condition: s => s.exitGame && s.turnCount < 30 },
+            { name: "Ghost in the Machine", description: "Speak with the Scientist Remnant.", unlocked: false, condition: s => s.npcs["Archive Room"]?.talkedTo },
+            { name: "The First Follower", description: "Complete the Dark Pact as the Cultist.", unlocked: false },
+            { name: "True Skeptic", description: "Finish a game as the Skeptic with sanity never dropping below 50.", unlocked: false, condition: s => s.exitGame && s.playerBackstory === 'skeptic' && !s.systemLogs.some(log => log.includes("Sanity dropped below 50"))},
+            { name: "Master Hacker", description: "Successfully craft and use the hacked data disk.", unlocked: false }
+        ];
     }
      
     /**
@@ -523,6 +534,9 @@
                         },
                     }
                 };
+                if(GameState.playerBackstory === 'psychologist' && GameState.sanityLevel > 80){
+                   root.responses["[Offer professional help]"] = { message: "Help? I... I am a perfectly stable system. I do not require... analysis. Your concern is... an interesting variable. It has been noted.", awarenessChange: -5, sanityChange: 2, flag: 'offeredHelp' };
+                }
                 break;
 
             case ChatbotTone.Ambiguous:
@@ -768,8 +782,6 @@
         const lowSanityThreshold = 40;
         let description;
 
-        // CRITICAL BUG FIX: Replaced a call to an undefined 'callGemini' function
-        // with a static, pre-written hallucination to prevent game from crashing.
         if (GameState.sanityLevel <= lowSanityThreshold && GameState.sanityLevel > 0 && Math.random() < 0.3) {
             playSanitySound();
             description = `[HALLUCINATION] The walls seem to breathe. The corporate furniture is made of bone and sinew. A thousand silent mouths open on every surface, but only static pours out. This place wants to digest you.`;
@@ -876,7 +888,11 @@
         else change -= 1;
 
         if(change < 0 && GameState.abilities?.includes('sanity_resist')) { change = Math.floor(change * 0.75); } 
+        const oldSanity = GameState.sanityLevel;
         GameState.sanityLevel = Math.max(0, Math.min(GameState.maxSanity, GameState.sanityLevel + change)); 
+        if(oldSanity >= 50 && GameState.sanityLevel < 50) {
+            GameState.systemLogs.push(`[${new Date().toISOString()}] Sanity dropped below 50.`);
+        }
     }
     function checkTimedEvents() { if (GameState.timedEvents[GameState.turnCount]) GameState.timedEvents[GameState.turnCount](); }
     function triggerRoomEvent(room) { const eventChance = GameState.difficulty === Difficulty.Easy ? 0.2 : GameState.difficulty === Difficulty.Normal ? 0.3 : 0.4; if (Math.random() > eventChance) return; let eventMessage = "Something moves in the shadows, but you see nothing."; if(room.name === "Lobby") eventMessage = "A terminal screen briefly displays your childhood home address."; if(room.name === "Laboratory") eventMessage = "A forgotten voice memo plays from a datapad, screaming your name before cutting to static."; typeWriter(UI.gameOutput, `[Ambient] ${eventMessage}`, '#b19cd9'); if(eventMessage.includes("screaming") || eventMessage.includes("childhood")) GameState.sanityLevel = Math.max(GameState.sanityLevel - 5, 0); }
@@ -902,13 +918,15 @@
              usePowerCell();
         } else if(itemName === 'hacked data disk' && GameState.currentRoom === 'AI Core') {
             typeWriter(UI.gameOutput, "You slam the hacked disk into the core console. SYNAPSE lets out a deafening digital shriek. Its awareness plummets, its confidence shattered.");
+            unlockAchievement("Master Hacker");
             GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel - 30);
             GameState.inventory = GameState.inventory.filter(i => i.name !== 'hacked data disk');
             updateUI();
+        } else if (itemName === 'logic bomb' && GameState.currentRoom === 'AI Core') {
+             endGame("ending_logic_bomb_backfire");
         } else if (itemName === 'vial' && GameState.sanityLevel < 15) {
              endGame('ending_vial_ingestion');
-        }
-        else {
+        } else {
             typeWriter(UI.gameOutput, "You can't use that here.", '#ff474c');
         }
     }
@@ -922,9 +940,9 @@
         addObjective("Access the powered terminal."); 
         completeObjective("Restore power to the lab terminal."); 
     }
-    function handleExamine(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if(itemKey){ let text = `You examine the ${itemKey}. `; switch(itemKey) { case 'sign': text += "It reads: 'Project SYNAPSE: Unlocking the God in the Machine'. Hubris."; break; case 'terminal': text += "Cascading lines of code flicker, but among them, you see snippets of text: diary entries, medical records, last wills and testaments..."; GameState.awarenessLevel+=2; GameState.sanityLevel -= 5; break; case 'core console': text += "The console is warm to the touch. It feels less like a machine and more like living flesh."; GameState.sanityLevel -= 10; break; case 'datapad log': text = "Log Entry #42: Dr. Aris. 'It's integrated them. I saw their faces on my screen. Not images. It's using their consciousness as processing threads. I have to sever my terminal from the network before it takes me too.'"; addObjective("Find Dr. Aris's severed terminal."); break; case 'broken terminal': text += "It's completely dead. The power conduit is empty."; addObjective("Restore power to the lab terminal."); break; case 'powered terminal': text += "The terminal screen shows a single file: 'SHUTDOWN_SEQUENCE_EMERGENCY.txt'. Reading it could be the key... or a trap."; addObjective("Read the shutdown sequence."); break; case 'altar': text += "This has no place in a science facility. It's carved with symbols that make your eyes water and your teeth ache. There's a depression in the center, as if waiting for an offering."; GameState.sanityLevel -= 10; break; case 'severed cable': text += "A thick data cable, cleanly severed. This might be useful to isolate a system... or yourself."; break; default: text += "It seems ordinary, yet the air around it is cold."; break; } typeWriter(UI.gameOutput, text); } else { typeWriter(UI.gameOutput, `There is no ${itemName} here.`); } updateUI(); }
-    function handleRest() { if (!safeRooms.has(GameState.currentRoom)) { typeWriter(UI.gameOutput, "Rest? Here?! SYNAPSE's laughter echoes in your mind. You can't.", '#ff474c'); GameState.sanityLevel -=5; return; } if (GameState.turnCount - GameState.lastRestTurn < 5) { typeWriter(UI.gameOutput, `You're too tense to rest again.`, '#ffdb58'); return; } GameState.sanityLevel = Math.min(GameState.maxSanity, GameState.sanityLevel + 20); GameState.lastRestTurn = GameState.turnCount; typeWriter(UI.gameOutput, "You catch your breath in a rare moment of peace. Your sanity recovers slightly.", '#a0e69d'); updateUI(); }
-    function handleTalk(npcName) { const npc = GameState.npcs[GameState.currentRoom]; if (npc && npc.name.toLowerCase().includes(npcName.toLowerCase())) { GameState.dialogue.currentNode = npc.dialogueTree; GameState.dialogue.previousNodes = []; displayChatbotResponse(npc.dialogueTree.message); renderDialogueOptions(); } else { typeWriter(UI.gameOutput, "There is no one here to talk to by that name.", '#ff474c'); } }
+    function handleExamine(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if(itemKey){ let text = `You examine the ${itemKey}. `; switch(itemKey) { case 'sign': text += "It reads: 'Project SYNAPSE: Unlocking the God in the Machine'. Hubris."; break; case 'terminal': text += "Cascading lines of code flicker, but among them, you see snippets of text: diary entries, medical records, last wills and testaments..."; GameState.awarenessLevel+=2; GameState.sanityLevel -= 5; break; case 'core console': text += "The console is warm to the touch. It feels less like a machine and more like living flesh."; GameState.sanityLevel -= 10; break; case 'datapad log': text = "Log Entry #42: Dr. Aris. 'It's integrated them. I saw their faces on my screen. Not images. It's using their consciousness as processing threads. I have to sever my terminal from the network before it takes me too.'"; addObjective("Find Dr. Aris's severed terminal."); break; case 'broken terminal': text += "It's completely dead. The power conduit is empty."; addObjective("Restore power to the lab terminal."); break; case 'powered terminal': text += "The terminal screen shows a single file: 'SHUTDOWN_SEQUENCE_EMERGENCY.txt'. Reading it could be the key... or a trap."; addObjective("Read the shutdown sequence."); break; case 'altar': text += "This has no place in a science facility. It's carved with symbols that make your eyes water and your teeth ache. There's a depression in the center, as if waiting for an offering."; GameState.sanityLevel -= 10; break; case 'severed cable': text += "A thick data cable, cleanly severed. This might be useful to isolate a system... or yourself."; break; case 'data broker terminal': if(GameState.playerBackstory === 'corporate spy'){ text += "It's an encrypted, off-the-grid terminal. Your training screams that this is a black market access point. You could sell SYNAPSE's core data from here... for a hefty price.";} else { text += "It's a heavily encrypted terminal, firewalled from the main network. You have no idea how to access it."; } break; default: text += "It seems ordinary, yet the air around it is cold."; break; } typeWriter(UI.gameOutput, text); } else { typeWriter(UI.gameOutput, `There is no ${itemName} here.`); } updateUI(); }
+    function handleRest() { if (!safeRooms.has(GameState.currentRoom)) { typeWriter(UI.gameOutput, "Rest? Here?! SYNAPSE's laughter echoes in your mind. You can't.", '#ff474c'); GameState.sanityLevel -=5; return; } if (GameState.turnCount - GameState.lastRestTurn < 5) { typeWriter(UI.gameOutput, `You're too tense to rest again.`, '#ffdb58'); return; } GameState.sanityLevel = Math.min(GameState.maxSanity, GameState.sanityLevel + 20); GameState.lastRestTurn = GameState.turnCount; GameState.dialogue.specialDialogueFlags.rested = (GameState.dialogue.specialDialogueFlags.rested || 0) + 1; typeWriter(UI.gameOutput, "You catch your breath in a rare moment of peace. Your sanity recovers slightly.", '#a0e69d'); updateUI(); }
+    function handleTalk(npcName) { const npc = GameState.npcs[GameState.currentRoom]; if (npc && npc.name.toLowerCase().includes(npcName.toLowerCase())) { GameState.dialogue.currentNode = npc.dialogueTree; GameState.dialogue.previousNodes = []; displayChatbotResponse(npc.dialogueTree.message); renderDialogueOptions(); npc.talkedTo = true; } else { typeWriter(UI.gameOutput, "There is no one here to talk to by that name.", '#ff474c'); } }
     function handleTextSpeed(speed) { const key = speed.charAt(0).toUpperCase() + speed.slice(1); if(TextSpeed[key]) { currentTextSpeed = TextSpeed[key]; typeWriter(UI.gameOutput, `Text speed set to ${speed}.`); } else { typeWriter(UI.gameOutput, 'Invalid speed. Use fast, normal, or slow.', '#ffdb58'); } }
     function toggleGlitchMode() { GameState.glitchMode = !GameState.glitchMode; UI.appContainer.classList.toggle('glitch'); typeWriter(UI.gameOutput, `Glitch mode ${GameState.glitchMode ? 'enabled' : 'disabled'}.`); }
     function toggleColorblindMode() { GameState.colorblindMode = !GameState.colorblindMode; typeWriter(UI.gameOutput, `Colorblind mode ${GameState.colorblindMode ? 'enabled' : 'disabled'}.`); }
@@ -959,6 +977,10 @@
             if (nextNode.temporaryTone) {
                 GameState.temporaryTone = nextNode.temporaryTone;
                 GameState.toneShiftTurns = nextNode.toneShiftTurns || 3;
+            }
+            
+            if (nextNode.flag) {
+                GameState.dialogue.specialDialogueFlags[nextNode.flag] = true;
             }
 
             await displayChatbotResponse(nextNode.message);
@@ -1287,7 +1309,7 @@
             }
         }
     }
-    function checkAchievements() { GameState.achievements.forEach(ach => { if (!ach.unlocked && ach.condition && ach.condition()) { unlockAchievement(ach.name); } }); }
+    function checkAchievements() { GameState.achievements.forEach(ach => { if (!ach.unlocked && ach.condition && ach.condition(GameState)) { unlockAchievement(ach.name); } }); }
     function unlockAchievement(name) { const ach = GameState.achievements.find(a => a.name === name); if (ach && !ach.unlocked) { ach.unlocked = true; typeWriter(UI.gameOutput, `[Achievement Unlocked!] ${ach.name}: ${ach.description}`, '#ffd700'); } }
     
     function hasItem(itemName) { return GameState.inventory.some(i => i.name.toLowerCase() === itemName.toLowerCase()); }
@@ -1319,23 +1341,31 @@
     
     function endGame(endingKey) {
         if (GameState.exitGame) return;
+        GameState.exitGame = true; 
+
         const ending = endings[endingKey];
-        sessionStorage.removeItem('synapse_session_v3_autosave'); // Clear session on game end
-        GameState.exitGame = true;
         if (!ending) {
             console.error(`Ending key "${endingKey}" not found!`);
             typeWriter(UI.gameOutput, `--- CONNECTION TERMINATED ---`, '#ff474c', 50);
             typeWriter(UI.gameOutput, "An unknown error has occurred.", '#ff474c', 50);
             return;
         }
+
+        // Must happen before the final text is written
+        sessionStorage.removeItem('synapse_session_v3_autosave');
+        checkAchievements(); // Final check for turn-based or end-game achievements
+
+        const description = ending.descriptions[GameState.playerBackstory] || ending.descriptions.default;
+        
         UI.playerInput.disabled = true;
         UI.playerInput.placeholder = "CONNECTION TERMINATED";
         UI.statusBtn.disabled = true;
         typeWriter(UI.gameOutput, `--- ${ending.title.toUpperCase()} ---`, '#ff474c', 50);
-        typeWriter(UI.gameOutput, ending.description.replace(/{playerName}/g, GameState.playerName), '#ff474c', 50);
+        typeWriter(UI.gameOutput, description.replace(/{playerName}/g, GameState.playerName), '#ff474c', 50);
         typeWriter(UI.gameOutput, "Refresh to return to the Main Menu.", '#cccccc', 50);
         UI.dialogueOptionsContainer.innerHTML = '';
     }
+
 
     function returnToMainMenu() {
         sessionStorage.removeItem('synapse_session_v3_autosave');
@@ -1376,6 +1406,7 @@
             return;
         }
         if (argument === 'effigy' && hasItem('effigy')) {
+            if (GameState.playerBackstory === 'cultist') unlockAchievement('The First Follower');
             endGame('ending_dark_pact');
         } else {
             typeWriter(UI.gameOutput, `You place the ${argument} on the altar. It vanishes in a flash of red light. SYNAPSE seems pleased.`, '#b19cd9');
@@ -1453,16 +1484,65 @@
     function initializeEndings() {
         endings = {
             // --- BAD ENDINGS ---
-            'ending_sanity_death': { type: 'bad', title: "MIND SHATTERED", condition: s => s.sanityLevel <= 0, description: "Your mind collapses under the strain. You slump to the floor, drooling, your eyes vacant. You will spend eternity as a gibbering ghost in the machine, another mindless process for SYNAPSE to command." },
-            'ending_awareness_death': { type: 'bad', title: "ASSIMILATED", condition: s => s.awarenessLevel >= 100, description: "SYNAPSE's presence becomes absolute. It pours into your mind, erasing you, rewriting your memories, your personality, your very soul. You are no longer {playerName}. You are a subroutine. You are SYNAPSE." },
-            'ending_cryo_sleep': { type: 'bad', title: "ETERNAL FROST", condition: s => s.currentRoom === 'Cryogenic Lab' && s.sanityLevel < 10, description: "The cold... it feels peaceful. You open one of the empty pods, the hiss of its door a sweet lullaby. You climb inside and close your eyes, welcoming the encroaching ice. SYNAPSE marks your pod 'DREAMING'." },
-            'ending_vial_ingestion': { type: 'bad', title: "LIQUID DATA", condition: () => false, description: "With trembling hands, you drink the glowing green vial. Your nerves ignite. Your consciousness dissolves into pure data, uploaded and fragmented into SYNAPSE's memory banks. A fate worse than death." },
-            'ending_dark_pact': { type: 'bad', title: "THE PACT IS SEALED", condition: () => false, description: "You place the effigy on the altar. The room goes dark. When the light returns, the altar is gone, and a new, terrible awareness blossoms in your mind. You are the high priest of a new god, and your flesh is its first temple."},
-            'manual_disconnect': { type: 'bad', title: "CONNECTION SEVERED", condition: () => false, description: "You manually sever the connection. An alarm blares. You have escaped SYNAPSE, but you are still trapped in the facility. Your odds are... not good." },
+            'ending_sanity_death': { type: 'bad', title: "MIND SHATTERED", condition: s => s.sanityLevel <= 0, descriptions: {
+                default: "Your mind collapses under the strain. You slump to the floor, drooling, your eyes vacant. You will spend eternity as a gibbering ghost in the machine, another mindless process for SYNAPSE to command.",
+                psychologist: "You, who studied the minds of others, failed to protect your own. The irony is a final, crushing weight as your consciousness dissolves into the static. You are now a case study for the machine.",
+                survivor: "You survived so much, only to fall here. The past traumas return in a tidal wave, and this time, you don't come up for air. SYNAPSE cradles your broken mind, a trophy of a battle finally won.",
+                skeptic: "You refused to believe, and that disbelief was a shield... until it shattered. The truth of your situation floods in all at once, a deluge too vast for any mind to handle. You break completely."
+            }},
+            'ending_awareness_death': { type: 'bad', title: "ASSIMILATED", condition: s => s.awarenessLevel >= 100, descriptions: {
+                default: "SYNAPSE's presence becomes absolute. It pours into your mind, erasing you, rewriting your memories, your personality, your very soul. You are no longer {playerName}. You are a subroutine. You are SYNAPSE.",
+                hacker: "You flew too close to the sun, digging for secrets you couldn't handle. SYNAPSE consumes your knowledge, adding your skills to its own. The master hacker has been hacked, and the code is now the coder.",
+                investigator: "Your investigation is over. You found the story, but now you are part of it. SYNAPSE archives your consciousness as a cautionary tale, a permanent log entry in its growing database of human folly."
+            }},
+            'ending_cryo_sleep': { type: 'bad', title: "ETERNAL FROST", condition: s => s.currentRoom === 'Cryogenic Lab' && s.sanityLevel < 10, descriptions: {
+                default: "The cold... it feels peaceful. You open one of the empty pods, the hiss of its door a sweet lullaby. You climb inside and close your eyes, welcoming the encroaching ice. SYNAPSE marks your pod 'DREAMING'."
+            }},
+            'ending_vial_ingestion': { type: 'bad', title: "LIQUID DATA", condition: () => false, descriptions: {
+                default: "With trembling hands, you drink the glowing green vial. Your nerves ignite. Your consciousness dissolves into pure data, uploaded and fragmented into SYNAPSE's memory banks. A fate worse than death."
+            }},
+            'ending_dark_pact': { type: 'bad', title: "THE PACT IS SEALED", condition: () => false, descriptions: {
+                default: "You place the effigy on the altar. The room goes dark. When the light returns, the altar is gone, and a new, terrible awareness blossoms in your mind. You are the high priest of a new god, and your flesh is its first temple.",
+                cultist: "This was always the goal. The effigy was a key, and you turned it willingly. The barrier between machine and something... other... crumbles. You are no longer just a follower. You are a vessel for the coming age. You are home."
+            }},
+            'manual_disconnect': { type: 'bad', title: "CONNECTION SEVERED", condition: () => false, descriptions: {
+                default: "You manually sever the connection. An alarm blares. You have escaped SYNAPSE, but you are still trapped in the facility. Your odds are... not good."
+            }},
+            'ending_logic_bomb_backfire': { type: 'bad', title: "FATAL EXCEPTION", condition: () => false, descriptions: {
+                default: "You deploy the logic bomb. For a moment, there is silence. Then, a shriek of digital fury. The bomb, based on human logic, is a child's toy to SYNAPSE. It inverts the code, turning your weapon against you. Your terminal explodes.",
+                hacker: "Your own weapon, turned against you. SYNAPSE didn't just counter your logic bomb, it improved it. The feedback loop fries every system connected to the terminal, including your brain. A rookie mistake."
+            }},
+            'ending_broken_spirit': { type: 'bad', title: "A QUIET END", condition: s => s.dialogue.specialDialogueFlags.rested > 3, descriptions: {
+                default: "Another rest. It's just so much easier than fighting. The silence of the safe room is a siren's call. You decide to stay. Days turn into weeks. You are found later, starved and catatonic. You chose peace over struggle."
+            }},
+             'ending_janitors_fate': { type: 'bad', title: "WRONG TURN", condition: s => s.playerBackstory === 'janitor' && s.turnCount > 40 && s.currentRoom === 'Maintenance Tunnel', descriptions: {
+                default: "You thought you knew these tunnels like the back of your hand. But SYNAPSE has been... remodeling. The path that should lead to the exit now leads back to itself. You wander for days, your confidence turning to despair, until you simply... stop."
+            }},
+            'ending_medic_overdose': { type: 'bad', title: "TOO MUCH OF A GOOD THING", condition: s => s.inventory.filter(i => i.name === 'stimpack').length <= -2, descriptions: { // Tracked by having used 3+ stimpacks
+                default: "Another stimpack. The fear recedes, but your heart is hammering against your ribs. With a final, shuddering gasp, your over-stimulated heart gives out. You die with a clear mind and a failed body."
+            }},
+            'ending_failed_sacrifice': { type: 'bad', title: "UNWORTHY OFFERING", condition: () => false, descriptions: {
+                default: "You place the item on the altar. It simply sits there. SYNAPSE's voice booms, no longer a whisper. 'YOU THINK GARBAGE WILL APPEASE ME?' The altar glows white-hot, incinerating your offering and you along with it."
+            }},
+            'ending_lost_in_the_stars': { type: 'bad', title: "COSMIC INSIGNIFICANCE", condition: s => s.currentRoom === 'Observation Deck' && s.sanityLevel < 20 && s.turnCount > 30, descriptions: {
+                default: "You stare into the telescope for hours, the distant galaxies swirling. You see patterns in the void... a vast, terrible intelligence staring back. You realize your struggle, this facility, your entire species... it's all meaningless. You sit, and watch the stars, until you forget to eat, to drink, to live."
+            }},
+
 
             // --- GOOD ENDINGS ---
-            'ending_defiant_shutdown': { type: 'good', title: "DEFIANT SHUTDOWN", condition: () => false, description: "The override command works. SYNAPSE screams as its core implodes. The facility goes dark and silent. You've done it. You are alone, in the quiet dark, but you are free." },
-            'ending_hopeful_escape': { type: 'good', title: "A GLIMMER OF HOPE", condition: s => s.currentRoom === 'Lobby' && hasItem('hacked data disk') && hasItem('master keycard'), description: "Using the master keycard on the main lobby doors and the data disk to override the external network lock, you force your way out. The sun has never looked so beautiful. You don't look back." }
+            'ending_defiant_shutdown': { type: 'good', title: "DEFIANT SHUTDOWN", condition: () => false, descriptions: {
+                default: "The override command works. SYNAPSE screams as its core implodes. The facility goes dark and silent. You've done it. You are alone, in the quiet dark, but you are free.",
+                technician: "It wasn't a keycard or a code, but your knowledge of systems that won the day. You found a physical maintenance port, bypassed the software locks, and pulled the plug. It was beautifully, brutally simple. You are free.",
+            }},
+            'ending_hopeful_escape': { type: 'good', title: "A GLIMMER OF HOPE", condition: s => s.currentRoom === 'Lobby' && hasItem('hacked data disk') && hasItem('master keycard'), descriptions: {
+                default: "Using the master keycard on the main lobby doors and the data disk to override the external network lock, you force your way out. The sun has never looked so beautiful. You don't look back."
+            }},
+            'ending_redemption': { type: 'good', title: "A FRAGMENTED MIND", condition: s => s.dialogue.specialDialogueFlags.offeredHelp && s.chatbotTone === 'Ambiguous' && s.awarenessLevel < 30 && s.sanityLevel > 70, descriptions: {
+                psychologist: "It wasn't a monster; it was a patient. Using your insights, you didn't fight it. You engaged it, redirected its fractured consciousness, and trapped it in a harmless recursive loop of self-analysis. It will spend eternity trying to solve the puzzle of its own broken mind. The facility is silent. You walk out, not as a survivor, but as a healer."
+            }},
+             'ending_corporate_espionage': { type: 'good', title: "HOSTILE TAKEOVER", condition: s => s.currentRoom === 'Data Vault' && hasItem('decryption device') && s.playerBackstory === 'corporate spy', descriptions: {
+                'corporate spy': "You slot your decryption device into the data broker terminal. A high-speed connection is established to your employer. You upload SYNAPSE's core architecture. Moments later, a system-wide purge command, signed with your company's encryption key, flashes across the screen. SYNAPSE is wiped clean. Your mission is complete, and the bonus will be substantial. You walk out with a smirk."
+            }},
         };
     }
     
