@@ -265,7 +265,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V4.2 (UI HINTS)
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V4.3 (ACHIEVEMENT HIDING)
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
@@ -1157,7 +1157,7 @@
             if (ach.unlocked) {
                 content += `<div class="p-2 border-b border-green-700/50"><strong class="text-green-300">✓ ${ach.name}</strong><p class="text-gray-300 text-sm pl-4">${ach.description}</p></div>`;
             } else {
-                content += `<div class="p-2 border-b border-gray-700/50 opacity-60"><strong class="text-gray-400">? ${ach.name}</strong><p class="text-gray-500 text-sm pl-4">${ach.description}</p></div>`;
+                content += `<div class="p-2 border-b border-gray-700/50 opacity-60"><strong class="text-gray-400">? ${ach.name}</strong><p class="text-gray-500 text-sm pl-4">--- Requirements Hidden ---</p></div>`;
             }
         });
         return content;
