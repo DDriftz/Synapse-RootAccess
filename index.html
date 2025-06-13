@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>SYNAPSE</title>
-    <!-- Add the game logo as a favicon for the browser tab -->
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -123,7 +122,6 @@
 
     <div id="app-container" class="w-full h-full bg-black/75 p-2 sm:p-4 flex flex-col crt-effect">
         
-        <!-- START SCREEN -->
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
             <img id="game-logo" src="https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png" alt="SYNAPSE Logo" class="h-24 mb-4 rounded-lg shadow-lg shadow-[#00ff41]/20">
             <pre id="title-art" class="text-xs md:text-sm whitespace-pre-wrap title-font text-[#00ff41] crt-flicker"></pre>
@@ -145,22 +143,18 @@
                      <button id="view-backstories-btn" class="button text-xs px-2 py-1">View Choices</button>
                  </div>
                  <div id="ability-display" class="text-center text-cyan-400 min-h-[4rem] mt-2 mb-4 p-2 border border-cyan-400/30 rounded-md bg-black/50 w-full max-w-md flex items-center justify-center">
-                    <!-- Ability description will be injected here by JS -->
-                 </div>
+                    </div>
                  <button id="start-game-btn" class="button button-primary">Begin</button>
              </div>
         </div>
 
-        <!-- GAME SCREEN -->
         <div id="game-screen" class="hidden flex-col h-full">
             <div class="flex-grow flex flex-col md:flex-row gap-4 overflow-hidden">
-                <!-- Main Game Output -->
                 <div class="w-full md:w-3/4 flex flex-col h-full">
                     <div id="game-output" class="flex-grow p-2 border border-[#00ff41]/30 rounded-md overflow-y-auto mb-2 bg-black/50"></div>
                     <div id="dialogue-options" class="flex flex-wrap gap-2 justify-center p-2"></div>
                 </div>
 
-                <!-- Side Panel (Hidden on mobile, shown on medium screens and up) -->
                 <div id="side-panel" class="w-full md:w-1/4 hidden md:flex flex-col gap-4">
                     <div id="stats-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50">
                         <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">STATS</h3>
@@ -185,7 +179,6 @@
                 </div>
             </div>
 
-            <!-- Input Area -->
             <div class="mt-2 flex items-center border-t-2 border-[#00ff41]/30 pt-2 gap-2">
                  <button id="status-btn" class="button md:hidden">Status</button>
                 <span class="text-xl hidden sm:inline">&gt;</span>
@@ -195,15 +188,13 @@
         </div>
     </div>
 
-    <!-- MODAL for timed challenges, menus etc -->
     <div id="modal" class="modal">
         <div id="modal-content" class="modal-content">
-            <!-- Modal content goes here -->
-        </div>
+            </div>
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V3.3 (MOBILE UI OVERHAUL)
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V3.4 (SESSION PERSISTENCE)
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
@@ -933,7 +924,6 @@
 
         const modalContentHTML = `
             <div class="flex flex-col h-full w-full text-sm sm:text-base bg-[#0d0d0d] border-2 border-[#00ff41] rounded-lg p-2">
-                <!-- Tab Buttons -->
                 <div class="flex-shrink-0 flex justify-around border-b-2 border-[#00ff41]/30 text-xs sm:text-sm">
                     <button class="status-tab-btn" data-tab="stats">STATS</button>
                     <button class="status-tab-btn" data-tab="objectives">OBJECTIVES</button>
@@ -942,7 +932,6 @@
                     <button class="status-tab-btn" data-tab="input">INPUT</button>
                 </div>
 
-                <!-- Tab Content Panels -->
                 <div class="flex-grow overflow-y-auto modal-scroll py-2">
                     <div id="status-tab-stats" class="status-tab-panel">${UI.stats.panel.innerHTML}</div>
                     <div id="status-tab-objectives" class="status-tab-panel hidden">${UI.objectives.panel.innerHTML}</div>
@@ -1014,7 +1003,6 @@
         UI.modal.onclick = (e) => { if (e.target === UI.modal) closeModal(); };
         document.getElementById('status-modal-close-btn').onclick = closeModal;
     }
-
 
     function showHelpMenu() { const helpText = `<div class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2"><h2 class="text-2xl mb-4 title-font text-cyan-400">HELP MENU</h2><p><strong class="text-green-300">Conversational:</strong> Type questions like 'who are you?' or click the buttons. You can also try actions like 'comfort synapse' or 'probe secrets'.</p><p><strong class="text-green-300">Navigation:</strong> 'go [direction]', 'look around', 'visit [room name]'</p><p><strong class="text-green-300">Interaction:</strong> 'take [item]', 'use [item]', 'examine [item]', 'talk to [npc]', 'combine [item1] with [item2]', 'sacrifice [item]'</p><p><strong class="text-green-300">System:</strong> 'save', 'load', 'rest', 'journal add [note]', 'history', 'debug', 'cmd:pause', 'cmd:undo', 'map', 'objectives'</p><p class="mt-4 md:hidden"><strong class="text-cyan-400">Mobile Tip:</strong> Use the 'Status' button to see your stats, objectives, inventory, and journal all at once.</p></div><button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(helpText, true); }
     function showPauseMenu() { const pauseText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">PAUSE</h2><div class="flex flex-col gap-2"><button id="pause-save" class="button">Save</button><button id="pause-load" class="button">Load</button><button id="pause-help" class="button">Help</button><button id="pause-resume" class="button button-primary">Resume</button></div>`; showModal(pauseText, true); document.getElementById('pause-save').onclick=()=>{saveGame(); hideModal();}; document.getElementById('pause-load').onclick=()=>{loadGame(); hideModal();}; document.getElementById('pause-help').onclick=showHelpMenu; document.getElementById('pause-resume').onclick=hideModal; }
@@ -1333,11 +1321,56 @@
         }
     }
 
-    // --- EVENT LISTENERS & INITIALIZATION ---
-    window.addEventListener('DOMContentLoaded', () => {
-        resetGameState();
-        setupIntro();
+    function saveStateToSession() {
+        if (GameState && typeof GameState.turnCount === 'number' && GameState.turnCount >= 0 && !GameState.exitGame) {
+            try {
+                const sessionData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value);
+                sessionStorage.setItem('synapse_session_v3_autosave', sessionData);
+            } catch (e) {
+                console.error("Session save failed:", e);
+            }
+        }
+    }
 
+    function loadStateFromSession() {
+        const sessionData = sessionStorage.getItem('synapse_session_v3_autosave');
+        if (!sessionData) return false;
+
+        try {
+            const loadedState = JSON.parse(sessionData);
+            if (loadedState.currentRoom && typeof loadedState.turnCount === 'number' && !loadedState.exitGame) {
+                resetGameState();
+                Object.assign(GameState, loadedState);
+                GameState.visitedRooms = new Set(loadedState.visitedRooms || []);
+                GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []);
+                initializeData();
+                buildDialogueTree(GameState.chatbotTone);
+                GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone] || GameState.dialogue.cache[ChatbotTone.Friendly];
+                GameState.dialogue.previousNodes = [];
+
+                UI.startScreen.classList.add('hidden');
+                UI.gameScreen.classList.remove('hidden');
+                UI.gameScreen.classList.add('flex');
+
+                UI.gameOutput.innerHTML = '';
+                typeWriter(UI.gameOutput, '[Connection Re-established. Session Restored.]', '#cccccc');
+                renderRoom();
+                updateUI();
+                renderDialogueOptions();
+                return true;
+            }
+        } catch (e) {
+            console.error("Session load failed:", e);
+            sessionStorage.removeItem('synapse_session_v3_autosave');
+        }
+        return false;
+    }
+
+    // --- EVENT LISTENERS & INITIALIZATION ---
+    window.addEventListener('beforeunload', saveStateToSession);
+
+    window.addEventListener('DOMContentLoaded', () => {
+        // Attach all event listeners
         UI.playerInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const input = UI.playerInput.value.trim();
@@ -1362,6 +1395,7 @@
         });
 
         UI.newGameBtn.addEventListener('click', async () => {
+            sessionStorage.removeItem('synapse_session_v3_autosave');
             await initializeAudio();
             UI.startOptions.classList.add('hidden');
             UI.playerSetup.classList.remove('hidden');
@@ -1370,6 +1404,7 @@
         });
 
         UI.loadGameBtn.addEventListener('click', async () => {
+            sessionStorage.removeItem('synapse_session_v3_autosave');
             await initializeAudio();
             loadGame();
         });
@@ -1387,10 +1422,15 @@
         });
 
         UI.playerBackstoryInput.addEventListener('input', updateAbilityDisplay);
-
         UI.viewBackstoriesBtn.addEventListener('click', showBackstoryModal);
-        
         UI.statusBtn.addEventListener('click', showStatusModal);
+
+        // --- Session Restore Logic ---
+        if (!loadStateFromSession()) {
+            // If no session, or it fails to load, start fresh
+            resetGameState();
+            setupIntro();
+        }
     });
 
     </script>
