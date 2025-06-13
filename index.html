@@ -262,7 +262,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V3.6 (MINI-MAP)
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V3.7 (MAIN MENU)
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
@@ -1090,7 +1090,17 @@
     }
 
     function showHelpMenu() { const helpText = `<div class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2"><h2 class="text-2xl mb-4 title-font text-cyan-400">HELP MENU</h2><p><strong class="text-green-300">Conversational:</strong> Type questions like 'who are you?' or click the buttons. You can also try actions like 'comfort synapse' or 'probe secrets'.</p><p><strong class="text-green-300">Navigation:</strong> 'go [direction]', 'look around', 'visit [room name]'</p><p><strong class="text-green-300">Interaction:</strong> 'take [item]', 'use [item]', 'examine [item]', 'talk to [npc]', 'combine [item1] with [item2]', 'sacrifice [item]'</p><p><strong class="text-green-300">System:</strong> 'save', 'load', 'rest', 'journal add [note]', 'history', 'debug', 'cmd:pause', 'cmd:undo', 'map', 'objectives'</p><p class="mt-4 md:hidden"><strong class="text-cyan-400">Mobile Tip:</strong> Use the 'Status' button to see your stats, objectives, inventory, and journal all at once.</p></div><button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(helpText, true); }
-    function showPauseMenu() { const pauseText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">PAUSE</h2><div class="flex flex-col gap-2"><button id="pause-save" class="button">Save</button><button id="pause-load" class="button">Load</button><button id="pause-help" class="button">Help</button><button id="pause-resume" class="button button-primary">Resume</button></div>`; showModal(pauseText, true); document.getElementById('pause-save').onclick=()=>{saveGame(); hideModal();}; document.getElementById('pause-load').onclick=()=>{loadGame(); hideModal();}; document.getElementById('pause-help').onclick=showHelpMenu; document.getElementById('pause-resume').onclick=hideModal; }
+    
+    function showPauseMenu() {
+        const pauseText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">PAUSE</h2><div class="flex flex-col gap-2"><button id="pause-save" class="button">Save</button><button id="pause-load" class="button">Load</button><button id="pause-help" class="button">Help</button><button id="pause-main-menu" class="button text-yellow-300 border-yellow-300/80">Main Menu</button><button id="pause-resume" class="button button-primary mt-4">Resume</button></div>`;
+        showModal(pauseText, true);
+        document.getElementById('pause-save').onclick = () => { saveGame(); hideModal(); };
+        document.getElementById('pause-load').onclick = () => { loadGame(); hideModal(); };
+        document.getElementById('pause-help').onclick = showHelpMenu;
+        document.getElementById('pause-main-menu').onclick = returnToMainMenu;
+        document.getElementById('pause-resume').onclick = hideModal;
+    }
+
     function showGlossary() { const glossaryText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">GLOSSARY</h2>...<button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(glossaryText, true); }
     function showTutorialGuide() { const guideText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">TUTORIAL GUIDE</h2>...<button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(guideText, true); }
     
@@ -1265,25 +1275,49 @@
         buildDialogueTree(GameState.chatbotTone);
         typeWriter(UI.gameOutput, "Initializing systems...", '#cccccc').then(() => { displayChatbotResponse(GameState.dialogue.currentNode.message).then(() => { renderRoom(); updateUI(); renderDialogueOptions(); }); }); 
     }
-    function endGame(endingKey) { 
+    
+    function endGame(endingKey) {
         if (GameState.exitGame) return;
         const ending = endings[endingKey];
+        sessionStorage.removeItem('synapse_session_v3_autosave'); // Clear session on game end
+        GameState.exitGame = true;
         if (!ending) {
             console.error(`Ending key "${endingKey}" not found!`);
-            typeWriter(UI.gameOutput, `--- CONNECTION TERMINATED ---`, '#ff474c', 50); 
-            typeWriter(UI.gameOutput, "An unknown error has occurred.", '#ff474c', 50); 
+            typeWriter(UI.gameOutput, `--- CONNECTION TERMINATED ---`, '#ff474c', 50);
+            typeWriter(UI.gameOutput, "An unknown error has occurred.", '#ff474c', 50);
             return;
         }
-        GameState.exitGame = true; 
-        UI.playerInput.disabled = true; 
-        UI.playerInput.placeholder = "CONNECTION TERMINATED"; 
+        UI.playerInput.disabled = true;
+        UI.playerInput.placeholder = "CONNECTION TERMINATED";
         UI.statusBtn.disabled = true;
-        typeWriter(UI.gameOutput, `--- ${ending.title.toUpperCase()} ---`, '#ff474c', 50); 
-        typeWriter(UI.gameOutput, ending.description.replace(/{playerName}/g, GameState.playerName), '#ff474c', 50); 
-        typeWriter(UI.gameOutput, "Refresh to start a new game.", '#cccccc', 50); 
-        UI.dialogueOptionsContainer.innerHTML = ''; 
+        typeWriter(UI.gameOutput, `--- ${ending.title.toUpperCase()} ---`, '#ff474c', 50);
+        typeWriter(UI.gameOutput, ending.description.replace(/{playerName}/g, GameState.playerName), '#ff474c', 50);
+        typeWriter(UI.gameOutput, "Refresh to return to the Main Menu.", '#cccccc', 50);
+        UI.dialogueOptionsContainer.innerHTML = '';
     }
-    
+
+    function returnToMainMenu() {
+        sessionStorage.removeItem('synapse_session_v3_autosave');
+        GameState.exitGame = true; // Prevents any lingering game loops
+
+        UI.gameScreen.classList.add('hidden');
+        UI.gameScreen.classList.remove('flex');
+        UI.startScreen.classList.remove('hidden');
+        UI.startScreen.classList.add('flex');
+
+        // Reset start screen UI to its initial state
+        UI.playerSetup.classList.add('hidden');
+        UI.playerSetup.classList.remove('flex');
+        UI.startOptions.classList.remove('hidden');
+        UI.introTextContainer.classList.remove('hidden');
+        UI.titleArt.classList.remove('hidden');
+
+        UI.gameOutput.innerHTML = '';
+        resetGameState();
+        setupIntro();
+        hideModal();
+    }
+
     function addObjective(text) { if (!GameState.objectives.some(o => o.text === text)) { GameState.objectives.push({ text: text, completed: false }); updateUI(); } }
     function completeObjective(text) { const obj = GameState.objectives.find(o => o.text === text); if (obj) { obj.completed = true; updateUI(); } }
     function displayObjectives() { if (window.innerWidth < 768) { showStatusModal(); } else { typeWriter(UI.gameOutput, "Current objectives displayed on the right panel.", '#cccccc'); } }
