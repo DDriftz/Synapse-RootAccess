@@ -244,6 +244,9 @@
                          <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">JOURNAL</h3>
                          <ul id="journal-list" class="list-none p-0 text-sm"></ul>
                      </div>
+                     <div class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50">
+                         <button id="view-achievements-btn" class="button w-full">ACHIEVEMENTS</button>
+                     </div>
                 </div>
             </div>
 
@@ -262,7 +265,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V3.7 (MAIN MENU)
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V3.8 (QOL UPDATE)
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
@@ -320,6 +323,7 @@
         backgroundCanvas: document.getElementById('background-canvas'),
         mapCanvas: document.getElementById('map-canvas'),
         mapContainer: document.getElementById('map-container'),
+        viewAchievementsBtn: document.getElementById('view-achievements-btn'),
     };
     let currentTextSpeed = TextSpeed.Normal;
     let commandHistory = [];
@@ -787,30 +791,44 @@
     }
     
     function renderDialogueOptions() {
-        UI.dialogueOptionsContainer.innerHTML = ''; 
+        UI.dialogueOptionsContainer.innerHTML = '';
         const node = GameState.dialogue.currentNode;
         if (!node) return;
+
+        // Container for system buttons like 'back' and 'pause'
+        const systemButtonsContainer = document.createElement('div');
+        systemButtonsContainer.className = 'w-full flex gap-2 mb-2';
+        let hasSystemButtons = false;
 
         // Add the 'go back' button if we are in a sub-menu
         if (GameState.dialogue.previousNodes.length > 0) {
             const backBtn = document.createElement('button');
             backBtn.textContent = "[Go back]";
-            backBtn.className = "button text-yellow-300 border-yellow-300/80 w-full"; // Make it prominent
-            backBtn.onclick = () => { 
-                processPlayerInput('[go back]');
-            };
-            UI.dialogueOptionsContainer.appendChild(backBtn);
+            backBtn.className = "button text-yellow-300 border-yellow-300/80 flex-grow";
+            backBtn.onclick = () => processPlayerInput('[go back]');
+            systemButtonsContainer.appendChild(backBtn);
+            hasSystemButtons = true;
         }
-        
+
+        // Add the 'pause' button
+        const pauseBtn = document.createElement('button');
+        pauseBtn.textContent = "[Pause]";
+        pauseBtn.className = "button text-cyan-300 border-cyan-300/80 flex-grow";
+        pauseBtn.onclick = showPauseMenu;
+        systemButtonsContainer.appendChild(pauseBtn);
+        hasSystemButtons = true;
+
+        if (hasSystemButtons) {
+            UI.dialogueOptionsContainer.appendChild(systemButtonsContainer);
+        }
+
         // Render the actual options for the current node
         if (node.responses) {
             for (const text in node.responses) {
-                const button = document.createElement('button'); 
-                button.textContent = text; 
-                button.className = "button w-full sm:w-[calc(50%-0.25rem)]"; // Full width on mobile, half on larger screens
-                button.onclick = () => { 
-                    processPlayerInput(text);
-                };
+                const button = document.createElement('button');
+                button.textContent = text;
+                button.className = "button w-full sm:w-[calc(50%-0.25rem)]";
+                button.onclick = () => processPlayerInput(text);
                 UI.dialogueOptionsContainer.appendChild(button);
             }
         }
@@ -1014,6 +1032,7 @@
                     <button class="status-tab-btn" data-tab="objectives">OBJECTIVES</button>
                     <button class="status-tab-btn" data-tab="inventory">INVENTORY</button>
                     <button class="status-tab-btn" data-tab="journal">JOURNAL</button>
+                    <button class="status-tab-btn" data-tab="achievements">ACHIEVEMENTS</button>
                     <button class="status-tab-btn" data-tab="input">INPUT</button>
                 </div>
 
@@ -1022,6 +1041,7 @@
                     <div id="status-tab-objectives" class="status-tab-panel hidden">${UI.objectives.panel.innerHTML}</div>
                     <div id="status-tab-inventory" class="status-tab-panel hidden">${UI.inventory.panel.innerHTML}</div>
                     <div id="status-tab-journal" class="status-tab-panel hidden">${UI.journal.panel.innerHTML}</div>
+                    <div id="status-tab-achievements" class="status-tab-panel hidden">${generateAchievementsHTML()}</div>
                     <div id="status-tab-input" class="status-tab-panel hidden p-4 flex flex-col justify-center items-center h-full">
                         <p class="mb-4 text-center">Enter your command below and press Submit.</p>
                         <div class="w-full max-w-sm flex items-center border-b-2 border-[#00ff41]/50 focus-within:border-[#00ff41]">
@@ -1055,7 +1075,7 @@
         };
 
         tabButtons.forEach(button => {
-            button.classList.add('w-1/5', 'p-3', 'text-[#00ff41]', 'border-b-4', 'transition-all', 'duration-200');
+            button.classList.add('w-1/6', 'p-2', 'text-[#00ff41]', 'border-b-4', 'transition-all', 'duration-200');
             button.addEventListener('click', () => setActiveTab(button.dataset.tab));
         });
 
@@ -1087,6 +1107,27 @@
 
         UI.modal.onclick = (e) => { if (e.target === UI.modal) closeModal(); };
         document.getElementById('status-modal-close-btn').onclick = closeModal;
+    }
+
+    function generateAchievementsHTML() {
+        let content = '';
+        GameState.achievements.forEach(ach => {
+            if (ach.unlocked) {
+                content += `<div class="p-2 border-b border-green-700/50"><strong class="text-green-300">✓ ${ach.name}</strong><p class="text-gray-300 text-sm pl-4">${ach.description}</p></div>`;
+            } else {
+                content += `<div class="p-2 border-b border-gray-700/50 opacity-60"><strong class="text-gray-400">? ${ach.name}</strong><p class="text-gray-500 text-sm pl-4">${ach.description}</p></div>`;
+            }
+        });
+        return content;
+    }
+
+    function showAchievementsModal() {
+        const content = `<h2 class="text-2xl mb-4 title-font text-cyan-400">ACHIEVEMENTS</h2>
+                         <div class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2 space-y-2">
+                            ${generateAchievementsHTML()}
+                         </div>
+                         <button id="close-modal-btn" class="button mt-6">Close</button>`;
+        showModal(content, true);
     }
 
     function showHelpMenu() { const helpText = `<div class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2"><h2 class="text-2xl mb-4 title-font text-cyan-400">HELP MENU</h2><p><strong class="text-green-300">Conversational:</strong> Type questions like 'who are you?' or click the buttons. You can also try actions like 'comfort synapse' or 'probe secrets'.</p><p><strong class="text-green-300">Navigation:</strong> 'go [direction]', 'look around', 'visit [room name]'</p><p><strong class="text-green-300">Interaction:</strong> 'take [item]', 'use [item]', 'examine [item]', 'talk to [npc]', 'combine [item1] with [item2]', 'sacrifice [item]'</p><p><strong class="text-green-300">System:</strong> 'save', 'load', 'rest', 'journal add [note]', 'history', 'debug', 'cmd:pause', 'cmd:undo', 'map', 'objectives'</p><p class="mt-4 md:hidden"><strong class="text-cyan-400">Mobile Tip:</strong> Use the 'Status' button to see your stats, objectives, inventory, and journal all at once.</p></div><button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(helpText, true); }
@@ -1668,6 +1709,8 @@
         UI.playerBackstoryInput.addEventListener('input', updateAbilityDisplay);
         UI.viewBackstoriesBtn.addEventListener('click', showBackstoryModal);
         UI.statusBtn.addEventListener('click', showStatusModal);
+        UI.viewAchievementsBtn.addEventListener('click', showAchievementsModal);
+
 
         setupBackgroundAnimation();
 
