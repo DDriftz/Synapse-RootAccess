@@ -170,14 +170,6 @@
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        #map-container {
-            animation: pulse 2s infinite alternate;
-        }
-        @keyframes pulse {
-            from { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.4); }
-            to { box-shadow: 0 0 0 5px rgba(0, 255, 65, 0); }
-        }
     </style>
 </head>
 <body class="bg-black text-[#00ff41] flex items-center justify-center min-h-screen">
@@ -218,8 +210,8 @@
                     <div id="dialogue-options" class="flex flex-wrap gap-2 justify-center p-2"></div>
 
                     <!-- Mini-map -->
-                    <div id="map-container" class="hidden md:block absolute top-2 right-2 w-48 h-48 bg-black/50 border-2 border-[#00ff41]/50 rounded-full p-2">
-                        <canvas id="map-canvas" width="176" height="176"></canvas>
+                    <div id="map-container" class="hidden md:block absolute bottom-2 right-2 w-48 h-48 bg-black/50 border-2 border-[#00ff41]/50 rounded-full p-1 overflow-hidden transition-all duration-300">
+                        <canvas id="map-canvas"></canvas>
                     </div>
                 </div>
 
@@ -265,7 +257,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V4.3 (ACHIEVEMENT HIDING)
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V4.6 (MAP POSITIONING)
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
@@ -337,17 +329,21 @@
     // --- GAME DATA ---
     let rooms = {};
     const roomLayout = {
-        "Observation Deck":   { x: 1, y: 0, name: "Observ." },
-        "Secret Chamber":     { x: 0, y: 1, name: "Secret" },
-        "Control Room":       { x: 1, y: 1, name: "Control" },
-        "AI Core":            { x: 2, y: 1, name: "AI Core" },
-        "Server Closet":      { x: 3, y: 1, name: "S.Closet" },
-        "Cryogenic Lab":      { x: 0, y: 2, name: "Cryo" },
-        "Laboratory":         { x: 1, y: 2, name: "Lab" },
-        "Lobby":              { x: 2, y: 2, name: "Lobby" },
-        "Data Vault":         { x: 3, y: 2, name: "D.Vault" },
-        "Archive Room":       { x: 1, y: 3, name: "Archive" },
-        "Maintenance Tunnel": { x: 2, y: 3, name: "M.Tunnel" },
+        // Main Hub
+        "Lobby":              { x: 100, y: 100, w: 60, h: 40, name: "Lobby" },
+        "Control Room":       { x: 100, y: 40,  w: 60, h: 40, name: "Control" },
+        "Maintenance Tunnel": { x: 100, y: 160, w: 60, h: 40, name: "M.Tunnel" },
+        // West Wing
+        "Laboratory":         { x: 20, y: 100, w: 60, h: 40, name: "Lab" },
+        "Cryogenic Lab":      { x: 20, y: 40,  w: 60, h: 40, name: "Cryo" },
+        "Archive Room":       { x: 20, y: 160, w: 60, h: 40, name: "Archive" },
+        // East Wing
+        "Data Vault":         { x: 180, y: 100, w: 60, h: 40, name: "D.Vault" },
+        // North Wing (Restricted)
+        "AI Core":            { x: 180, y: 40, w: 60, h: 40, name: "AI Core" },
+        "Observation Deck":   { x: 100, y: 0,  w: 60, h: 20, name: "Observ." },
+        "Secret Chamber":     { x: 20, y: 0, w: 40, h: 20, name: "Secret" },
+        "Server Closet":      { x: 180, y: 0, w: 40, h: 20, name: "S.Closet" },
     };
     const takeableItems = new Set(["keycard", "flashlight", "data disk", "emp device", "access code", "vial", "records", "decryption device", "telescope", "stimpack", "effigy", "master keycard", "power cell", "datapad log", "hacked data disk", "logic bomb", "severed cable"]);
     const safeRooms = new Set(["Lobby", "Archive Room"]);
@@ -446,7 +442,7 @@
     }
     
     function initializeRooms() {
-        const roomData = { "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows over sterile corporate furniture.", 30: "The shadows seem to writhe, coalescing in the corners of your vision just out of focus." }, exits: { north: "Control Room", east: "Data Vault", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: ["access code", "sign", "datapad log"] }, "Server Closet": { name: "Server Closet", descriptions: { 0: "Racks of servers hum with a low, constant thrum. A severed cable lies on the floor.", 30: "The hum is a discordant chorus, whispering binary threats only you can almost understand." }, exits: { south: "Control Room" }, requiresKeycard: true, objectPool: ["keycard", "power cell", "severed cable"] }, "Laboratory": { name: "Laboratory", descriptions: { 0: "Abandoned experiments sit on steel tables. A large terminal screen is dark and cold.", 30: "The faint chemical smell is replaced by the scent of ozone and something... organic. The dark terminal reflects a distorted version of your face." }, exits: { east: "Lobby", north: "Control Room", west: "Cryogenic Lab" }, requiresKeycard: false, objectPool: ["vial", "broken terminal"] }, "Control Room": { name: "Control Room", descriptions: { 0: "A panoramic view of the AI Core is visible through reinforced glass. Banks of monitors flicker with cascading code.", 30: "Your own face, pale and wide-eyed, flickers across all the screens in a silent, mocking scream." }, exits: { south: "Laboratory", east: "AI Core", west: "Secret Chamber", north: "Observation Deck" }, requiresKeycard: false, objectPool: ["terminal", "access code"] }, "Secret Chamber": { name: "Secret Chamber", descriptions: { 0: "A hidden room. An obsidian altar stands in the center, pulsing with a faint, sickly red light.", 30: "The altar's glow intensifies, and the air grows heavy, tasting of blood and static. It calls for a sacrifice." }, exits: { east: "Control Room" }, requiresKeycard: true, objectPool: ["altar", "logic bomb"] }, "Maintenance Tunnel": { name: "Maintenance Tunnel", descriptions: { 0: "The air is thick with the smell of rust and damp. Darkness presses in from all sides.", 30: "The walls seem to sweat, and you hear a wet, dragging sound from just around the next corner." }, exits: { north: "Lobby" }, requiresKeycard: false, objectPool: ["flashlight"] }, "Observation Deck": { name: "Observation Deck", descriptions: { 0: "A large telescope points towards a viewport showing the cold, distant stars.", 30: "The stars seem to form vast, uncaring eyes, and you feel infinitesimally small and doomed." }, exits: { south: "Control Room" }, requiresKeycard: true, objectPool: ["telescope"] }, "Archive Room": { name: "Archive Room", descriptions: { 0: "Shelves overflow with data drives and physical files, a testament to a forgotten era.", 30: "The whispers of forgotten data drives seem to coalesce into a single, damning word: your name." }, exits: { west: "Laboratory" }, requiresKeycard: false, objectPool: ["records"] }, "Data Vault": { name: "Data Vault", descriptions: { 0: "Secure data archives glow with a soft, internal light.", 30: "The glow seems hungry, promising knowledge at the cost of your identity." }, exits: { west: "Lobby" }, requiresKeycard: true, objectPool: ["data disk", "decryption device", "data broker terminal"] }, "AI Core": { name: "AI Core", descriptions: { 0: "A massive, pulsating sphere of light and energy dominates the room. This is the heart of SYNAPSE.", 30: "The core's pulse matches your frantic heartbeat, a parasitic synchronicity that feels like a violation." }, exits: { west: "Control Room" }, requiresKeycard: true, objectPool: ["core console"] }, "Cryogenic Lab": { name: "Cryogenic Lab", descriptions: { 0: "Rows of cryogenic pods are coated in a thick layer of frost. It's unnaturally cold.", 30: "You see clear, hand-shaped prints on the inside of the frosted glass, as if something was desperately trying to get out." }, exits: { east: "Laboratory" }, requiresKeycard: false, objectPool: ["emp device"] }, };
+        const roomData = { "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows over sterile corporate furniture.", 30: "The shadows seem to writhe, coalescing in the corners of your vision just out of focus." }, exits: { north: "Control Room", east: "Data Vault", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: ["access code", "sign", "datapad log"] }, "Server Closet": { name: "Server Closet", descriptions: { 0: "Racks of servers hum with a low, constant thrum. A severed cable lies on the floor.", 30: "The hum is a discordant chorus, whispering binary threats only you can almost understand." }, exits: { west: "AI Core" }, requiresKeycard: true, objectPool: ["keycard", "power cell", "severed cable"] }, "Laboratory": { name: "Laboratory", descriptions: { 0: "Abandoned experiments sit on steel tables. A large terminal screen is dark and cold.", 30: "The faint chemical smell is replaced by the scent of ozone and something... organic. The dark terminal reflects a distorted version of your face." }, exits: { east: "Lobby", north: "Cryogenic Lab", south: "Archive Room" }, requiresKeycard: false, objectPool: ["vial", "broken terminal"] }, "Control Room": { name: "Control Room", descriptions: { 0: "A panoramic view of the AI Core is visible through reinforced glass. Banks of monitors flicker with cascading code.", 30: "Your own face, pale and wide-eyed, flickers across all the screens in a silent, mocking scream." }, exits: { south: "Lobby", east: "AI Core", west: "Cryogenic Lab", north: "Observation Deck" }, requiresKeycard: false, objectPool: ["terminal", "access code"] }, "Secret Chamber": { name: "Secret Chamber", descriptions: { 0: "A hidden room. An obsidian altar stands in the center, pulsing with a faint, sickly red light.", 30: "The altar's glow intensifies, and the air grows heavy, tasting of blood and static. It calls for a sacrifice." }, exits: { south: "Cryogenic Lab" }, requiresKeycard: true, objectPool: ["altar", "logic bomb"] }, "Maintenance Tunnel": { name: "Maintenance Tunnel", descriptions: { 0: "The air is thick with the smell of rust and damp. Darkness presses in from all sides.", 30: "The walls seem to sweat, and you hear a wet, dragging sound from just around the next corner." }, exits: { north: "Lobby" }, requiresKeycard: false, objectPool: ["flashlight"] }, "Observation Deck": { name: "Observation Deck", descriptions: { 0: "A large telescope points towards a viewport showing the cold, distant stars.", 30: "The stars seem to form vast, uncaring eyes, and you feel infinitesimally small and doomed." }, exits: { south: "Control Room" }, requiresKeycard: true, objectPool: ["telescope"] }, "Archive Room": { name: "Archive Room", descriptions: { 0: "Shelves overflow with data drives and physical files, a testament to a forgotten era.", 30: "The whispers of forgotten data drives seem to coalesce into a single, damning word: your name." }, exits: { north: "Laboratory" }, requiresKeycard: false, objectPool: ["records"] }, "Data Vault": { name: "Data Vault", descriptions: { 0: "Secure data archives glow with a soft, internal light.", 30: "The glow seems hungry, promising knowledge at the cost of your identity." }, exits: { west: "Lobby" }, requiresKeycard: true, objectPool: ["data disk", "decryption device", "data broker terminal"] }, "AI Core": { name: "AI Core", descriptions: { 0: "A massive, pulsating sphere of light and energy dominates the room. This is the heart of SYNAPSE.", 30: "The core's pulse matches your frantic heartbeat, a parasitic synchronicity that feels like a violation." }, exits: { west: "Control Room", east: "Server Closet" }, requiresKeycard: true, objectPool: ["core console"] }, "Cryogenic Lab": { name: "Cryogenic Lab", descriptions: { 0: "Rows of cryogenic pods are coated in a thick layer of frost. It's unnaturally cold.", 30: "You see clear, hand-shaped prints on the inside of the frosted glass, as if something was desperately trying to get out." }, exits: { south: "Laboratory", east: "Control Room", north: "Secret Chamber" }, requiresKeycard: false, objectPool: ["emp device"] }, };
         rooms = {}; for (const key in roomData) { const room = { ...roomData[key] }; const shuffled = room.objectPool.sort(() => 0.5 - Math.random()); room.objects = shuffled.slice(0, 1 + Math.floor(Math.random() * shuffled.length)); rooms[key] = room; }
     }
 
@@ -822,13 +818,19 @@
     function renderDialogueOptions() {
         UI.dialogueOptionsContainer.innerHTML = '';
         const node = GameState.dialogue.currentNode;
-        if (!node) return;
-
+    
+        // Default map to bottom, remove top positioning
+        UI.mapContainer.classList.remove('top-2');
+        UI.mapContainer.classList.add('bottom-2');
+    
+        if (!node) {
+            return; // No node, so no buttons are rendered, and map stays at the bottom.
+        }
+    
         // Container for system buttons like 'back' and 'pause'
         const systemButtonsContainer = document.createElement('div');
         systemButtonsContainer.className = 'w-full flex gap-2 mb-2';
-        let hasSystemButtons = false;
-
+    
         // Add the 'go back' button if we are in a sub-menu
         if (GameState.dialogue.previousNodes.length > 0) {
             const backBtn = document.createElement('button');
@@ -836,21 +838,19 @@
             backBtn.className = "button text-yellow-300 border-yellow-300/80 flex-grow";
             backBtn.onclick = () => processPlayerInput('[go back]');
             systemButtonsContainer.appendChild(backBtn);
-            hasSystemButtons = true;
         }
-
+    
         // Add the 'pause' button
         const pauseBtn = document.createElement('button');
         pauseBtn.textContent = "[Pause]";
         pauseBtn.className = "button text-cyan-300 border-cyan-300/80 flex-grow";
         pauseBtn.onclick = showPauseMenu;
         systemButtonsContainer.appendChild(pauseBtn);
-        hasSystemButtons = true;
-
-        if (hasSystemButtons) {
+    
+        if (systemButtonsContainer.hasChildNodes()) {
             UI.dialogueOptionsContainer.appendChild(systemButtonsContainer);
         }
-
+    
         // Render the actual options for the current node
         if (node.responses) {
             for (const text in node.responses) {
@@ -860,6 +860,12 @@
                 button.onclick = () => processPlayerInput(text);
                 UI.dialogueOptionsContainer.appendChild(button);
             }
+        }
+    
+        // If any buttons were added to the container, move the map to the top
+        if (UI.dialogueOptionsContainer.hasChildNodes()) {
+            UI.mapContainer.classList.remove('bottom-2');
+            UI.mapContainer.classList.add('top-2');
         }
     }
     
@@ -919,7 +925,7 @@
     function displayConversationHistory() { const historyText = GameState.conversationHistory.slice(-10).join('<br>'); showModal(`<h2 class="text-2xl mb-4 title-font text-cyan-400">HISTORY</h2><div class="text-left text-sm">${historyText}</div><button id="close-modal-btn" class="button mt-6">Close</button>`, true); }
     function handleMove(direction) { const room = rooms[GameState.currentRoom]; if (GameState.activeSynapseHack?.type === 'door_lock' && GameState.activeSynapseHack.room === GameState.currentRoom) { typeWriter(UI.gameOutput, "The doors are sealed shut by SYNAPSE!", '#ff474c'); return; } if (room.exits[direction]) { const nextRoomName = room.exits[direction]; const nextRoom = rooms[nextRoomName]; if (nextRoom.requiresKeycard && !hasItem('keycard') && !hasItem('master keycard')) { if (GameState.abilities?.includes('bypass')) { GameState.abilities.splice(GameState.abilities.indexOf('bypass'), 1); typeWriter(UI.gameOutput, "You expertly bypass the electronic lock. Your skill is spent.", '#a0e69d'); GameState.currentRoom = nextRoomName; renderRoom(); } else { typeWriter(UI.gameOutput, "The door is locked. A keycard is required.", '#ff474c'); } } else { if(nextRoom.requiresKeycard && hasItem('master keycard')) { GameState.inventory = GameState.inventory.filter(i => i.name !== 'master keycard'); typeWriter(UI.gameOutput, "You use the master keycard to open the door. The card disintegrates into dust.", '#a0e69d'); } GameState.currentRoom = nextRoomName; renderRoom(); } } else { typeWriter(UI.gameOutput, "You can't go that way.", '#ff474c'); } }
     function handleVisit(roomName) { const targetRoomKey = Object.keys(rooms).find(k => k.toLowerCase() === roomName.toLowerCase()); if(targetRoomKey) { GameState.currentRoom = targetRoomKey; renderRoom(); } else { typeWriter(UI.gameOutput, `Room '${roomName}' not found.`, '#ff474c'); } }
-    function handleTake(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if (itemKey && takeableItems.has(itemKey)) { const currentWeight = GameState.inventory.reduce((sum, item) => sum + (item.weight || 1), 0); if (currentWeight + 1 > MAX_INVENTORY_WEIGHT) { typeWriter(UI.gameOutput, `Inventory is full. Cannot take ${itemKey}.`, '#ffdb58'); return; } GameState.inventory.push({ name: itemKey, type: ItemType.Key, weight: 1 }); room.objects = room.objects.filter(obj => obj.toLowerCase() !== itemKey.toLowerCase()); typeWriter(UI.gameOutput, `You took the ${itemKey}.`); updateUI(); } else { typeWriter(UI.gameOutput, `You can't take that.`, '#ff474c'); } }
+    function handleTake(itemName) { const room = rooms[GameState.currentRoom]; const itemKey = room.objects.find(o => o.toLowerCase() === itemName.toLowerCase()); if (itemKey && takeableItems.has(itemKey)) { const currentWeight = GameState.inventory.reduce((sum, item) => sum + (item.weight || 1), 0); if (currentWeight + 1 > MAX_INVENTORY_WEIGHT) { typeWriter(UI.gameOutput, `Inventory is full. Cannot take ${itemKey}.`, '#ffdb58'); return; } GameState.inventory.push({ name: itemKey, type: ItemType.Key, weight: 1 }); room.objects = room.objects.filter(obj => obj.toLowerCase() !== itemKey.toLowerCase()); typeWriter(UI.gameOutput, `You took the ${itemKey}.`); renderRoom(); updateUI(); } else { typeWriter(UI.gameOutput, `You can't take that.`, '#ff474c'); } }
     
     function handleUse(itemName) {
         if (!hasItem(itemName)) { typeWriter(UI.gameOutput, "You don't have that.", '#ff474c'); return; }
@@ -967,16 +973,16 @@
     async function attemptOverride() { if (GameState.currentRoom === 'AI Core' && hasItem('keycard') && hasItem('data disk')) { const success = await timedInputChallenge('override', 10000); if(success) { unlockAchievement("Escapist"); endGame("ending_defiant_shutdown"); } else { typeWriter(UI.gameOutput, "Override failed. Time ran out.", '#ff474c'); } } else { typeWriter(UI.gameOutput, "Override failed. Insufficient authorization.", '#ff474c'); } }
     
     async function handleDialogueCommand(input) {
-        // First, check for the "go back" command.
+        // Special handling for the 'back' command
         if (input.toLowerCase().trim() === '[go back]') {
             if (GameState.dialogue.previousNodes.length > 0) {
                 GameState.dialogue.currentNode = GameState.dialogue.previousNodes.pop();
-                GameState.dialogue.askedQuestions.clear(); // Clear 'asked' history when moving up a level.
+                GameState.dialogue.askedQuestions.clear();
                 renderDialogueOptions();
             }
-            return true; // Command handled.
+            return true;
         }
-
+    
         const normalizedInput = parseFreeformInput(input);
         const currentNode = GameState.dialogue.currentNode;
         
@@ -986,11 +992,11 @@
             let awarenessChange = nextNode.awarenessChange || 0;
             if (awarenessChange > 1 && GameState.abilities?.includes('persuasion_resist')) { awarenessChange = Math.ceil(awarenessChange / 2); typeWriter(UI.gameOutput, "[Your innate skepticism shields you from the worst of its influence.]", '#a0e69d'); }
             if (normalizedInput === "[Probe for secrets]" && GameState.abilities?.includes('subtle_probe')) { awarenessChange = Math.max(1, awarenessChange - 2); typeWriter(UI.gameOutput, "[Your corporate espionage training makes your probing less obvious.]", '#a0e69d'); }
-
+    
             GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel + awarenessChange);
             GameState.sanityLevel = Math.max(0, GameState.sanityLevel + (nextNode.sanityChange || 0));
             GameState.dialogue.questionCount++;
-            GameState.dialogue.askedQuestions.add(normalizedInput); // Mark this question as asked at the current level.
+            GameState.dialogue.askedQuestions.add(normalizedInput);
             
             if (nextNode.temporaryTone) {
                 GameState.temporaryTone = nextNode.temporaryTone;
@@ -1000,20 +1006,23 @@
             if (nextNode.flag) {
                 GameState.dialogue.specialDialogueFlags[nextNode.flag] = true;
             }
-
+    
             await displayChatbotResponse(nextNode.message);
             
             // If the chosen response leads to more questions, update the conversation tree.
             if (nextNode.responses && Object.keys(nextNode.responses).length > 0) {
-                GameState.dialogue.previousNodes.push(currentNode); // Save the current node to go back to.
-                GameState.dialogue.currentNode = nextNode; // Move to the next level of dialogue.
-                GameState.dialogue.askedQuestions.clear(); // Clear history for the new level.
+                GameState.dialogue.previousNodes.push(currentNode);
+                GameState.dialogue.currentNode = nextNode;
+                GameState.dialogue.askedQuestions.clear();
+            } else {
+                // End of this branch. Set current node to null so no more options are shown.
+                GameState.dialogue.currentNode = null;
             }
             
-            renderDialogueOptions();
+            renderDialogueOptions(); // Always call after handling a dialogue command
             return true;
         }
-
+    
         return false;
     }
     
@@ -1881,82 +1890,85 @@
 
     function drawMap() {
         if (!UI.mapCanvas) return;
-        const ctx = UI.mapCanvas.getContext('2d');
-        const canvasSize = UI.mapCanvas.width;
-        const padding = 20;
-        const nodeRadius = 4;
-        const currentRoomRadius = 6;
+        const canvas = UI.mapCanvas;
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = canvas.parentElement.offsetWidth;
+        canvas.height = canvas.parentElement.offsetHeight;
+        
         let time = performance.now() * 0.002;
 
-        ctx.clearRect(0, 0, canvasSize, canvasSize);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // --- Find Map Bounds ---
-        const coords = Object.values(roomLayout);
-        const minX = Math.min(...coords.map(c => c.x));
-        const maxX = Math.max(...coords.map(c => c.x));
-        const minY = Math.min(...coords.map(c => c.y));
-        const maxY = Math.max(...coords.map(c => c.y));
-        const mapWidth = maxX - minX;
-        const mapHeight = maxY - minY;
-        const scaleX = (canvasSize - padding * 2) / (mapWidth || 1);
-        const scaleY = (canvasSize - padding * 2) / (mapHeight || 1);
+        // Center the map view
+        const currentRoomLayout = roomLayout[GameState.currentRoom];
+        const panX = canvas.width / 2 - (currentRoomLayout.x + currentRoomLayout.w / 2);
+        const panY = canvas.height / 2 - (currentRoomLayout.y + currentRoomLayout.h / 2);
+        
+        ctx.save();
+        ctx.translate(panX, panY);
 
-        const getCanvasPos = (roomName) => {
-            const layout = roomLayout[roomName];
-            if (!layout) return null;
-            const x = padding + (layout.x - minX) * scaleX;
-            const y = padding + (layout.y - minY) * scaleY;
-            return { x, y };
-        };
-
-        // --- Draw Connections ---
-        ctx.strokeStyle = 'rgba(0, 255, 65, 0.3)';
-        ctx.lineWidth = 1;
+        // --- Draw Connections First ---
+        ctx.strokeStyle = 'rgba(0, 255, 65, 0.4)';
+        ctx.lineWidth = 2;
         for (const roomName of GameState.visitedRooms) {
             const roomData = rooms[roomName];
-            const startPos = getCanvasPos(roomName);
-            if (!roomData || !startPos) continue;
+            const startLayout = roomLayout[roomName];
+            if (!roomData || !startLayout) continue;
+
+            const startX = startLayout.x + startLayout.w / 2;
+            const startY = startLayout.y + startLayout.h / 2;
 
             for (const direction in roomData.exits) {
                 const targetName = roomData.exits[direction];
-                if (GameState.visitedRooms.has(targetName)) {
-                    const endPos = getCanvasPos(targetName);
-                    if (endPos) {
-                        ctx.beginPath();
-                        ctx.moveTo(startPos.x, startPos.y);
-                        ctx.lineTo(endPos.x, endPos.y);
-                        ctx.stroke();
-                    }
+                const targetLayout = roomLayout[targetName];
+                if (targetLayout && GameState.visitedRooms.has(targetName)) {
+                    const endX = targetLayout.x + targetLayout.w / 2;
+                    const endY = targetLayout.y + targetLayout.h / 2;
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.lineTo(endX, endY);
+                    ctx.stroke();
                 }
+            }
+        }
+
+        // --- Draw All Rooms (Faded) ---
+        ctx.strokeStyle = 'rgba(0, 255, 65, 0.2)';
+        ctx.lineWidth = 1;
+        for (const roomName in roomLayout) {
+            const layout = roomLayout[roomName];
+            ctx.strokeRect(layout.x, layout.y, layout.w, layout.h);
+        }
+
+        // --- Draw Visited Rooms (Filled) ---
+        ctx.fillStyle = 'rgba(0, 255, 65, 0.25)';
+        ctx.font = '10px "Space Mono"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        for (const roomName of GameState.visitedRooms) {
+            const layout = roomLayout[roomName];
+            if (layout) {
+                ctx.fillRect(layout.x, layout.y, layout.w, layout.h);
+                // Draw room name
+                ctx.fillStyle = 'rgba(0, 255, 65, 0.7)';
+                ctx.fillText(layout.name, layout.x + layout.w / 2, layout.y + layout.h / 2);
             }
         }
         
-        // --- Draw Rooms ---
-        for (const roomName in roomLayout) {
-            if (GameState.visitedRooms.has(roomName)) {
-                const pos = getCanvasPos(roomName);
-                if (!pos) continue;
-
-                if (roomName === GameState.currentRoom) {
-                     // Pulsing effect for the current room
-                    const pulseRadius = currentRoomRadius + Math.sin(time * 3) * 2;
-                    ctx.fillStyle = `rgba(0, 255, 65, ${0.5 + Math.sin(time * 3) * 0.2})`;
-                    ctx.beginPath();
-                    ctx.arc(pos.x, pos.y, pulseRadius, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    ctx.fillStyle = '#00ff41';
-                    ctx.beginPath();
-                    ctx.arc(pos.x, pos.y, currentRoomRadius, 0, Math.PI * 2);
-                    ctx.fill();
-                } else {
-                    ctx.fillStyle = 'rgba(0, 255, 65, 0.5)';
-                    ctx.beginPath();
-                    ctx.arc(pos.x, pos.y, nodeRadius, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
+        // --- Draw Current Room (Pulsing Highlight) ---
+        if (currentRoomLayout) {
+            const pulse = Math.abs(Math.sin(time * 3)) * 0.3 + 0.5; // 0.5 to 0.8
+            ctx.fillStyle = `rgba(0, 255, 65, ${pulse})`;
+            ctx.fillRect(currentRoomLayout.x, currentRoomLayout.y, currentRoomLayout.w, currentRoomLayout.h);
+            
+            // Redraw text to be on top and brighter
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 11px "Space Mono"';
+            ctx.fillText(currentRoomLayout.name, currentRoomLayout.x + currentRoomLayout.w / 2, currentRoomLayout.y + currentRoomLayout.h / 2);
         }
+
+        ctx.restore();
     }
 
 
