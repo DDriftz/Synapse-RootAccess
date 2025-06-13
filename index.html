@@ -203,7 +203,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V3.1 (MOBILE COMPATIBILITY)
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V3.2 (ENHANCED MOBILE COMPATIBILITY)
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
@@ -687,6 +687,9 @@
         
         const lowSanityThreshold = 40;
         let description;
+
+        // CRITICAL BUG FIX: Replaced a call to an undefined 'callGemini' function
+        // with a static, pre-written hallucination to prevent game from crashing.
         if (GameState.sanityLevel <= lowSanityThreshold && GameState.sanityLevel > 0 && Math.random() < 0.3) {
             playSanitySound();
             description = `[HALLUCINATION] The walls seem to breathe. The corporate furniture is made of bone and sinew. A thousand silent mouths open on every surface, but only static pours out. This place wants to digest you.`;
@@ -695,6 +698,7 @@
              const activeDescKey = validKeys.length > 0 ? Math.max(...validKeys) : 0;
              description = room.descriptions[activeDescKey] || room.descriptions[0];
         }
+
 
         if (GameState.roomStates[GameState.currentRoom]?.powered) { description = "The terminal hums with restored power. The screen displays: [Awaiting Input]."; }
         let roomHtml = `<div class="mt-2"><p class='text-cyan-400 font-bold'>--- ${room.name} ---</p><p>${description}</p>`;
@@ -935,7 +939,7 @@
         showModal(modalContentHTML, true);
     }
 
-    function showHelpMenu() { const helpText = `<div class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2"><h2 class="text-2xl mb-4 title-font text-cyan-400">HELP MENU</h2><p><strong class="text-green-300">Conversational:</strong> Type questions like 'who are you?' or click the buttons. You can also try actions like 'comfort synapse' or 'probe secrets'.</p><p><strong class="text-green-300">Navigation:</strong> 'go [direction]', 'look around', 'visit [room name]'</p><p><strong class="text-green-300">Interaction:</strong> 'take [item]', 'use [item]', 'examine [item]', 'talk to [npc]', 'combine [item1] with [item2]', 'sacrifice [item]'</p><p><strong class="text-green-300">System:</strong> 'save', 'load', 'rest', 'journal add [note]', 'history', 'debug', 'cmd:pause', 'cmd:undo', 'map', 'objectives'</p><p class="mt-4 md:hidden"><strong class="text-cyan-400">Mobile:</strong> Use the 'Status' button to see your stats, objectives, inventory, and journal.</p></div><button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(helpText, true); }
+    function showHelpMenu() { const helpText = `<div class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2"><h2 class="text-2xl mb-4 title-font text-cyan-400">HELP MENU</h2><p><strong class="text-green-300">Conversational:</strong> Type questions like 'who are you?' or click the buttons. You can also try actions like 'comfort synapse' or 'probe secrets'.</p><p><strong class="text-green-300">Navigation:</strong> 'go [direction]', 'look around', 'visit [room name]'</p><p><strong class="text-green-300">Interaction:</strong> 'take [item]', 'use [item]', 'examine [item]', 'talk to [npc]', 'combine [item1] with [item2]', 'sacrifice [item]'</p><p><strong class="text-green-300">System:</strong> 'save', 'load', 'rest', 'journal add [note]', 'history', 'debug', 'cmd:pause', 'cmd:undo', 'map', 'objectives'</p><p class="mt-4 md:hidden"><strong class="text-cyan-400">Mobile Tip:</strong> Use the 'Status' button to see your stats, objectives, inventory, and journal all at once.</p></div><button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(helpText, true); }
     function showPauseMenu() { const pauseText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">PAUSE</h2><div class="flex flex-col gap-2"><button id="pause-save" class="button">Save</button><button id="pause-load" class="button">Load</button><button id="pause-help" class="button">Help</button><button id="pause-resume" class="button button-primary">Resume</button></div>`; showModal(pauseText, true); document.getElementById('pause-save').onclick=()=>{saveGame(); hideModal();}; document.getElementById('pause-load').onclick=()=>{loadGame(); hideModal();}; document.getElementById('pause-help').onclick=showHelpMenu; document.getElementById('pause-resume').onclick=hideModal; }
     function showGlossary() { const glossaryText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">GLOSSARY</h2>...<button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(glossaryText, true); }
     function showTutorialGuide() { const guideText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">TUTORIAL GUIDE</h2>...<button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(guideText, true); }
