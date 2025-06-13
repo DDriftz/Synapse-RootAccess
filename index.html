@@ -25,11 +25,38 @@
             font-family: 'Space Mono', monospace;
             position: fixed; /* Prevents pull-to-refresh and other weird mobile browser behaviors */
         }
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.1;
+        }
+        #app-container {
+            position: relative;
+            z-index: 1;
+        }
+        body::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: rgba(18, 16, 16, 0.1);
+            opacity: .5;
+            z-index: 2;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg, rgba(0, 255, 65, 0.15), rgba(0, 255, 65, 0.15) 1px, transparent 1px, transparent 2px);
+        }
         #title, .title-font {
             font-family: 'Major Mono Display', monospace;
         }
         .crt-flicker {
-            animation: flicker 1.5s infinite alternate;
+            animation: flicker 2.5s infinite alternate;
         }
         .crt-effect::before {
             content: " ";
@@ -45,8 +72,8 @@
             pointer-events: none;
         }
         @keyframes flicker {
-            0%, 100% { text-shadow: 0 0 5px #00ff41, 0 0 10px #00ff41, 0 0 15px #00ff41; opacity: 1; }
-            50% { text-shadow: 0 0 5px #00ff41, 0 0 10px #00ff41; opacity: 0.8; }
+            0%, 100% { text-shadow: 0 0 7px #00ff41, 0 0 12px #00ff41, 0 0 20px #00ff41; opacity: 1; }
+            50% { text-shadow: 0 0 5px #00ff41, 0 0 10px #00ff41; opacity: 0.85; }
         }
         .input-caret {
             background-color: #00ff41;
@@ -61,17 +88,34 @@
         #game-output::-webkit-scrollbar, #journal-panel::-webkit-scrollbar, #objectives-panel::-webkit-scrollbar, .modal-scroll::-webkit-scrollbar { width: 8px; }
         #game-output::-webkit-scrollbar-track, #journal-panel::-webkit-scrollbar-track, #objectives-panel::-webkit-scrollbar-track, .modal-scroll::-webkit-scrollbar-track { background: #1a1a1a; }
         #game-output::-webkit-scrollbar-thumb, #journal-panel::-webkit-scrollbar-thumb, #objectives-panel::-webkit-scrollbar-thumb, .modal-scroll::-webkit-scrollbar-thumb { background-color: #00ff41; border-radius: 4px; }
+        
         .glitch {
-            animation: glitch-anim 0.5s infinite;
+            animation: glitch-anim 1s infinite alternate;
         }
         @keyframes glitch-anim {
-            0% { transform: translate(0); }
-            20% { transform: translate(-3px, 3px); }
-            40% { transform: translate(-3px, -3px); }
-            60% { transform: translate(3px, 3px); }
-            80% { transform: translate(3px, -3px); }
-            100% { transform: translate(0); }
+          0% { clip-path: inset(45% 0 50% 0); }
+          5% { clip-path: inset(25% 0 35% 0); }
+          10% { clip-path: inset(60% 0 10% 0); }
+          15% { clip-path: inset(90% 0 5% 0); }
+          20% { clip-path: inset(40% 0 45% 0); }
+          25% { clip-path: inset(20% 0 70% 0); }
+          30% { clip-path: inset(85% 0 5% 0); }
+          35% { clip-path: inset(15% 0 80% 0); }
+          40% { clip-path: inset(55% 0 25% 0); }
+          45% { clip-path: inset(30% 0 55% 0); }
+          50% { clip-path: inset(70% 0 5% 0); }
+          55% { clip-path: inset(10% 0 85% 0); }
+          60% { clip-path: inset(75% 0 15% 0); }
+          65% { clip-path: inset(5% 0 90% 0); }
+          70% { clip-path: inset(65% 0 20% 0); }
+          75% { clip-path: inset(45% 0 50% 0); }
+          80% { clip-path: inset(25% 0 65% 0); }
+          85% { clip-path: inset(95% 0 2% 0); }
+          90% { clip-path: inset(30% 0 60% 0); }
+          95% { clip-path: inset(5% 0 75% 0); }
+          100% { clip-path: inset(80% 0 10% 0); }
         }
+
         .button {
             background-color: rgba(0,255,65,0.1);
             border: 1px solid rgba(0,255,65,0.8);
@@ -82,14 +126,20 @@
             cursor: pointer;
             flex-shrink: 0;
             -webkit-tap-highlight-color: transparent; /* Disable tap highlight on mobile */
+            text-shadow: 0 0 3px rgba(0,255,65,0.5);
         }
         .button:hover, .button:active {
             background-color: rgba(0,255,65,0.3);
+            box-shadow: 0 0 10px rgba(0,255,65,0.5);
+        }
+        .button:active {
+             transform: translateY(1px) scale(0.98);
         }
         .button-primary {
             background-color: #00ff41;
             color: #000;
             font-weight: bold;
+            text-shadow: none;
         }
         .button-primary:hover, .button-primary:active {
             background-color: #fff;
@@ -103,6 +153,7 @@
             justify-content: center;
             padding: 1rem;
             z-index: 50;
+            animation: fadeIn 0.3s ease-out;
         }
         .modal.flex {
             display: flex;
@@ -115,11 +166,22 @@
             max-width: 48rem;
             width: 100%;
             text-align: center;
+            animation: scaleUp 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        #map-container {
+            animation: pulse 2s infinite alternate;
+        }
+        @keyframes pulse {
+            from { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.4); }
+            to { box-shadow: 0 0 0 5px rgba(0, 255, 65, 0); }
         }
     </style>
 </head>
 <body class="bg-black text-[#00ff41] flex items-center justify-center min-h-screen">
-
+    <canvas id="background-canvas"></canvas>
     <div id="app-container" class="w-full h-full bg-black/75 p-2 sm:p-4 flex flex-col crt-effect">
         
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
@@ -150,9 +212,15 @@
 
         <div id="game-screen" class="hidden flex-col h-full">
             <div class="flex-grow flex flex-col md:flex-row gap-4 overflow-hidden">
-                <div class="w-full md:w-3/4 flex flex-col h-full">
+                <!-- Main Game Content -->
+                <div class="w-full md:w-3/4 flex flex-col h-full relative">
                     <div id="game-output" class="flex-grow p-2 border border-[#00ff41]/30 rounded-md overflow-y-auto mb-2 bg-black/50"></div>
                     <div id="dialogue-options" class="flex flex-wrap gap-2 justify-center p-2"></div>
+
+                    <!-- Mini-map -->
+                    <div id="map-container" class="hidden md:block absolute top-2 right-2 w-48 h-48 bg-black/50 border-2 border-[#00ff41]/50 rounded-full p-2">
+                        <canvas id="map-canvas" width="176" height="176"></canvas>
+                    </div>
                 </div>
 
                 <div id="side-panel" class="w-full md:w-1/4 hidden md:flex flex-col gap-4">
@@ -194,7 +262,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V3.4 (SESSION PERSISTENCE)
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V3.6 (MINI-MAP)
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
@@ -249,6 +317,9 @@
         viewBackstoriesBtn: document.getElementById('view-backstories-btn'),
         abilityDisplay: document.getElementById('ability-display'),
         statusBtn: document.getElementById('status-btn'),
+        backgroundCanvas: document.getElementById('background-canvas'),
+        mapCanvas: document.getElementById('map-canvas'),
+        mapContainer: document.getElementById('map-container'),
     };
     let currentTextSpeed = TextSpeed.Normal;
     let commandHistory = [];
@@ -260,6 +331,19 @@
     
     // --- GAME DATA ---
     let rooms = {};
+    const roomLayout = {
+        "Observation Deck":   { x: 1, y: 0, name: "Observ." },
+        "Secret Chamber":     { x: 0, y: 1, name: "Secret" },
+        "Control Room":       { x: 1, y: 1, name: "Control" },
+        "AI Core":            { x: 2, y: 1, name: "AI Core" },
+        "Server Closet":      { x: 3, y: 1, name: "S.Closet" },
+        "Cryogenic Lab":      { x: 0, y: 2, name: "Cryo" },
+        "Laboratory":         { x: 1, y: 2, name: "Lab" },
+        "Lobby":              { x: 2, y: 2, name: "Lobby" },
+        "Data Vault":         { x: 3, y: 2, name: "D.Vault" },
+        "Archive Room":       { x: 1, y: 3, name: "Archive" },
+        "Maintenance Tunnel": { x: 2, y: 3, name: "M.Tunnel" },
+    };
     const takeableItems = new Set(["keycard", "flashlight", "data disk", "emp device", "access code", "vial", "records", "decryption device", "telescope", "stimpack", "effigy", "master keycard", "power cell", "datapad log", "hacked data disk", "logic bomb", "severed cable"]);
     const safeRooms = new Set(["Lobby", "Archive Room"]);
     const sanityEvents = { 
@@ -670,6 +754,7 @@
         UI.inventory.list.innerHTML = ''; if (GameState.inventory.length > 0) { GameState.inventory.forEach(item => { const li = document.createElement('li'); li.textContent = `- ${item.name}`; UI.inventory.list.appendChild(li); }); } else { UI.inventory.list.innerHTML = '<li>(empty)</li>'; }
         UI.journal.list.innerHTML = ''; GameState.journalEntries.slice().reverse().forEach(entry => { const li = document.createElement('li'); li.textContent = entry; UI.journal.list.appendChild(li); });
         UI.objectives.list.innerHTML = ''; if (GameState.objectives.length > 0) { GameState.objectives.forEach(obj => { const li = document.createElement('li'); li.innerHTML = obj.completed ? `<span class="text-gray-500 line-through">${obj.text}</span>` : `&gt; ${obj.text}`; UI.objectives.list.appendChild(li); }); } else { UI.objectives.list.innerHTML = '<li>(None)</li>'; }
+        drawMap();
     }
     
     async function renderRoom() {
@@ -1202,7 +1287,13 @@
     function addObjective(text) { if (!GameState.objectives.some(o => o.text === text)) { GameState.objectives.push({ text: text, completed: false }); updateUI(); } }
     function completeObjective(text) { const obj = GameState.objectives.find(o => o.text === text); if (obj) { obj.completed = true; updateUI(); } }
     function displayObjectives() { if (window.innerWidth < 768) { showStatusModal(); } else { typeWriter(UI.gameOutput, "Current objectives displayed on the right panel.", '#cccccc'); } }
-    function displayMap() { showModal("Map feature not yet implemented.", false); }
+    function displayMap() {
+        if (window.innerWidth < 768) {
+             showModal("Map is available on the main screen on larger displays.", false);
+        } else {
+            typeWriter(UI.gameOutput, "Map is displayed in the top-right corner.", '#cccccc');
+        }
+    }
     function handleCombine(argument) { typeWriter(UI.gameOutput, "Combine command not yet fully implemented.", '#ffdb58'); }
     function handleSacrifice(argument) {
         if (GameState.currentRoom !== 'Secret Chamber' || !hasItem(argument)) {
@@ -1366,6 +1457,125 @@
         return false;
     }
 
+    function setupBackgroundAnimation() {
+        const canvas = UI.backgroundCanvas;
+        const ctx = canvas.getContext('2d');
+        let width, height, grid_size = 20, time = 0;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.strokeStyle = 'rgba(0, 255, 65, 0.2)';
+            ctx.lineWidth = 1;
+
+            for (let x = 0; x < width; x += grid_size) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+
+            for (let y = 0; y < height; y += grid_size) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+            
+            time += 0.01;
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        draw();
+    }
+
+    function drawMap() {
+        if (!UI.mapCanvas) return;
+        const ctx = UI.mapCanvas.getContext('2d');
+        const canvasSize = UI.mapCanvas.width;
+        const padding = 20;
+        const nodeRadius = 4;
+        const currentRoomRadius = 6;
+        let time = performance.now() * 0.002;
+
+        ctx.clearRect(0, 0, canvasSize, canvasSize);
+
+        // --- Find Map Bounds ---
+        const coords = Object.values(roomLayout);
+        const minX = Math.min(...coords.map(c => c.x));
+        const maxX = Math.max(...coords.map(c => c.x));
+        const minY = Math.min(...coords.map(c => c.y));
+        const maxY = Math.max(...coords.map(c => c.y));
+        const mapWidth = maxX - minX;
+        const mapHeight = maxY - minY;
+        const scaleX = (canvasSize - padding * 2) / (mapWidth || 1);
+        const scaleY = (canvasSize - padding * 2) / (mapHeight || 1);
+
+        const getCanvasPos = (roomName) => {
+            const layout = roomLayout[roomName];
+            if (!layout) return null;
+            const x = padding + (layout.x - minX) * scaleX;
+            const y = padding + (layout.y - minY) * scaleY;
+            return { x, y };
+        };
+
+        // --- Draw Connections ---
+        ctx.strokeStyle = 'rgba(0, 255, 65, 0.3)';
+        ctx.lineWidth = 1;
+        for (const roomName of GameState.visitedRooms) {
+            const roomData = rooms[roomName];
+            const startPos = getCanvasPos(roomName);
+            if (!roomData || !startPos) continue;
+
+            for (const direction in roomData.exits) {
+                const targetName = roomData.exits[direction];
+                if (GameState.visitedRooms.has(targetName)) {
+                    const endPos = getCanvasPos(targetName);
+                    if (endPos) {
+                        ctx.beginPath();
+                        ctx.moveTo(startPos.x, startPos.y);
+                        ctx.lineTo(endPos.x, endPos.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+        
+        // --- Draw Rooms ---
+        for (const roomName in roomLayout) {
+            if (GameState.visitedRooms.has(roomName)) {
+                const pos = getCanvasPos(roomName);
+                if (!pos) continue;
+
+                if (roomName === GameState.currentRoom) {
+                     // Pulsing effect for the current room
+                    const pulseRadius = currentRoomRadius + Math.sin(time * 3) * 2;
+                    ctx.fillStyle = `rgba(0, 255, 65, ${0.5 + Math.sin(time * 3) * 0.2})`;
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, pulseRadius, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#00ff41';
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, currentRoomRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    ctx.fillStyle = 'rgba(0, 255, 65, 0.5)';
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, nodeRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+    }
+
+
     // --- EVENT LISTENERS & INITIALIZATION ---
     window.addEventListener('beforeunload', saveStateToSession);
 
@@ -1424,6 +1634,8 @@
         UI.playerBackstoryInput.addEventListener('input', updateAbilityDisplay);
         UI.viewBackstoriesBtn.addEventListener('click', showBackstoryModal);
         UI.statusBtn.addEventListener('click', showStatusModal);
+
+        setupBackgroundAnimation();
 
         // --- Session Restore Logic ---
         if (!loadStateFromSession()) {
