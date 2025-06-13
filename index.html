@@ -203,7 +203,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V3.2 (ENHANCED MOBILE COMPATIBILITY)
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V3.3 (MOBILE UI OVERHAUL)
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
@@ -925,19 +925,96 @@
         UI.modal.classList.remove('flex');
     }
     
-    // Shows the status panel content in a modal for mobile users
+    // Shows the new tabbed status panel in a modal for mobile users
     function showStatusModal() {
+        // Add classes for a more fullscreen-like mobile view and reset some base styles
+        UI.modal.classList.add('p-1', 'sm:p-4');
+        UI.modalContent.classList.add('!p-1', 'sm:!p-2', '!max-w-full', 'h-full', '!text-left', '!bg-transparent', '!border-none');
+
         const modalContentHTML = `
-            <div class="text-left max-h-[70vh] overflow-y-auto modal-scroll p-2 space-y-4">
-                <div class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50">${UI.stats.panel.innerHTML}</div>
-                <div class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50">${UI.objectives.panel.innerHTML}</div>
-                <div class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50">${UI.inventory.panel.innerHTML}</div>
-                <div class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50">${UI.journal.panel.innerHTML}</div>
+            <div class="flex flex-col h-full w-full text-sm sm:text-base bg-[#0d0d0d] border-2 border-[#00ff41] rounded-lg p-2">
+                <!-- Tab Buttons -->
+                <div class="flex-shrink-0 flex justify-around border-b-2 border-[#00ff41]/30 text-xs sm:text-sm">
+                    <button class="status-tab-btn" data-tab="stats">STATS</button>
+                    <button class="status-tab-btn" data-tab="objectives">OBJECTIVES</button>
+                    <button class="status-tab-btn" data-tab="inventory">INVENTORY</button>
+                    <button class="status-tab-btn" data-tab="journal">JOURNAL</button>
+                    <button class="status-tab-btn" data-tab="input">INPUT</button>
+                </div>
+
+                <!-- Tab Content Panels -->
+                <div class="flex-grow overflow-y-auto modal-scroll py-2">
+                    <div id="status-tab-stats" class="status-tab-panel">${UI.stats.panel.innerHTML}</div>
+                    <div id="status-tab-objectives" class="status-tab-panel hidden">${UI.objectives.panel.innerHTML}</div>
+                    <div id="status-tab-inventory" class="status-tab-panel hidden">${UI.inventory.panel.innerHTML}</div>
+                    <div id="status-tab-journal" class="status-tab-panel hidden">${UI.journal.panel.innerHTML}</div>
+                    <div id="status-tab-input" class="status-tab-panel hidden p-4 flex flex-col justify-center items-center h-full">
+                        <p class="mb-4 text-center">Enter your command below and press Submit.</p>
+                        <div class="w-full max-w-sm flex items-center border-b-2 border-[#00ff41]/50 focus-within:border-[#00ff41]">
+                        <span class="text-xl text-[#00ff41]">&gt;</span>
+                        <input type="text" id="modal-player-input" class="flex-grow bg-transparent text-[#00ff41] text-lg ml-2 p-2 focus:outline-none" autocomplete="off" autocapitalize="none" spellcheck="false">
+                        </div>
+                        <button id="modal-submit-btn" class="button button-primary mt-6">Submit Command</button>
+                    </div>
+                </div>
+                <button id="status-modal-close-btn" class="button mt-2 flex-shrink-0 w-full sm:w-auto">Close</button>
             </div>
-            <button id="close-modal-btn" class="button mt-6">Close</button>
         `;
-        showModal(modalContentHTML, true);
+
+        UI.modalContent.innerHTML = modalContentHTML;
+        UI.modal.classList.remove('hidden');
+        UI.modal.classList.add('flex');
+        
+        const tabButtons = UI.modalContent.querySelectorAll('.status-tab-btn');
+        const tabPanels = UI.modalContent.querySelectorAll('.status-tab-panel');
+
+        const setActiveTab = (tabName) => {
+            tabButtons.forEach(btn => {
+                const isTarget = btn.dataset.tab === tabName;
+                btn.classList.toggle('opacity-50', !isTarget);
+                btn.classList.toggle('border-[#00ff41]', isTarget);
+                btn.classList.toggle('font-bold', isTarget);
+                btn.classList.toggle('border-transparent', !isTarget);
+            });
+            tabPanels.forEach(panel => panel.classList.toggle('hidden', panel.id !== `status-tab-${tabName}`));
+            if (tabName === 'input') document.getElementById('modal-player-input')?.focus();
+        };
+
+        tabButtons.forEach(button => {
+            button.classList.add('w-1/5', 'p-3', 'text-[#00ff41]', 'border-b-4', 'transition-all', 'duration-200');
+            button.addEventListener('click', () => setActiveTab(button.dataset.tab));
+        });
+
+        setActiveTab('stats');
+
+        const modalSubmitBtn = document.getElementById('modal-submit-btn');
+        const modalPlayerInput = document.getElementById('modal-player-input');
+
+        const submitModalInput = () => {
+            const input = modalPlayerInput.value.trim();
+            if (input) {
+                closeModal();
+                setTimeout(() => processPlayerInput(input), 150);
+            }
+        };
+
+        if(modalSubmitBtn && modalPlayerInput) {
+            modalSubmitBtn.onclick = submitModalInput;
+            modalPlayerInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); submitModalInput(); }
+            });
+        }
+        
+        const closeModal = () => {
+            hideModal();
+            UI.modal.classList.remove('p-1', 'sm:p-4');
+            UI.modalContent.classList.remove('!p-1', 'sm:!p-2', '!max-w-full', 'h-full', '!text-left', '!bg-transparent', '!border-none');
+        };
+
+        UI.modal.onclick = (e) => { if (e.target === UI.modal) closeModal(); };
+        document.getElementById('status-modal-close-btn').onclick = closeModal;
     }
+
 
     function showHelpMenu() { const helpText = `<div class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2"><h2 class="text-2xl mb-4 title-font text-cyan-400">HELP MENU</h2><p><strong class="text-green-300">Conversational:</strong> Type questions like 'who are you?' or click the buttons. You can also try actions like 'comfort synapse' or 'probe secrets'.</p><p><strong class="text-green-300">Navigation:</strong> 'go [direction]', 'look around', 'visit [room name]'</p><p><strong class="text-green-300">Interaction:</strong> 'take [item]', 'use [item]', 'examine [item]', 'talk to [npc]', 'combine [item1] with [item2]', 'sacrifice [item]'</p><p><strong class="text-green-300">System:</strong> 'save', 'load', 'rest', 'journal add [note]', 'history', 'debug', 'cmd:pause', 'cmd:undo', 'map', 'objectives'</p><p class="mt-4 md:hidden"><strong class="text-cyan-400">Mobile Tip:</strong> Use the 'Status' button to see your stats, objectives, inventory, and journal all at once.</p></div><button id="close-modal-btn" class="button mt-6">Close</button>`; showModal(helpText, true); }
     function showPauseMenu() { const pauseText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">PAUSE</h2><div class="flex flex-col gap-2"><button id="pause-save" class="button">Save</button><button id="pause-load" class="button">Load</button><button id="pause-help" class="button">Help</button><button id="pause-resume" class="button button-primary">Resume</button></div>`; showModal(pauseText, true); document.getElementById('pause-save').onclick=()=>{saveGame(); hideModal();}; document.getElementById('pause-load').onclick=()=>{loadGame(); hideModal();}; document.getElementById('pause-help').onclick=showHelpMenu; document.getElementById('pause-resume').onclick=hideModal; }
@@ -1319,4 +1396,3 @@
     </script>
 </body>
 </html>
-
