@@ -8,7 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Space+Mono&display=swap" rel="stylesheet">
+    <!-- Updated font to VT323 for a more pixelated look -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Mono&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <style>
         html, body {
@@ -52,12 +53,17 @@
             pointer-events: none;
             background: repeating-linear-gradient(0deg, rgba(0, 255, 65, 0.15), rgba(0, 255, 65, 0.15) 1px, transparent 1px, transparent 2px);
         }
-        #title, .title-font {
-            font-family: 'Major Mono Display', monospace;
+        /* Updated title font family */
+        .title-font {
+            font-family: 'VT323', monospace;
         }
-        .title-3d {
-            color: #f0f0f0; /* Lighter base color for the text */
-            animation: subtle-flicker 4s infinite alternate;
+
+        /* Reverted 3D pixel title style to a straight-on view */
+        .title-pixel-3d {
+            color: #00ff41; /* Bright green face */
+            background-color: transparent;
+            position: relative;
+            animation: pixel-flicker 5s infinite linear;
         }
 
         .crt-effect::before {
@@ -73,52 +79,48 @@
             background-size: 100% 2px, 3px 100%;
             pointer-events: none;
         }
-        @keyframes subtle-flicker {
-            0%, 100% {
+        
+        /* Keyframes for the pixelated 3D title flicker */
+        @keyframes pixel-flicker {
+            0%, 19.9%, 22.1%, 60%, 100% {
                 text-shadow:
-                    /* Base 3D effect shadows */
-                    0 1px 0 #ccc,
-                    0 2px 0 #c9c9c9,
-                    0 3px 0 #bbb,
-                    0 4px 0 #b9b9b9,
-                    0 5px 0 #aaa,
-                    /* Deeper perspective shadows */
-                    0 6px 1px rgba(0,0,0,.1),
-                    0 0 5px rgba(0,0,0,.1),
-                    0 1px 3px rgba(0,0,0,.3),
-                    0 3px 5px rgba(0,0,0,.2),
-                    0 5px 10px rgba(0,0,0,.25),
-                    0 10px 10px rgba(0,0,0,.2),
-                    0 20px 20px rgba(0,0,0,.15),
-                    /* Green glow effect */
-                    0 0 15px rgba(0, 255, 65, 0.6),
-                    0 0 30px rgba(0, 255, 65, 0.5),
-                    0 0 50px rgba(0, 255, 65, 0.3);
-                color: #f0f0f0;
+                    /* The main green glow */
+                    0 0 5px #00ff41, 0 0 10px #00ff41, 0 0 20px #00ff41,
+                    /* The 3D block shadow */
+                    1px 1px 0px #00a32a,
+                    2px 2px 0px #00a32a,
+                    3px 3px 0px #008221,
+                    4px 4px 0px #008221,
+                    5px 5px 0px #006119,
+                    6px 6px 0px #006119,
+                    7px 7px 0px #004010,
+                    8px 8px 0px #004010;
+                opacity: 1;
             }
-            50% {
-                text-shadow:
-                    /* Base 3D effect shadows */
-                    0 1px 0 #ccc,
-                    0 2px 0 #c9c9c9,
-                    0 3px 0 #bbb,
-                    0 4px 0 #b9b9b9,
-                    0 5px 0 #aaa,
-                    /* Deeper perspective shadows */
-                    0 6px 1px rgba(0,0,0,.1),
-                    0 0 5px rgba(0,0,0,.1),
-                    0 1px 3px rgba(0,0,0,.3),
-                    0 3px 5px rgba(0,0,0,.2),
-                    0 5px 10px rgba(0,0,0,.25),
-                    0 10px 10px rgba(0,0,0,.2),
-                    0 20px 20px rgba(0,0,0,.15),
-                    /* Intensified Green glow effect for the flicker */
-                    0 0 18px rgba(0, 255, 65, 0.7),
-                    0 0 35px rgba(0, 255, 65, 0.6),
-                    0 0 55px rgba(0, 255, 65, 0.4);
-                color: #fff;
+            20% {
+                 text-shadow:
+                    /* Intensified glow */
+                    0 0 10px #00ff41, 0 0 20px #00ff41, 0 0 30px #00ff41,
+                    /* The 3D block shadow */
+                     1px 1px 0px #00a32a, 2px 2px 0px #00a32a,
+                    3px 3px 0px #008221, 4px 4px 0px #008221,
+                    5px 5px 0px #006119, 6px 6px 0px #006119,
+                    7px 7px 0px #004010, 8px 8px 0px #004010;
+                opacity: 0.9;
+            }
+            22% {
+                 text-shadow:
+                    /* The main green glow */
+                    0 0 5px #00ff41, 0 0 10px #00ff41, 0 0 20px #00ff41,
+                    /* The 3D block shadow with jitter */
+                    1px 1px 0px #00a32a, 1px 2px 0px #00a32a, 
+                    2px 3px 0px #008221, 3px 4px 0px #008221,
+                    4px 5px 0px #006119, 5px 6px 0px #006119,
+                    6px 7px 0px #004010, 7px 8px 0px #004010;
+                 opacity: 0.95;
             }
         }
+        
         .input-caret {
             background-color: #00ff41;
             width: 10px;
@@ -179,6 +181,31 @@
         .button:active {
              transform: translateY(1px) scale(0.98);
         }
+
+        /* Button glow style */
+        .btn-glow {
+            animation: button-glow 5s infinite linear;
+             font-family: 'VT323', monospace;
+             font-size: 1.25rem;
+             letter-spacing: 0.05em;
+        }
+
+        @keyframes button-glow {
+            0%, 19.9%, 22.1%, 60%, 100% {
+                box-shadow: 0 0 5px rgba(0,255,65,0.7), inset 0 0 3px rgba(0,255,65,0.5);
+                text-shadow: 0 0 3px rgba(0,255,65,0.8);
+            }
+            20% {
+                 box-shadow: 0 0 10px rgba(0,255,65,0.9), inset 0 0 5px rgba(0,255,65,0.7);
+                 text-shadow: 0 0 5px rgba(0,255,65,1);
+            }
+            22% {
+                box-shadow: 0 0 5px rgba(0,255,65,0.7), inset 0 0 3px rgba(0,255,65,0.5);
+                 text-shadow: 0 0 3px rgba(0,255,65,0.8);
+            }
+        }
+
+
         .button-primary {
             background-color: #00ff41;
             color: #000;
@@ -231,11 +258,12 @@
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
             <!-- Overlay for readability -->
             <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-black bg-opacity-60">
-                <h1 id="game-title" class="text-7xl md:text-9xl font-bold title-3d title-font mb-4">SYNAPSE</h1>
+                <h1 id="game-title" class="text-7xl md:text-9xl font-bold title-pixel-3d title-font mb-4">SYNAPSE</h1>
                 <div id="intro-text-container" class="max-w-4xl text-sm md:text-base text-white"></div>
                  <div id="start-options" class="mt-6">
-                     <button id="new-game-btn" class="button">New Game</button>
-                     <button id="load-game-btn" class="button ml-4">Load Game</button>
+                     <!-- Added btn-glow class -->
+                     <button id="new-game-btn" class="button btn-glow">New Game</button>
+                     <button id="load-game-btn" class="button btn-glow ml-4">Load Game</button>
                  </div>
                  <div id="player-setup" class="hidden flex-col items-center mt-6 w-full">
                      <p class="mb-4">Select difficulty:</p>
