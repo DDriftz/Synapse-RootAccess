@@ -170,6 +170,14 @@
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* Style for the start screen background */
+        #start-screen {
+            background-image: url('https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
     </style>
 </head>
 <body class="bg-black text-[#00ff41] flex items-center justify-center min-h-screen">
@@ -177,29 +185,31 @@
     <div id="app-container" class="w-full h-full bg-black/75 p-2 sm:p-4 flex flex-col crt-effect">
         
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
-            <img id="game-logo" src="https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png" alt="SYNAPSE Logo" class="h-24 mb-4 rounded-lg shadow-lg shadow-[#00ff41]/20">
-            <pre id="title-art" class="text-xs md:text-sm whitespace-pre-wrap title-font text-[#00ff41] crt-flicker"></pre>
-            <div id="intro-text-container" class="max-w-4xl text-sm md:text-base"></div>
-             <div id="start-options" class="mt-6">
-                 <button id="new-game-btn" class="button">New Game</button>
-                 <button id="load-game-btn" class="button ml-4">Load Game</button>
-             </div>
-             <div id="player-setup" class="hidden flex-col items-center mt-6 w-full">
-                 <p class="mb-4">Select difficulty:</p>
-                 <div class="flex gap-4 mb-6">
-                     <button class="difficulty-btn button" data-difficulty="Easy">Easy</button>
-                     <button class="difficulty-btn button button-primary" data-difficulty="Normal">Normal</button>
-                     <button class="difficulty-btn button" data-difficulty="Hard">Hard</button>
+            <!-- Overlay for readability -->
+            <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-black bg-opacity-60">
+                <h1 id="game-title" class="text-7xl md:text-9xl font-bold text-white crt-flicker title-font mb-4" style="text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41, 0 0 35px #00ff41;">SYNAPSE</h1>
+                <div id="intro-text-container" class="max-w-4xl text-sm md:text-base text-white"></div>
+                 <div id="start-options" class="mt-6">
+                     <button id="new-game-btn" class="button">New Game</button>
+                     <button id="load-game-btn" class="button ml-4">Load Game</button>
                  </div>
-                 <input type="text" id="player-name" placeholder="Enter your name" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 mb-4 focus:outline-none p-1">
-                 <div class="flex items-center gap-2 mb-6">
-                     <input type="text" id="player-backstory" placeholder="Enter your backstory" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 focus:outline-none p-1">
-                     <button id="view-backstories-btn" class="button text-xs px-2 py-1">View Choices</button>
+                 <div id="player-setup" class="hidden flex-col items-center mt-6 w-full">
+                     <p class="mb-4">Select difficulty:</p>
+                     <div class="flex gap-4 mb-6">
+                         <button class="difficulty-btn button" data-difficulty="Easy">Easy</button>
+                         <button class="difficulty-btn button button-primary" data-difficulty="Normal">Normal</button>
+                         <button class="difficulty-btn button" data-difficulty="Hard">Hard</button>
+                     </div>
+                     <input type="text" id="player-name" placeholder="Enter your name" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 mb-4 focus:outline-none p-1">
+                     <div class="flex items-center gap-2 mb-6">
+                         <input type="text" id="player-backstory" placeholder="Enter your backstory" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 focus:outline-none p-1">
+                         <button id="view-backstories-btn" class="button text-xs px-2 py-1">View Choices</button>
+                     </div>
+                     <div id="ability-display" class="text-center text-cyan-400 min-h-[4rem] mt-2 mb-4 p-2 border border-cyan-400/30 rounded-md bg-black/50 w-full max-w-md flex items-center justify-center">
+                        </div>
+                     <button id="start-game-btn" class="button button-primary">Begin</button>
                  </div>
-                 <div id="ability-display" class="text-center text-cyan-400 min-h-[4rem] mt-2 mb-4 p-2 border border-cyan-400/30 rounded-md bg-black/50 w-full max-w-md flex items-center justify-center">
-                    </div>
-                 <button id="start-game-btn" class="button button-primary">Begin</button>
-             </div>
+            </div>
         </div>
 
         <div id="game-screen" class="hidden flex-col h-full">
@@ -257,7 +267,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V4.6 (MAP POSITIONING)
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V4.7 (UI UPDATE)
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
@@ -308,7 +318,6 @@
         dialogueOptionsContainer: document.getElementById('dialogue-options'),
         modal: document.getElementById('modal'),
         modalContent: document.getElementById('modal-content'),
-        titleArt: document.getElementById('title-art'),
         introTextContainer: document.getElementById('intro-text-container'),
         viewBackstoriesBtn: document.getElementById('view-backstories-btn'),
         abilityDisplay: document.getElementById('ability-display'),
@@ -1379,7 +1388,8 @@
             UI.startScreen.classList.remove('hidden');
             UI.startOptions.classList.add('hidden');
             UI.introTextContainer.classList.add('hidden');
-            UI.titleArt.classList.add('hidden');
+            const title = document.getElementById('game-title');
+            if (title) title.classList.add('hidden');
             UI.playerSetup.classList.remove('hidden');
             UI.playerSetup.classList.add('flex');
             updateAbilityDisplay();
@@ -1406,7 +1416,9 @@
     
     function hasItem(itemName) { return GameState.inventory.some(i => i.name.toLowerCase() === itemName.toLowerCase()); }
     
-    function setupIntro() { UI.titleArt.textContent = `...SYNAPSE...`; UI.introTextContainer.innerHTML = `<p class="mb-4">Decades ago... a clandestine project was born...</p><p>You have been sent to uncover what became of Project SYNAPSE...</p><p>As you activate the central terminal, a voice greets you... 'Hello, user.'</p>`; }
+    function setupIntro() { 
+        UI.introTextContainer.innerHTML = `<p class="mb-4">Decades ago... a clandestine project was born...</p><p>You have been sent to uncover what became of Project SYNAPSE...</p><p>As you activate the central terminal, a voice greets you... 'Hello, user.'</p>`; 
+    }
     function startGame(fromTutorial = false) { 
         if (!fromTutorial) {
             resetGameState(); 
@@ -1481,7 +1493,9 @@
         UI.playerSetup.classList.remove('flex');
         UI.startOptions.classList.remove('hidden');
         UI.introTextContainer.classList.remove('hidden');
-        UI.titleArt.classList.remove('hidden');
+        const title = document.getElementById('game-title');
+        if (title) title.classList.remove('hidden');
+
 
         UI.gameOutput.innerHTML = '';
         resetGameState();
