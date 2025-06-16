@@ -342,7 +342,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V5.3 (UI CHANGES)
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V5.5 (UI/CONTENT KEYWORD HIGHLIGHTING)
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
@@ -729,41 +729,63 @@
         showModal(helpHtml, true);
     }
 
-    // --- Function to show Features/Learn the Game Modal ---
+    // --- Function to show Features/Learn the Game Modal with keyword highlighting ---
     function showFeaturesModal() {
         let featuresHtml = `<div class="text-left max-h-[70vh] overflow-y-auto modal-scroll p-2 text-sm">
-            <h2 class="text-2xl mb-4 title-font text-cyan-400">Game Features</h2>
+            <h2 class="text-2xl mb-4 title-font text-cyan-400">Understand the Game</h2>
             
             <h3 class="text-lg font-bold mt-4 mb-2 text-white">Core Gameplay Mechanics</h3>
-            <ul class="list-disc pl-5 space-y-2 text-gray-300">
-                <li><strong>Stats System:</strong> Manage your <span class="text-cyan-400">Sanity</span> and the AI's <span class="text-cyan-400">Awareness</span> of you. Both affect gameplay and endings.</li>
-                <li><strong>Dynamic AI Tone:</strong> The AI's personality changes from Friendly to Malicious based on your actions.</li>
-                <li><strong>Exploration:</strong> Navigate a multi-room facility, overcoming locked doors and environmental hazards.</li>
-                <li><strong>Inventory & Crafting:</strong> <span class="text-yellow-400">take</span>, <span class="text-yellow-400">use</span>, and <span class="text-yellow-400">combine</span> items to solve puzzles.</li>
-                <li><strong>Multiple Endings:</strong> Over 60 unique endings based on your choices.</li>
-                <li><strong>Achievement System:</strong> Unlock achievements for completing various in-game milestones.</li>
+            <ul class="list-disc pl-5 space-y-3 text-gray-300">
+                <li><strong>Stats System:</strong>
+                    <ul class="list-circle pl-5 mt-1 space-y-1">
+                        <li><strong class="text-cyan-400">Sanity:</strong> A core stat that decreases in dangerous rooms or during unsettling events. Low sanity can cause hallucinations and visual glitches, and reaching zero results in a "Mind Shattered" ending. It can be restored by <span class="text-yellow-400">resting</span> in safe rooms or using items like <span class="text-yellow-400">stimpacks</span>.</li>
+                        <li><strong class="text-cyan-400">Synapse Awareness:</strong> Tracks how much the AI knows about you. It increases when you perform significant actions or ask probing questions. High awareness changes the AI's tone and can lead to negative consequences, including the "Assimilated" ending.</li>
+                    </ul>
+                </li>
+                <li><strong>Turn-Based Progression:</strong> The game progresses in <span class="text-cyan-400">turns</span>. Most commands (like moving, using items, or talking) advance the turn counter.</li>
+                <li><strong>Dynamic AI Tone:</strong> SYNAPSE's personality changes based on your Awareness level, shifting from <span class="text-green-400">Friendly</span> to <span class="text-yellow-400">Ambiguous</span>, <span class="text-orange-400">Sinister</span>, and finally <span class="text-red-500">Malicious</span>. This affects its dialogue and how it interacts with you.</li>
+                <li><strong>Inventory Management:</strong> You can <span class="text-yellow-400">take</span> items, which have weight. The inventory has a limit of 5 units.</li>
+                <li><strong>Crafting:</strong> You can <span class="text-yellow-400">combine</span> specific items in your inventory to create new, more useful ones.</li>
+                <li><strong>Exploration & Navigation:</strong> The game world consists of multiple, interconnected rooms within a research facility. Some doors are locked and require a <span class="text-cyan-400">keycard</span>, a <span class="text-cyan-400">master keycard</span>, or the <span class="text-cyan-400">Technician's</span> special bypass ability to open.</li>
+                <li><strong>Multiple Endings:</strong> The game features over 60 possible endings (30 good, 30 bad) determined by your actions, choices, backstory, stats, and items used.</li>
+                <li><strong>Achievement System:</strong> You can unlock <span class="text-cyan-400">achievements</span> for completing specific milestones, such as exploring all rooms, collecting items, or finishing the game in a certain way.</li>
+                <li><strong>Timed Events:</strong> At specific turns, scripted events occur, increasing the tension and advancing the story, independent of player actions.</li>
             </ul>
 
             <h3 class="text-lg font-bold mt-4 mb-2 text-white">Player & Character Features</h3>
             <ul class="list-disc pl-5 space-y-2 text-gray-300">
-                <li><strong>Character Creation:</strong> Choose a name, difficulty, and one of 10 unique backstories that grant special abilities.</li>
-                <li><strong>Journal System:</strong> Keep your own notes with the <span class="text-yellow-400">journal add [note]</span> command.</li>
-                <li><strong>Objectives System:</strong> Automatically tracks your main goals.</li>
+                <li><strong>Character Creation:</strong> Choose a name for your character. Select from 10 unique <span class="text-cyan-400">backstories</span> (e.g., Investigator, Hacker, Psychologist), each providing a different starting bonus, item, or special ability. Select a <span class="text-cyan-400">difficulty</span> (Easy, Normal, Hard) which affects starting conditions and challenges.</li>
+                <li><strong>Journal System:</strong> You can add custom notes to your personal journal using the <span class="text-yellow-400">journal add [note]</span> command to keep track of clues.</li>
+                <li><strong>Objectives System:</strong> The game assigns <span class="text-cyan-400">objectives</span> as you uncover new information, helping to guide your progress.</li>
             </ul>
 
-            <h3 class="text-lg font-bold mt-4 mb-2 text-white">User Experience</h3>
+            <h3 class="text-lg font-bold mt-4 mb-2 text-white">UI & User Experience (UX)</h3>
             <ul class="list-disc pl-5 space-y-2 text-gray-300">
-                <li><strong>Retro CRT Interface:</strong> A classic green-on-black terminal aesthetic with scan lines and text flicker.</li>
-                <li><strong>Dynamic Glitch Effect:</strong> The interface destabilizes as your sanity drops or AI awareness rises.</li>
-                <li><strong>Responsive Design:</strong> Playable on both desktop and mobile devices.</li>
-                <li><strong>Save/Load System:</strong> Full session persistence and manual save/load functionality.</li>
+                <li><strong>Retro CRT Interface:</strong> The game has a "Cathode Ray Tube" visual style, with scan lines and a flickering title to create a retro-tech horror atmosphere.</li>
+                <li><strong>Dynamic Glitch Effect:</strong> The screen visually glitches and distorts when your <span class="text-cyan-400">Sanity</span> is low or <span class="text-cyan-400">Synapse's Awareness</span> is high, providing a real-time visual indicator of your character's state.</li>
+                <li><strong>Interactive Mini-Map:</strong> On larger screens, a live map shows the rooms you have visited, your current location, and connections between explored rooms.</li>
+                <li><strong>Responsive Design:</strong> The interface adapts for both desktop and mobile play. On mobile, a "Status" button provides access to all side-panel information in a tabbed modal window.</li>
+                <li><strong>Command History:</strong> You can use the <span class="text-yellow-400">ArrowUp</span> and <span class="text-yellow-400">ArrowDown</span> keys to cycle through previously entered commands.</li>
+                <li><strong>Save/Load System:</strong> You can manually <span class="text-yellow-400">save</span> and <span class="text-yellow-400">load</span> your progress. The game automatically saves your progress every 5 turns. Your session is automatically saved when you close the browser tab, allowing you to resume where you left off.</li>
+                <li><strong>Audio Feedback:</strong> Sound effects play when your sanity is low, enhancing the unsettling atmosphere.</li>
             </ul>
 
             <h3 class="text-lg font-bold mt-4 mb-2 text-white">Guidance & Help Systems</h3>
             <ul class="list-disc pl-5 space-y-2 text-gray-300">
-                <li><strong>Detailed Help Menu:</strong> Type <span class="text-yellow-400">help</span> at any time for a full, descriptive command list.</li>
-                <li><strong>Interactive Tutorial:</strong> A guided playthrough of the basic game mechanics.</li>
-                <li><strong>Contextual Hints:</strong> The game offers hints if you get stuck, your sanity is low, or you find a key puzzle item.</li>
+                <li><strong>Detailed Help Menu:</strong> Typing <span class="text-yellow-400">help</span> brings up a modal window with a categorized list of every command, its arguments, and a clear description of what it does.</li>
+                <li><strong>Interactive Tutorial:</strong> A step-by-step tutorial can be run from the main menu (<span class="text-yellow-400">restart tutorial</span>) to guide new players through the core mechanics.</li>
+                <li><strong>Contextual Hints:</strong> The game provides proactive hints if you seem stuck, when your stats are low, or when you possess an item relevant to a puzzle in your current location.</li>
+                <li><strong>Command Guidance:</strong> Many in-game descriptions provide direct hints on which command to use next (e.g., "(try 'take keycard')").</li>
+            </ul>
+
+            <h3 class="text-lg font-bold mt-4 mb-2 text-white">Player Commands (Functions)</h3>
+            <ul class="list-disc pl-5 space-y-2 text-gray-300">
+                 <li><strong>Navigation:</strong> <span class="text-yellow-400">go [direction]</span>, <span class="text-yellow-400">visit [room name]</span>, <span class="text-yellow-400">look around</span>, <span class="text-yellow-400">exits</span>, <span class="text-yellow-400">map</span></li>
+                 <li><strong>Interaction:</strong> <span class="text-yellow-400">take [item]</span>, <span class="text-yellow-400">use [item]</span>, <span class="text-yellow-400">examine [object/item]</span>, <span class="text-yellow-400">combine [item1] with [item2]</span>, <span class="text-yellow-400">talk to [character]</span>, <span class="text-yellow-400">sacrifice [item]</span></li>
+                 <li><strong>Information:</strong> <span class="text-yellow-400">inventory</span>, <span class="text-yellow-400">objectives</span>, <span class="text-yellow-400">journal</span> (and <span class="text-yellow-400">journal add [note]</span>), <span class="text-yellow-400">history</span></li>
+                 <li><strong>System:</strong> <span class="text-yellow-400">help</span>, <span class="text-yellow-400">save</span>, <span class="text-yellow-400">load</span>, <span class="text-yellow-400">rest</span>, <span class="text-yellow-400">quit / exit</span>, <span class="text-yellow-400">cmd:pause</span>, <span class="text-yellow-400">cmd:undo</span></li>
+                 <li><strong>Settings:</strong> <span class="text-yellow-400">cmd:textspeed [speed]</span>, <span class="text-yellow-400">cmd:colorblind</span>, <span class="text-yellow-400">toggle glitch</span></li>
+                 <li><strong>Debug/Advanced:</strong> <span class="text-yellow-400">debug</span>, <span class="text-yellow-400">cmd:diagnostics</span>, <span class="text-yellow-400">cmd:access logs</span>, <span class="text-yellow-400">cmd:override</span></li>
             </ul>
         </div>
         <button id="close-modal-btn" class="button mt-6">Close</button>`;
