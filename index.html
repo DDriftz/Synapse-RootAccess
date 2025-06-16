@@ -257,13 +257,12 @@
         
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
             <!-- Overlay for readability -->
-            <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-black bg-opacity-60">
+            <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-black bg-opacity-60 relative">
                 <h1 id="game-title" class="text-7xl md:text-9xl font-bold title-pixel-3d title-font mb-4">SYNAPSE</h1>
                 <div id="intro-text-container" class="max-w-4xl text-sm md:text-base text-white"></div>
                  <div id="start-options" class="mt-6 flex flex-wrap justify-center gap-4">
                      <button id="new-game-btn" class="button btn-glow">New Game</button>
                      <button id="load-game-btn" class="button btn-glow">Load Game</button>
-                     <button id="view-features-btn" class="button btn-glow">Features</button>
                  </div>
                  <div id="player-setup" class="hidden flex-col items-center mt-6 w-full">
                      <p class="mb-4">Select difficulty:</p>
@@ -280,6 +279,10 @@
                      <div id="ability-display" class="text-center text-cyan-400 min-h-[4rem] mt-2 mb-4 p-2 border border-cyan-400/30 rounded-md bg-black/50 w-full max-w-md flex items-center justify-center">
                         </div>
                      <button id="start-game-btn" class="button button-primary">Begin</button>
+                 </div>
+                 <!-- Button moved to the corner -->
+                 <div class="absolute bottom-4 right-4">
+                    <button id="view-features-btn" class="button btn-glow">Understand the Game</button>
                  </div>
             </div>
         </div>
@@ -339,7 +342,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V5.2 (FEATURES BUTTON)
+    // SYNAPSE: AI HORROR GAME - FULL JAVASCRIPT PORT V5.3 (UI CHANGES)
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
@@ -359,7 +362,7 @@
         gameScreen: document.getElementById('game-screen'),
         newGameBtn: document.getElementById('new-game-btn'),
         loadGameBtn: document.getElementById('load-game-btn'),
-        viewFeaturesBtn: document.getElementById('view-features-btn'), // <-- NEW
+        viewFeaturesBtn: document.getElementById('view-features-btn'),
         playerSetup: document.getElementById('player-setup'),
         startOptions: document.getElementById('start-options'),
         playerNameInput: document.getElementById('player-name'),
@@ -726,7 +729,7 @@
         showModal(helpHtml, true);
     }
 
-    // --- NEW: Function to show Features Modal ---
+    // --- Function to show Features/Learn the Game Modal ---
     function showFeaturesModal() {
         let featuresHtml = `<div class="text-left max-h-[70vh] overflow-y-auto modal-scroll p-2 text-sm">
             <h2 class="text-2xl mb-4 title-font text-cyan-400">Game Features</h2>
@@ -920,7 +923,7 @@
         });
         UI.newGameBtn.addEventListener('click', async () => { sessionStorage.removeItem('synapse_session_v5_autosave'); await initializeAudio(); UI.startOptions.classList.add('hidden'); UI.playerSetup.classList.remove('hidden'); UI.playerSetup.classList.add('flex'); updateAbilityDisplay(); });
         UI.loadGameBtn.addEventListener('click', async () => { sessionStorage.removeItem('synapse_session_v5_autosave'); await initializeAudio(); loadGame(); });
-        UI.viewFeaturesBtn.addEventListener('click', showFeaturesModal); // <-- NEW
+        UI.viewFeaturesBtn.addEventListener('click', showFeaturesModal);
         UI.startGameBtn.addEventListener('click', () => { startGame(); });
         UI.difficultyBtns.forEach(btn => { btn.addEventListener('click', () => { UI.difficultyBtns.forEach(b => b.classList.remove('button-primary')); btn.classList.add('button-primary'); updateAbilityDisplay(); }); });
         UI.playerBackstoryInput.addEventListener('input', updateAbilityDisplay); UI.viewBackstoriesBtn.addEventListener('click', showBackstoryModal); UI.statusBtn.addEventListener('click', showStatusModal); UI.viewProgressionBtn.addEventListener('click', showProgressionModal);
