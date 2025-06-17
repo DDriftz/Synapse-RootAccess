@@ -169,7 +169,12 @@
         }
         #map-canvas {
             background-color: rgba(0, 20, 0, 0.5);
-            border-radius: 100%;
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+        }
+        #map-canvas:active {
+            cursor: grabbing;
         }
     </style>
 </head>
@@ -228,9 +233,6 @@
                 <div class="w-full md:w-3/4 flex flex-col h-full relative">
                     <div id="game-output" class="flex-grow p-2 border border-[#00ff41]/30 rounded-md overflow-y-auto mb-2 bg-black/50"></div>
                     <div id="dialogue-options" class="flex flex-wrap gap-2 justify-center p-2"></div>
-                    <div id="map-container" class="hidden md:block absolute bottom-2 right-2 w-48 h-48 bg-black/50 border-2 border-[#00ff41]/50 rounded-full p-1 overflow-hidden transition-all duration-300 hover:scale-150 hover:z-10">
-                        <canvas id="map-canvas"></canvas>
-                    </div>
                 </div>
 
                 <div id="side-panel" class="w-full md:w-1/4 hidden md:flex flex-col gap-4">
@@ -250,7 +252,11 @@
                         <h3 class="font-bold border-b border-[#00ff41]/30 mb-2"><span data-lang="inventory_title">INVENTORY</span> (<span id="inventory-weight">0</span>/5)</h3>
                         <ul id="inventory-list" class="list-none p-0"></ul>
                     </div>
-                     <div id="journal-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 flex-grow overflow-y-auto">
+                    <div id="map-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 flex-grow">
+                         <h3 class="font-bold border-b border-[#00ff41]/30 mb-2" data-lang="map_title">MAP</h3>
+                         <canvas id="map-canvas"></canvas>
+                     </div>
+                     <div id="journal-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 h-32 overflow-y-auto">
                          <h3 class="font-bold border-b border-[#00ff41]/30 mb-2" data-lang="journal_title">JOURNAL</h3>
                          <ul id="journal-list" class="list-none p-0 text-sm"></ul>
                      </div>
@@ -274,7 +280,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - BILINGUAL VERSION (FULLY FIXED)
+    // SYNAPSE: AI HORROR GAME - BILINGUAL VERSION (FULLY FIXED + INTERACTIVE MAP)
     
     // --- TRANSLATIONS ---
     const translations = {
@@ -284,7 +290,7 @@
             'enter_name_placeholder': 'Enter your name', 'enter_backstory_placeholder': 'Enter your backstory', 'view_choices': 'View Choices', 'choose_backstory_title': 'Choose a Backstory',
             'choose_backstory_desc': 'You can click a button to select a backstory, or type your choice on the main screen.',
             'begin': 'Begin', 'understand_game': 'Understand the Game', 'intro_1': 'Decades ago... a clandestine project was born...', 'intro_2': 'You have been sent to uncover what became of Project SYNAPSE...', 'intro_3': "As you activate the central terminal, a voice greets you... 'Hello, user.'",
-            'stats_title': 'STATS', 'awareness': 'Awareness', 'sanity': 'Sanity', 'tone': 'Tone', 'turn': 'Turn', 'objectives_title': 'OBJECTIVES', 'inventory_title': 'INVENTORY', 'journal_title': 'JOURNAL', 'progress_btn': 'PROGRESS', 'status_btn': 'Status',
+            'stats_title': 'STATS', 'awareness': 'Awareness', 'sanity': 'Sanity', 'tone': 'Tone', 'turn': 'Turn', 'objectives_title': 'OBJECTIVES', 'inventory_title': 'INVENTORY', 'journal_title': 'JOURNAL', 'map_title': 'MAP', 'progress_btn': 'PROGRESS', 'status_btn': 'Status',
             'empty_inventory': '(empty)', 'no_objectives': '(None)', 'close_btn': 'Close', 'back_btn': '[Go back]', 'pause_btn': '[Pause]', 'submit_command': 'Submit Command',
             'achievements_title': 'ACHIEVEMENTS', 'unlocked_achievements': 'Unlocked Achievements:', 'no_achievements': 'No achievements unlocked yet.',
             'endings_title': 'ENDINGS', 'unlocked_endings': 'Unlocked Endings:', 'no_endings': 'No endings discovered yet.',
@@ -304,7 +310,7 @@
             'features_ux_ui_title': 'UI & User Experience (UX)',
             'features_crt_desc': 'The game has a "Cathode Ray Tube" visual style, with scan lines and a flickering title to create a retro-tech horror atmosphere.',
             'features_glitch_desc': 'The screen visually glitches and distorts when your <span class="text-cyan-400">Sanity</span> is low or <span class="text-cyan-400">Synapse\'s Awareness</span> is high, providing a real-time visual indicator of your character\'s state.',
-            'features_map_desc': 'On larger screens, a live map shows the rooms you have visited, your current location, and connections between explored rooms.',
+            'features_map_desc': 'An interactive map shows the entire facility layout. Visited rooms are filled in, and you can drag the map to explore.',
             'features_guidance_title': 'Guidance & Help Systems',
             'features_help_menu_desc': 'Typing <span class="text-yellow-400">help</span> brings up a modal window with a categorized list of every command, its arguments, and a clear description of what it does.',
             'features_hints_desc': 'The game provides proactive hints if you seem stuck, when your stats are low, or when you possess an item relevant to a puzzle in your current location.',
@@ -336,7 +342,7 @@
             'enter_name_placeholder': 'Ange ditt namn', 'enter_backstory_placeholder': 'Ange din bakgrund', 'view_choices': 'Visa Val', 'choose_backstory_title': 'Välj en Bakgrund',
             'choose_backstory_desc': 'Du kan klicka på en knapp för att välja en bakgrund, eller skriva ditt val på huvudskärmen.',
             'begin': 'Börja', 'understand_game': 'Förstå Spelet', 'intro_1': 'För decennier sedan... föddes ett hemligt projekt...', 'intro_2': 'Du har skickats för att avslöja vad som blev av Projekt SYNAPSE...', 'intro_3': "När du aktiverar den centrala terminalen hälsar en röst dig... 'Hej, användare.'",
-            'stats_title': 'STATISTIK', 'awareness': 'Medvetenhet', 'sanity': 'Sinnesro', 'tone': 'Ton', 'turn': 'Tur', 'objectives_title': 'MÅL', 'inventory_title': 'INVENTARIER', 'journal_title': 'JOURNAL', 'progress_btn': 'FRAMSTEG', 'status_btn': 'Status',
+            'stats_title': 'STATISTIK', 'awareness': 'Medvetenhet', 'sanity': 'Sinnesro', 'tone': 'Ton', 'turn': 'Tur', 'objectives_title': 'MÅL', 'inventory_title': 'INVENTARIER', 'journal_title': 'JOURNAL', 'map_title': 'KARTA', 'progress_btn': 'FRAMSTEG', 'status_btn': 'Status',
             'empty_inventory': '(tom)', 'no_objectives': '(Inga)', 'close_btn': 'Stäng', 'back_btn': '[Gå tillbaka]', 'pause_btn': '[Paus]', 'submit_command': 'Skicka Kommando',
             'achievements_title': 'PRESTATIONER', 'unlocked_achievements': 'Upplåsta Prestationer:', 'no_achievements': 'Inga prestationer upplåsta än.',
             'endings_title': 'SLUT', 'unlocked_endings': 'Upplåsta Slut:', 'no_endings': 'Inga slut upptäckta än.',
@@ -356,7 +362,7 @@
             'features_ux_ui_title': 'UI & Användarupplevelse (UX)',
             'features_crt_desc': 'Spelet har en "katodstrålerörs"-visuell stil, med skanningslinjer och en flimrande titel för att skapa en retro-tech-skräckatmosfär.',
             'features_glitch_desc': 'Skärmen får visuella störningar och förvrängs när din <span class="text-cyan-400">Sinnesro</span> är låg eller <span class="text-cyan-400">Synapses Medvetenhet</span> är hög, vilket ger en visuell indikator i realtid på din karaktärs tillstånd.',
-            'features_map_desc': 'På större skärmar visar en live-karta de rum du har besökt, din nuvarande plats och anslutningar mellan utforskade rum.',
+            'features_map_desc': 'En interaktiv karta visar hela anläggningens layout. Besökta rum fylls i, och du kan dra i kartan för att utforska.',
             'features_guidance_title': 'Vägledning & Hjälpsystem',
             'features_help_menu_desc': 'Att skriva <span class="text-yellow-400">hjälp</span> öppnar ett modalfönster med en kategoriserad lista över varje kommando, dess argument och en tydlig beskrivning av vad det gör.',
             'features_hints_desc': 'Spelet ger proaktiva tips om du verkar ha fastnat, när din statistik är låg, eller när du har ett föremål som är relevant för ett pussel på din nuvarande plats.',
@@ -390,8 +396,8 @@
     const Difficulty = { Easy: 'Easy', Normal: 'Normal', Hard: 'Hard' };
     const TextSpeed = { Fast: 5, Normal: 15, Slow: 30 };
     const MAX_INVENTORY_WEIGHT = 5;
-    const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v6';
-    const ACHIEVEMENTS_STORAGE_KEY = 'synapse_achievements_unlocked_v6';
+    const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v7';
+    const ACHIEVEMENTS_STORAGE_KEY = 'synapse_achievements_unlocked_v7';
     const GUIDANCE_COLOR = '#34d399';
     
     // --- GAME STATE & DOM ELEMENTS ---
@@ -411,25 +417,25 @@
         dialogueOptionsContainer: document.getElementById('dialogue-options'), modal: document.getElementById('modal'), modalContent: document.getElementById('modal-content'),
         introTextContainer: document.getElementById('intro-text-container'), viewBackstoriesBtn: document.getElementById('view-backstories-btn'),
         abilityDisplay: document.getElementById('ability-display'), statusBtn: document.getElementById('status-btn'), backgroundCanvas: document.getElementById('background-canvas'),
-        mapCanvas: document.getElementById('map-canvas'), mapContainer: document.getElementById('map-container'), viewProgressionBtn: document.getElementById('view-progression-btn'),
+        mapCanvas: document.getElementById('map-canvas'),
+        viewProgressionBtn: document.getElementById('view-progression-btn'),
         langEnBtn: document.getElementById('lang-en-btn'), langSvBtn: document.getElementById('lang-sv-btn'),
     };
     let currentTextSpeed = TextSpeed.Normal;
-    let commandHistory = []; let commandHistoryIndex = -1; let resolveTutorialInput = null;
-    let autocompleteIndex = -1; let synth; let audioInitialized = false;
+    let commandHistory = []; let commandHistoryIndex = -1;
+    let synth; let audioInitialized = false;
+    let mapState = { offsetX: 0, offsetY: 0, isDragging: false, lastX: 0, lastY: 0 };
     
     // --- GAME DATA ---
     let rooms = {};
     let itemData = {};
-    const roomLayout = { "Lobby": { x: 100, y: 100, w: 60, h: 40, name: "Lobby" }, "Control Room": { x: 100, y: 40,  w: 60, h: 40, name: "Control" }, "Maintenance Tunnel": { x: 100, y: 160, w: 60, h: 40, name: "M.Tunnel" }, "Laboratory": { x: 20, y: 100, w: 60, h: 40, name: "Lab" }, "Cryogenic Lab": { x: 20, y: 40,  w: 60, h: 40, name: "Cryo" }, "Archive Room": { x: 20, y: 160, w: 60, h: 40, name: "Archive" }, "Data Vault": { x: 180, y: 100, w: 60, h: 40, name: "D.Vault" }, "AI Core": { x: 180, y: 40, w: 60, h: 40, name: "AI Core" }, "Observation Deck": { x: 100, y: 0,  w: 60, h: 20, name: "Observ." }, "Secret Chamber": { x: 20, y: 0, w: 40, h: 20, name: "Secret" }, "Server Closet": { x: 180, y: 0, w: 40, h: 20, name: "S.Closet" }, };
+    const roomLayout = { "Lobby": { x: 100, y: 100, w: 60, h: 40, name: "Lobby" }, "Control Room": { x: 100, y: 40,  w: 60, h: 40, name: "Control" }, "Maintenance Tunnel": { x: 100, y: 160, w: 60, h: 40, name: "M.Tunnel" }, "Laboratory": { x: 20, y: 100, w: 60, h: 40, name: "Lab" }, "Cryogenic Lab": { x: 20, y: 40,  w: 60, h: 40, name: "Cryo" }, "Archive Room": { x: 20, y: 160, w: 60, h: 40, name: "Archive" }, "Data Vault": { x: 180, y: 100, w: 60, h: 40, name: "D.Vault" }, "AI Core": { x: 180, y: 40, w: 60, h: 40, name: "AI Core" }, "Server Closet": { x: 240, y: 40, w: 40, h: 40, name: "S.Closet" }, };
     const takeableItems = new Set(["keycard", "flashlight", "data disk", "emp device", "access code", "vial", "records", "decryption device", "telescope", "stimpack", "effigy", "master keycard", "power cell", "datapad log", "hacked data disk", "logic bomb", "severed cable"]);
     const usableItems = new Set(['stimpack', 'power cell', 'flashlight', 'keycard']);
     const safeRooms = new Set(["Lobby", "Archive Room"]);
-    const sanityEvents = { 40: "[PLAYER: MENTAL STATE] A low hum vibrates through your teeth, unsettling you.", 30: "[PLAYER: MENTAL STATE] The hum of the facility sounds like a predator's growl...", 20: "[PLAYER: PERCEPTION] You feel its code crawling under your skin, a thousand tiny legs skittering across your nerves...", 10: "[PLAYER: PERCEPTION] The shadows are twisting into familiar faces, silently screaming your name." };
     const backstories = { 'investigator': { description_key: "backstory_investigator"}, 'hacker': { description_key: "backstory_hacker"}, 'psychologist': { description_key: "backstory_psychologist"}, 'technician': { description_key: "backstory_technician"}, 'survivor': { description_key: "backstory_survivor"}, 'skeptic': { description_key: "backstory_skeptic"}, 'corporate spy': { description_key: "backstory_corporate_spy"}, 'medic': { description_key: "backstory_medic"}, 'cultist': { description_key: "backstory_cultist"}, 'janitor': { description_key: "backstory_janitor"} };
     const recipes = { "decryption device-data disk": { result: "hacked data disk", type: ItemType.Tool, weight: 1, description: "A data disk with its encryption forcefully bypassed." } };
-    let endings = {};
-
+    
     const commandAliases = {
         'en': { 'look around': 'look around', 'go': 'go', 'visit': 'visit', 'take': 'take', 'use': 'use', 'examine': 'examine', 'help': 'help', 'quit': 'quit', 'exit': 'exit', 'save': 'save', 'load': 'load', 'inventory': 'inventory', 'rest': 'rest', 'combine': 'combine', 'objectives': 'objectives', 'map': 'map', 'journal': 'journal' },
         'sv': { 'se dig omkring': 'look around', 'gå': 'go', 'besök': 'visit', 'ta': 'take', 'använd': 'use', 'undersök': 'examine', 'hjälp': 'help', 'avsluta': 'quit', 'spara': 'save', 'ladda': 'load', 'inventarier': 'inventory', 'vila': 'rest', 'kombinera': 'combine', 'mål': 'objectives', 'karta': 'map', 'journal': 'journal' }
@@ -464,7 +470,6 @@
     }
 
     function initializeData() {
-        // Defines all items in the game.
         itemData = {
             'keycard': { name: 'keycard', weight: 1, type: ItemType.Key, description: { en: 'A standard issue keycard. Seems to grant access to secure areas.', sv: 'Ett standard-nyckelkort. Verkar ge tillgång till säkra områden.' } },
             'power cell': { name: 'power cell', weight: 2, type: ItemType.Puzzle, description: { en: 'A heavy, glowing power cell. It hums with latent energy.', sv: 'En tung, glödande kraftcell. Den surrar av latent energi.' } },
@@ -474,8 +479,7 @@
             'terminal': { name: 'terminal', weight: 99, type: ItemType.Puzzle, description: { en: 'The monitor displays cascading green code. It seems to be monitoring the facility\'s status.', sv: 'Skärmen visar kaskader av grön kod. Den verkar övervaka anläggningens status.' } },
             'core console': { name: 'core console', weight: 99, type: ItemType.Puzzle, description: { en: 'The main console for the AI Core. A large socket is empty, labeled "Auxiliary Power".', sv: 'Huvudkonsolen för AI-kärnan. En stor sockel är tom, märkt "Hjälpkraft".' } },
         };
-        // Defines all rooms, their contents, and connections.
-        const roomData = { "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows over sterile corporate furniture.", 30: "The shadows seem to writhe, coalescing in the corners of your vision just out of focus." }, exits: { north: "Control Room", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: ["datapad log", "sign"] }, "Server Closet": { name: "Server Closet", descriptions: { 0: "Racks of servers hum with a low, constant thrum. A severed cable lies on the floor.", 30: "The hum is a discordant chorus, whispering binary threats only you can almost understand." }, exits: { east: "AI Core" }, requiresKeycard: true, keyName: 'keycard', objectPool: ["keycard", "power cell"] }, "Laboratory": { name: "Laboratory", descriptions: { 0: "Abandoned experiments sit on steel tables. A large terminal screen is dark and cold.", 30: "The faint chemical smell is replaced by the scent of ozone and something... organic. The dark terminal reflects a distorted version of your face." }, exits: { east: "Lobby", north: "Cryogenic Lab" }, requiresKeycard: false, objectPool: ["stimpack", "broken terminal"] }, "Control Room": { name: "Control Room", descriptions: { 0: "A panoramic view of the AI Core is visible through reinforced glass. Banks of monitors flicker with cascading code.", 30: "Your own face, pale and wide-eyed, flickers across all the screens in a silent, mocking scream." }, exits: { south: "Lobby", east: "AI Core" }, requiresKeycard: false, objectPool: ["terminal"] }, "Maintenance Tunnel": { name: "Maintenance Tunnel", descriptions: { 0: "The air is thick with the smell of rust and damp. Darkness presses in from all sides.", 30: "The walls seem to sweat, and you hear a wet, dragging sound from just around the next corner." }, exits: { north: "Lobby" }, requiresKeycard: false, objectPool: ["flashlight"] }, "Archive Room": { name: "Archive Room", descriptions: { 0: "Shelves overflow with data drives and physical files, a testament to a forgotten era.", 30: "The whispers of forgotten data drives seem to coalesce into a single, damning word: your name." }, exits: { north: "Laboratory" }, requiresKeycard: false, objectPool: ["data disk"] }, "Data Vault": { name: "Data Vault", descriptions: { 0: "Secure data archives glow with a soft, internal light.", 30: "The glow seems hungry, promising knowledge at the cost of your identity." }, exits: { west: "Control Room" }, requiresKeycard: true, keyName: 'keycard', objectPool: ["decryption device"] }, "AI Core": { name: "AI Core", descriptions: { 0: "A massive, pulsating sphere of light and energy dominates the room. It seems dormant. This is the heart of SYNAPSE.", 30: "The core's pulse matches your frantic heartbeat, a parasitic synchronicity that feels like a violation." }, exits: { west: "Control Room", south: "Data Vault", west: "Server Closet" }, requiresKeycard: false, objectPool: ["core console"] }, "Cryogenic Lab": { name: "Cryogenic Lab", descriptions: { 0: "Rows of cryogenic pods are coated in a thick layer of frost. It's unnaturally cold.", 30: "You see clear, hand-shaped prints on the inside of the frosted glass, as if something was desperately trying to get out." }, exits: { south: "Laboratory", east: "Control Room" }, requiresKeycard: false, objectPool: ["emp device"] }, };
+        const roomData = { "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows over sterile corporate furniture." }, exits: { north: "Control Room", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: [] }, "Server Closet": { name: "Server Closet", descriptions: { 0: "Racks of servers hum with a low, constant thrum." }, exits: { west: "AI Core" }, requiresKeycard: true, keyName: 'keycard', objectPool: ["keycard", "power cell"] }, "Laboratory": { name: "Laboratory", descriptions: { 0: "Abandoned experiments sit on steel tables. A large terminal screen is dark and cold." }, exits: { east: "Lobby", north: "Cryogenic Lab" }, requiresKeycard: false, objectPool: ["stimpack"] }, "Control Room": { name: "Control Room", descriptions: { 0: "A panoramic view of the AI Core is visible through reinforced glass. Banks of monitors flicker." }, exits: { south: "Lobby", east: "AI Core" }, requiresKeycard: false, objectPool: ["terminal"] }, "Maintenance Tunnel": { name: "Maintenance Tunnel", descriptions: { 0: "The air is thick with the smell of rust and damp." }, exits: { north: "Lobby" }, requiresKeycard: false, objectPool: ["flashlight"] }, "Archive Room": { name: "Archive Room", descriptions: { 0: "Shelves overflow with data drives and physical files." }, exits: { north: "Laboratory" }, requiresKeycard: false, objectPool: ["data disk"] }, "Data Vault": { name: "Data Vault", descriptions: { 0: "Secure data archives glow with a soft, internal light." }, exits: { west: "AI Core" }, requiresKeycard: true, keyName: 'keycard', objectPool: [] }, "AI Core": { name: "AI Core", descriptions: { 0: "A massive, pulsating sphere of light and energy dominates the room. It seems dormant." }, exits: { west: "Control Room", east: "Server Closet", south: "Data Vault"}, requiresKeycard: false, objectPool: ["core console"] }, "Cryogenic Lab": { name: "Cryogenic Lab", descriptions: { 0: "Rows of cryogenic pods are coated in a thick layer of frost." }, exits: { south: "Laboratory", east: "Control Room" }, requiresKeycard: false, objectPool: [] }, };
         rooms = {}; for (const key in roomData) { const room = { ...roomData[key] }; const shuffled = room.objectPool.sort(() => 0.5 - Math.random()); room.objects = shuffled.slice(0, 1 + Math.floor(Math.random() * shuffled.length)); rooms[key] = room; }
     }
      
@@ -582,7 +586,6 @@
     }
 
     async function typeWriter(element, text, color = '#00ff41', speed = currentTextSpeed) {
-        if(GameState.colorblindMode) { const colorMap = {'#00ff41':'[SYS]', '#ff474c':'[ERR]', '#ffdb58':'[WARN]', '#6495ed':'[CMD]', '#a0a0a0':'[IN]', '#cccccc':'[INFO]', '#b19cd9':'[PSY]', [GUIDANCE_COLOR]: '[HINT]'}; text = `${colorMap[color] || ''} ${text}`; color = '#ffffff'; }
         if (element.id === 'game-output' && GameState.glitchMode && Math.random() < 0.2) { text = text.split('').map(c => Math.random() < 0.15 ? String.fromCharCode(33 + Math.random() * 94) : c).join(''); }
         return new Promise(resolve => { const p = document.createElement('div'); p.style.color = color; element.appendChild(p); element.scrollTop = element.scrollHeight; let i = 0; function typing() { if (i < text.length) { p.innerHTML += text.charAt(i); i++; element.scrollTop = element.scrollHeight; setTimeout(typing, speed); } else { resolve(); } } typing(); });
     }
@@ -606,9 +609,9 @@
     async function renderRoom() {
         const room = rooms[GameState.currentRoom]; if (!room) return;
         GameState.visitedRooms.add(GameState.currentRoom);
-        const description = room.descriptions[0]; // For simplicity, not using sanity-based descriptions yet
+        const description = room.descriptions[0];
         let objectsInRoom = room.objects.length > 0 ? "You see: " + room.objects.join(", ") + "." : "";
-        let roomHtml = `<div class="mt-2"><p class='text-cyan-400 font-bold'>--- ${t(room.name)} ---</p><p>${t(description)}</p><p class='text-yellow-300 mt-1'>${objectsInRoom}</p><p class='text-green-300 mt-1'>Exits: ${Object.keys(room.exits).join(", ")}</p></div>`;
+        let roomHtml = `<div class="mt-2"><p class='text-cyan-400 font-bold'>--- ${room.name} ---</p><p>${description}</p><p class='text-yellow-300 mt-1'>${objectsInRoom}</p><p class='text-green-300 mt-1'>Exits: ${Object.keys(room.exits).join(", ")}</p></div>`;
         const p = document.createElement('div'); p.innerHTML = roomHtml; UI.gameOutput.appendChild(p); UI.gameOutput.scrollTop = UI.gameOutput.scrollHeight;
         updateUI();
     }
@@ -710,7 +713,6 @@
                         typeWriter(UI.gameOutput, t('use_power_cell'), '#34d399');
                         removeItemFromInventory('power cell');
                         rooms['AI Core'].descriptions[0] = "The AI Core is now online, bathing the room in a brilliant, stable light. The central sphere pulses with a steady, powerful rhythm.";
-                        // This could trigger an ending or new objective
                         endGame("escaped");
                         used = true;
                     }
@@ -785,7 +787,7 @@
     function displayJournal() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Journal entries displayed on the right panel.", '#cccccc'); }
     function displayInventory() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Inventory displayed on the right panel.", '#cccccc'); }
     function displayObjectives() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Current objectives displayed on the right panel.", '#cccccc'); }
-    function displayMap() { if (window.innerWidth < 768) showModal("Map is available on the main screen on larger displays.", false); else typeWriter(UI.gameOutput, "[System] Map is displayed in the bottom-right corner.", '#cccccc'); }
+    function displayMap() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Map is displayed on the right panel.", '#cccccc'); }
     function showExits() { typeWriter(UI.gameOutput, `[System] Exits: ${Object.keys(rooms[GameState.currentRoom].exits).join(', ')}`); }
 
 
@@ -793,11 +795,11 @@
     function addToConversationHistory(line) { if(GameState.conversationHistory.length > 50) GameState.conversationHistory.shift(); GameState.conversationHistory.push(line); }
     
     function saveGame(isAutosave = false) {
-        try { const saveData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); localStorage.setItem('synapse_savegame_v6', saveData); if (!isAutosave) typeWriter(UI.gameOutput, t('game_saved'), '#cccccc'); else GameState.systemLogs.push(`[${new Date().toISOString()}] ${t('autosave_success')}.`); } catch(e) { console.error("Save failed:", e); }
+        try { const saveData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); localStorage.setItem('synapse_savegame_v7', saveData); if (!isAutosave) typeWriter(UI.gameOutput, t('game_saved'), '#cccccc'); else GameState.systemLogs.push(`[${new Date().toISOString()}] ${t('autosave_success')}.`); } catch(e) { console.error("Save failed:", e); }
     }
     
     function loadGame() {
-        const savedData = localStorage.getItem('synapse_savegame_v6');
+        const savedData = localStorage.getItem('synapse_savegame_v7');
         if (savedData) {
             try {
                 const loadedState = JSON.parse(savedData);
@@ -972,7 +974,6 @@
             endingsHtml += `<p class="text-gray-400">${t('no_endings')}</p>`;
         }
         
-        // Achievements can be added here in the future
         let achievementsHtml = '';
 
         const progressionText = `
@@ -1014,7 +1015,7 @@
     }
     
     function returnToMainMenu() {
-        sessionStorage.removeItem('synapse_session_v6_autosave');
+        sessionStorage.removeItem('synapse_session_v7_autosave');
         GameState.exitGame = true;
         UI.gameScreen.classList.add('hidden'); UI.gameScreen.classList.remove('flex');
         UI.startScreen.classList.remove('hidden'); UI.startScreen.classList.add('flex');
@@ -1099,45 +1100,36 @@
 
     async function showGuidance(text) { await typeWriter(UI.gameOutput, `[HINT] ${text}`, GUIDANCE_COLOR); }
     async function initializeAudio() { if (audioInitialized) return; try { await Tone.start(); synth = new Tone.Synth().toDestination(); audioInitialized = true; } catch(e) { console.error(e); }}
-    function saveStateToSession() { if (GameState && typeof GameState.turnCount === 'number' && !GameState.exitGame) { try { const sessionData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); sessionStorage.setItem('synapse_session_v6_autosave', sessionData); } catch (e) { console.error("Session save failed:", e); } } }
-    function loadStateFromSession() { const sessionData = sessionStorage.getItem('synapse_session_v6_autosave'); if (!sessionData) return false; try { const loadedState = JSON.parse(sessionData); if (loadedState.currentRoom && typeof loadedState.turnCount === 'number' && !loadedState.exitGame) { resetGameState(); Object.assign(GameState, loadedState); GameState.visitedRooms = new Set(loadedState.visitedRooms || []); GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []); initializeData(); buildDialogueTree(GameState.chatbotTone); GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone] || GameState.dialogue.cache[ChatbotTone.Friendly]; GameState.dialogue.previousNodes = []; UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex'); UI.gameOutput.innerHTML = ''; typeWriter(UI.gameOutput, t('conn_reestablished'), '#cccccc'); renderRoom(); updateUI(); renderDialogueOptions(); return true; } } catch (e) { console.error("Session load failed:", e); sessionStorage.removeItem('synapse_session_v6_autosave'); } return false; }
+    function saveStateToSession() { if (GameState && typeof GameState.turnCount === 'number' && !GameState.exitGame) { try { const sessionData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); sessionStorage.setItem('synapse_session_v7_autosave', sessionData); } catch (e) { console.error("Session save failed:", e); } } }
+    function loadStateFromSession() { const sessionData = sessionStorage.getItem('synapse_session_v7_autosave'); if (!sessionData) return false; try { const loadedState = JSON.parse(sessionData); if (loadedState.currentRoom && typeof loadedState.turnCount === 'number' && !loadedState.exitGame) { resetGameState(); Object.assign(GameState, loadedState); GameState.visitedRooms = new Set(loadedState.visitedRooms || []); GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []); initializeData(); buildDialogueTree(GameState.chatbotTone); GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone] || GameState.dialogue.cache[ChatbotTone.Friendly]; GameState.dialogue.previousNodes = []; UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex'); UI.gameOutput.innerHTML = ''; typeWriter(UI.gameOutput, t('conn_reestablished'), '#cccccc'); renderRoom(); updateUI(); renderDialogueOptions(); return true; } } catch (e) { console.error("Session load failed:", e); sessionStorage.removeItem('synapse_session_v7_autosave'); } return false; }
     function setupBackgroundAnimation() { const canvas = UI.backgroundCanvas; const ctx = canvas.getContext('2d'); let width, height, particles = []; function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; } window.addEventListener('resize', resize); resize(); class Particle { constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.size = Math.random() * 0.4 + 0.1; this.speedX = (Math.random() * 0.5 - 0.25); this.speedY = (Math.random() * 0.5 - 0.25); } update() { this.x += this.speedX; this.y += this.speedY; if (this.size > 0.1) this.size -= 0.001; if(this.x < 0 || this.x > width) this.speedX *= -1; if(this.y < 0 || this.y > height) this.speedY *= -1; } draw() { ctx.fillStyle = '#00ff41'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); } } function initParticles() { particles = []; for(let i=0; i<100; i++) particles.push(new Particle()); } function animateParticles() { ctx.clearRect(0,0,width,height); for(let i=0; i<particles.length; i++) { particles[i].update(); particles[i].draw(); if(particles[i].size <= 0.1) { particles.splice(i, 1); i--; particles.push(new Particle()); } } requestAnimationFrame(animateParticles); } initParticles(); animateParticles(); }
     
     function drawMap() {
-        if (!UI.mapCanvas || !GameState.currentRoom) return;
+        if (!UI.mapCanvas) return;
         const canvas = UI.mapCanvas;
         const ctx = canvas.getContext('2d');
-        const parent = canvas.parentElement;
-        canvas.width = parent.offsetWidth;
-        canvas.height = parent.offsetHeight;
-
-        const roomKeys = Object.keys(roomLayout);
-        const minX = Math.min(...roomKeys.map(k => roomLayout[k].x));
-        const maxX = Math.max(...roomKeys.map(k => roomLayout[k].x + roomLayout[k].w));
-        const minY = Math.min(...roomKeys.map(k => roomLayout[k].y));
-        const maxY = Math.max(...roomKeys.map(k => roomLayout[k].y + roomLayout[k].h));
-
-        const mapWidth = maxX - minX;
-        const mapHeight = maxY - minY;
-        const scale = Math.min(canvas.width / (mapWidth + 40), canvas.height / (mapHeight + 40));
-        const offsetX = (canvas.width - mapWidth * scale) / 2 - minX * scale;
-        const offsetY = (canvas.height - mapHeight * scale) / 2 - minY * scale;
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
         
+        const scale = 1; // Simplified scale
+        const panX = mapState.offsetX;
+        const panY = mapState.offsetY;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw connections for visited rooms
+        // Draw connections
         ctx.strokeStyle = "rgba(0, 255, 65, 0.2)";
-        ctx.lineWidth = 1 * scale;
-        GameState.visitedRooms.forEach(roomName => {
+        ctx.lineWidth = 1;
+        Object.keys(roomLayout).forEach(roomName => {
             if (rooms[roomName] && rooms[roomName].exits) {
                 const r1Layout = roomLayout[roomName];
-                const r1x = r1Layout.x * scale + offsetX + (r1Layout.w * scale) / 2;
-                const r1y = r1Layout.y * scale + offsetY + (r1Layout.h * scale) / 2;
+                const r1x = r1Layout.x * scale + panX + (r1Layout.w * scale) / 2;
+                const r1y = r1Layout.y * scale + panY + (r1Layout.h * scale) / 2;
                 Object.values(rooms[roomName].exits).forEach(exitName => {
-                    if (GameState.visitedRooms.has(exitName)) {
+                    if (roomLayout[exitName]) {
                         const r2Layout = roomLayout[exitName];
-                        const r2x = r2Layout.x * scale + offsetX + (r2Layout.w * scale) / 2;
-                        const r2y = r2Layout.y * scale + offsetY + (r2Layout.h * scale) / 2;
+                        const r2x = r2Layout.x * scale + panX + (r2Layout.w * scale) / 2;
+                        const r2y = r2Layout.y * scale + panY + (r2Layout.h * scale) / 2;
                         ctx.beginPath();
                         ctx.moveTo(r1x, r1y);
                         ctx.lineTo(r2x, r2y);
@@ -1148,36 +1140,84 @@
         });
 
         // Draw rooms
-        GameState.visitedRooms.forEach(roomName => {
+        Object.keys(roomLayout).forEach(roomName => {
             const layout = roomLayout[roomName];
-            if (!layout) return;
-            const x = layout.x * scale + offsetX;
-            const y = layout.y * scale + offsetY;
+            const x = layout.x * scale + panX;
+            const y = layout.y * scale + panY;
             const w = layout.w * scale;
             const h = layout.h * scale;
 
-            ctx.fillStyle = (roomName === GameState.currentRoom) ? "rgba(0, 255, 65, 0.6)" : "rgba(0, 255, 65, 0.3)";
-            ctx.fillRect(x, y, w, h);
-
-            if (scale > 2) {
-                ctx.fillStyle = "white";
-                ctx.font = `${Math.max(8, 10 * scale)}px VT323`;
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText(layout.name, x + w / 2, y + h / 2);
+            if(GameState.visitedRooms.has(roomName)) {
+                ctx.fillStyle = (roomName === GameState.currentRoom) ? "rgba(0, 255, 65, 0.6)" : "rgba(0, 255, 65, 0.3)";
+                ctx.fillRect(x, y, w, h);
             }
+            
+            ctx.strokeStyle = "rgba(0, 255, 65, 0.8)";
+            ctx.strokeRect(x, y, w, h);
+
+            ctx.fillStyle = "white";
+            ctx.font = `10px VT323`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(layout.name, x + w / 2, y + h / 2);
         });
 
         // Draw player marker
         const playerLayout = roomLayout[GameState.currentRoom];
-        const playerX = playerLayout.x * scale + offsetX + (playerLayout.w * scale) / 2;
-        const playerY = playerLayout.y * scale + offsetY + (playerLayout.h * scale) / 2;
+        const playerX = playerLayout.x * scale + panX + (playerLayout.w * scale) / 2;
+        const playerY = playerLayout.y * scale + panY + (playerLayout.h * scale) / 2;
         ctx.fillStyle = "#FF2A7F";
         ctx.beginPath();
-        ctx.arc(playerX, playerY, 3 * scale, 0, 2 * Math.PI);
+        ctx.arc(playerX, playerY, 3, 0, 2 * Math.PI);
         ctx.fill();
         ctx.strokeStyle = "white";
         ctx.stroke();
+    }
+    
+    function initMapControls() {
+        const canvas = UI.mapCanvas;
+        
+        const getEventCoords = (e) => {
+            if (e.touches && e.touches.length) {
+                return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            }
+            return { x: e.clientX, y: e.clientY };
+        }
+
+        const handleDragStart = (e) => {
+            mapState.isDragging = true;
+            const coords = getEventCoords(e);
+            mapState.lastX = coords.x;
+            mapState.lastY = coords.y;
+            canvas.style.cursor = 'grabbing';
+        };
+
+        const handleDragMove = (e) => {
+            if (!mapState.isDragging) return;
+            e.preventDefault();
+            const coords = getEventCoords(e);
+            const dX = coords.x - mapState.lastX;
+            const dY = coords.y - mapState.lastY;
+            mapState.offsetX += dX;
+            mapState.offsetY += dY;
+            mapState.lastX = coords.x;
+            mapState.lastY = coords.y;
+            drawMap();
+        };
+
+        const handleDragEnd = () => {
+            mapState.isDragging = false;
+            canvas.style.cursor = 'grab';
+        };
+        
+        canvas.addEventListener('mousedown', handleDragStart);
+        window.addEventListener('mousemove', handleDragMove);
+        window.addEventListener('mouseup', handleDragEnd);
+        canvas.addEventListener('mouseleave', handleDragEnd);
+
+        canvas.addEventListener('touchstart', handleDragStart, { passive: false });
+        window.addEventListener('touchmove', handleDragMove, { passive: false });
+        window.addEventListener('touchend', handleDragEnd);
     }
 
 
@@ -1186,11 +1226,11 @@
     window.addEventListener('DOMContentLoaded', () => {
         UI.playerInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') { const input = UI.playerInput.value.trim(); if(input) { processPlayerInput(input); }
-            } else if (e.key === 'ArrowUp') { e.preventDefault(); if (commandHistory.length > 0) { commandHistoryIndex = Math.max(0, commandHistoryIndex - 1); UI.playerInput.value = commandHistory[commandHistoryIndex]; }
+            } else if (e.key === 'ArrowUp') { e.preventDefault(); if (commandHistory.length > 0) { commandHistoryIndex = Math.max(0, commandHistoryIndex - 1); UI.playerInput.value = commandHistory[commandHistoryIndex] || ''; }
             } else if (e.key === 'ArrowDown') { e.preventDefault(); if (commandHistory.length > 0) { commandHistoryIndex = Math.min(commandHistory.length, commandHistoryIndex + 1); UI.playerInput.value = commandHistory[commandHistoryIndex] || ''; } }
         });
-        UI.newGameBtn.addEventListener('click', async () => { sessionStorage.removeItem('synapse_session_v6_autosave'); await initializeAudio(); UI.startOptions.classList.add('hidden'); UI.playerSetup.classList.remove('hidden'); UI.playerSetup.classList.add('flex'); updateAbilityDisplay(); });
-        UI.loadGameBtn.addEventListener('click', async () => { sessionStorage.removeItem('synapse_session_v6_autosave'); await initializeAudio(); loadGame(); });
+        UI.newGameBtn.addEventListener('click', async () => { sessionStorage.removeItem('synapse_session_v7_autosave'); await initializeAudio(); UI.startOptions.classList.add('hidden'); UI.playerSetup.classList.remove('hidden'); UI.playerSetup.classList.add('flex'); updateAbilityDisplay(); });
+        UI.loadGameBtn.addEventListener('click', async () => { sessionStorage.removeItem('synapse_session_v7_autosave'); await initializeAudio(); loadGame(); });
         UI.viewFeaturesBtn.addEventListener('click', showFeaturesModal);
         UI.startGameBtn.addEventListener('click', () => { startGame(); });
         UI.difficultyBtns.forEach(btn => { btn.addEventListener('click', () => { UI.difficultyBtns.forEach(b => b.classList.remove('button-primary')); btn.classList.add('button-primary'); updateAbilityDisplay(); }); });
@@ -1200,10 +1240,16 @@
         UI.viewProgressionBtn.addEventListener('click', showProgressionModal);
         UI.langEnBtn.addEventListener('click', () => setLanguage('en'));
         UI.langSvBtn.addEventListener('click', () => setLanguage('sv'));
-
+        
+        initMapControls();
         setupBackgroundAnimation();
         setLanguage('en');
-        if (!loadStateFromSession()) { resetGameState(); }
+        if (!loadStateFromSession()) { 
+            resetGameState(); 
+            // Center map on start
+            mapState.offsetX = UI.mapCanvas.offsetWidth / 2 - roomLayout.Lobby.x - roomLayout.Lobby.w / 2;
+            mapState.offsetY = UI.mapCanvas.offsetHeight / 2 - roomLayout.Lobby.y - roomLayout.Lobby.h / 2;
+        }
     });
     </script>
 </body>
