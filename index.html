@@ -16,14 +16,14 @@
             width: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Prevent scrollbars on the body */
-            font-size: clamp(14px, 1.5vw, 18px); /* Responsive font size */
+            overflow: hidden; 
+            font-size: clamp(14px, 1.5vw, 18px); 
         }
         body {
             background-color: #0d0d0d;
             color: #00ff41;
             font-family: 'Space Mono', monospace;
-            position: fixed; /* Prevents pull-to-refresh and other weird mobile browser behaviors */
+            position: fixed; 
         }
         #background-canvas {
             position: fixed;
@@ -55,12 +55,34 @@
         .title-font {
             font-family: 'VT323', monospace;
         }
+
+        .title-wrapper {
+            position: relative;
+        }
+        
         .title-pixel-3d {
             color: #00ff41;
             background-color: transparent;
             position: relative;
             animation: pixel-flicker 5s infinite linear;
+            /* Apply the SVG filter */
+            filter: url(#drip-filter);
         }
+
+        .title-pixel-3d::before {
+            content: 'SYNAPSE';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            background: linear-gradient(175deg, #FF2A7F 0%, #B80000 70%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
         .crt-effect::before {
             content: " ";
             display: block;
@@ -74,6 +96,7 @@
             background-size: 100% 2px, 3px 100%;
             pointer-events: none;
         }
+
         @keyframes pixel-flicker {
             0%, 19.9%, 22.1%, 60%, 100% {
                 text-shadow:
@@ -103,6 +126,7 @@
                  opacity: 0.95;
             }
         }
+        
         .input-caret {
             background-color: #00ff41;
             width: 10px;
@@ -145,12 +169,25 @@
     </style>
 </head>
 <body class="bg-black text-[#00ff41] flex items-center justify-center min-h-screen">
+    <!-- SVG Filter for the dripping effect -->
+    <svg style="display:none;">
+        <defs>
+            <filter id="drip-filter">
+                <feTurbulence type="fractalNoise" baseFrequency="0.01 0.04" numOctaves="1" result="turbulence"/>
+                <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="20" xChannelSelector="R" yChannelSelector="G"/>
+                <animate xlink:href="#drip-filter" attributeName="baseFrequency" dur="10s" keyTimes="0;0.5;1" values="0.01 0.04;0.02 0.06;0.01 0.04" repeatCount="indefinite"/>
+            </filter>
+        </defs>
+    </svg>
+
     <canvas id="background-canvas"></canvas>
     <div id="app-container" class="w-full h-full bg-black/75 p-2 sm:p-4 flex flex-col crt-effect">
         
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
             <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-black bg-opacity-60 relative">
-                <h1 id="game-title" class="text-7xl md:text-9xl font-bold title-pixel-3d title-font mb-4">SYNAPSE</h1>
+                 <div class="title-wrapper">
+                    <h1 id="game-title" class="text-7xl md:text-9xl font-bold title-pixel-3d title-font mb-4">SYNAPSE</h1>
+                </div>
                 <div id="intro-text-container" class="max-w-4xl text-sm md:text-base text-white"></div>
                  <div id="start-options" class="mt-6 flex flex-wrap justify-center gap-4">
                      <button id="new-game-btn" data-lang="new_game" class="button btn-glow">New Game</button>
