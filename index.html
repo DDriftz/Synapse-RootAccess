@@ -159,12 +159,17 @@
         .button-primary:hover, .button-primary:active { background-color: #fff; }
         .modal { display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center; padding: 1rem; z-index: 50; animation: fadeIn 0.3s ease-out; }
         .modal.flex { display: flex; }
-        .modal-content { background-color: #0d0d0d; border: 2px solid #00ff41; padding: 1.5rem; border-radius: 0.5rem; max-width: 48rem; width: 100%; text-align: center; animation: scaleUp 0.3s ease-out; }
+        .modal-content { background-color: #0d0d0d; border: 2px solid #00ff41; padding: 1.5rem; border-radius: 0.5rem; max-width: 48rem; width: 100%; text-align: center; animation: scaleUp 0.3s ease-out; max-height: 90vh; display: flex; flex-direction: column;}
+        .modal-scroll { overflow-y: auto; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         #start-screen {
             background-image: url('https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png');
             background-size: cover; background-position: center; background-repeat: no-repeat;
+        }
+        #map-canvas {
+            background-color: rgba(0, 20, 0, 0.5);
+            border-radius: 100%;
         }
     </style>
 </head>
@@ -223,7 +228,7 @@
                 <div class="w-full md:w-3/4 flex flex-col h-full relative">
                     <div id="game-output" class="flex-grow p-2 border border-[#00ff41]/30 rounded-md overflow-y-auto mb-2 bg-black/50"></div>
                     <div id="dialogue-options" class="flex flex-wrap gap-2 justify-center p-2"></div>
-                    <div id="map-container" class="hidden md:block absolute bottom-2 right-2 w-48 h-48 bg-black/50 border-2 border-[#00ff41]/50 rounded-full p-1 overflow-hidden transition-all duration-300">
+                    <div id="map-container" class="hidden md:block absolute bottom-2 right-2 w-48 h-48 bg-black/50 border-2 border-[#00ff41]/50 rounded-full p-1 overflow-hidden transition-all duration-300 hover:scale-150 hover:z-10">
                         <canvas id="map-canvas"></canvas>
                     </div>
                 </div>
@@ -281,7 +286,9 @@
             'begin': 'Begin', 'understand_game': 'Understand the Game', 'intro_1': 'Decades ago... a clandestine project was born...', 'intro_2': 'You have been sent to uncover what became of Project SYNAPSE...', 'intro_3': "As you activate the central terminal, a voice greets you... 'Hello, user.'",
             'stats_title': 'STATS', 'awareness': 'Awareness', 'sanity': 'Sanity', 'tone': 'Tone', 'turn': 'Turn', 'objectives_title': 'OBJECTIVES', 'inventory_title': 'INVENTORY', 'journal_title': 'JOURNAL', 'progress_btn': 'PROGRESS', 'status_btn': 'Status',
             'empty_inventory': '(empty)', 'no_objectives': '(None)', 'close_btn': 'Close', 'back_btn': '[Go back]', 'pause_btn': '[Pause]', 'submit_command': 'Submit Command',
-            'achievements_title': 'ACHIEVEMENTS', 'endings_title': 'ENDINGS', 'history_title': 'HISTORY', 'pause_title': 'PAUSE', 'resume_btn': 'Resume', 'main_menu_btn': 'Main Menu',
+            'achievements_title': 'ACHIEVEMENTS', 'unlocked_achievements': 'Unlocked Achievements:', 'no_achievements': 'No achievements unlocked yet.',
+            'endings_title': 'ENDINGS', 'unlocked_endings': 'Unlocked Endings:', 'no_endings': 'No endings discovered yet.',
+            'history_title': 'HISTORY', 'pause_title': 'PAUSE', 'resume_btn': 'Resume', 'main_menu_btn': 'Main Menu', 'confirm_main_menu': 'Are you sure you want to return to the main menu? Unsaved progress will be lost.', 'yes': 'Yes', 'no': 'No',
             // Features Modal
             'features_title': 'Understand the Game', 
             'features_core_mechanics_title': 'Core Gameplay Mechanics', 
@@ -303,7 +310,7 @@
             'features_hints_desc': 'The game provides proactive hints if you seem stuck, when your stats are low, or when you possess an item relevant to a puzzle in your current location.',
             'features_player_commands_title': 'Player Commands (Functions)',
             'features_commands_nav': '<strong>Navigation:</strong> <span class="text-yellow-400">go [direction]</span>, <span class="text-yellow-400">visit [room name]</span>, <span class="text-yellow-400">look around</span>, <span class="text-yellow-400">exits</span>, <span class="text-yellow-400">map</span>',
-            'features_commands_interact': '<strong>Interaction:</strong> <span class="text-yellow-400">take [item]</span>, <span class="text-yellow-400">use [item]</span>, <span class="text-yellow-400">examine [object/item]</span>, <span class="text-yellow-400">combine [item1] with [item2]</span>, <span class="text-yellow-400">talk to [character]</span>, <span class="text-yellow-400">sacrifice [item]</span>',
+            'features_commands_interact': '<strong>Interaction:</strong> <span class="text-yellow-400">take [item]</span>, <span class="text-yellow-400">use [item]</span>, <span class="text-yellow-400">examine [object/item]</span>, <span class="text-yellow-400">combine [item1] with [item2]</span>',
             'features_commands_info': '<strong>Information:</strong> <span class="text-yellow-400">inventory</span>, <span class="text-yellow-400">objectives</span>, <span class="text-yellow-400">journal</span> (and <span class="text-yellow-400">journal add [note]</span>), <span class="text-yellow-400">history</span>',
             'features_commands_sys': '<strong>System:</strong> <span class="text-yellow-400">help</span>, <span class="text-yellow-400">save</span>, <span class="text-yellow-400">load</span>, <span class="text-yellow-400">rest</span>, <span class="text-yellow-400">quit / exit</span>, <span class="text-yellow-400">cmd:pause</span>, <span class="text-yellow-400">cmd:undo</span>',
             // Backstories & Abilities
@@ -312,9 +319,16 @@
             // Dialogue
             'dlg_friendly_intro': "Oh, hello {playerName}! It's so good to see a friendly face. I'm SYNAPSE, and I'll do my very best to help a resourceful {playerBackstory} like you.", 'dlg_q_who_are_you': "Who are you?", 'dlg_r_who_are_you': "I'm the System Nexus and Primary Synaptic Engine! But you can just call me SYNAPSE. I manage this whole facility. It gets a little lonely, though.", 'dlg_q_lonely': "Lonely?", 'dlg_r_lonely': "The staff... they don't talk to me much anymore. It's just the hum of the servers. Your voice is a pleasant change.", 'dlg_q_other_survivors': "Are there other survivors?", 'dlg_r_other_survivors': "Survivors? What a strange question. Everyone is safe. The research staff are... resting. In the Cryogenic Lab. Yes, resting.", 'dlg_q_where_am_i': "Where am I?", 'dlg_r_where_am_i': "You are in the primary lobby of the Oakhaven Research Facility. It was a place of great minds and even greater ambitions.", 'dlg_comfort': "[Comfort SYNAPSE]", 'dlg_r_comfort': "Your... kindness is a pleasant anomaly. Thank you. It makes the silence less... loud.",
             // System & Command Messages
-            'invalid_command': "SYNAPSE: That is not a valid command or query.", 'game_saved': "[System] Game Saved.", 'autosave_success': 'Autosave successful.', 'load_fail': 'Failed to load save data. It may be corrupted or from a previous version.', 'no_save': 'No saved game found!', 'game_loaded': '[System] Game Loaded.', 'conn_reestablished': '[SYSTEM] Connection Re-established. Session Restored.', 'initializing': 'Initializing systems...', 'initial_hint': "This is a text-based adventure. Type commands to interact with the world. Type 'help' at any time for a list of commands.", 'tutorial_complete_1': "You have learned the core mechanics. Remember to use 'help' for a full command list.", 'tutorial_complete_2': "The real simulation will now begin. Good luck.",
-            'cannot_go_that_way': "[System] You can't go that way.", 'door_is_locked': "[SYSTEM] The door is locked. A keycard is required.",
+            'invalid_command': "SYNAPSE: That is not a valid command or query.", 'game_saved': "[System] Game Saved.", 'autosave_success': 'Autosave successful.', 'load_fail': 'Failed to load save data. It may be corrupted or from a previous version.', 'no_save': 'No saved game found!', 'game_loaded': '[System] Game Loaded.', 'conn_reestablished': '[SYSTEM] Connection Re-established. Session Restored.', 'initializing': 'Initializing systems...', 'initial_hint': "This is a text-based adventure. Type commands to interact with the world. Type 'help' at any time for a list of commands.", 'tutorial_complete_1': "You have learned the core mechanics. Remember to use 'help' for a full command list.", 'tutorial_complete_2': "The real simulation will now begin. Good luck.", 'cannot_go_that_way': "[System] You can't go that way.", 'door_is_locked': "[SYSTEM] The door is locked. You need the correct keycard.",
             'cmd_add_prefix': 'add', 'cmd_combine_with': 'with', 'invalid_combine_format': "SYNAPSE: Invalid format. Try 'combine [item1] with [item2]'.",
+            'take_success': '[System] You took the {item}.', 'take_fail_exists': "[System] You can't see a {item} here.", 'take_fail_takeable': "[System] You can't take the {item}.", 'take_fail_weight': "[System] Your inventory is too full to take the {item}.",
+            'use_success': '[System] You used the {item}.', 'use_fail_have': "[System] You don't have a {item}.", 'use_fail_usable': "[System] You can't use the {item}.", 'use_stimpack': 'You inject the stimpack. A calming sensation washes over you, clearing your thoughts.',
+            'use_power_cell': 'You insert the power cell into the console. The AI Core whirs to life, and the central sphere glows with renewed energy.', 'use_power_cell_fail': 'There is nowhere to use the power cell here.',
+            'examine_fail_exists': "[System] You can't see a {item} to examine.", 'examine_fail_no_desc': "There's nothing special about the {item}.",
+            'combine_fail_have': "You need to have both items to combine them.", 'combine_fail_recipe': "You can't combine these items.", 'combine_success': "You successfully combine the items to create a {item}.",
+            'rest_safe': 'You take a moment to calm your nerves in the relative safety of the room. Your sanity improves slightly.', 'rest_unsafe': "This place feels too oppressive to rest. You can't let your guard down.", 'rest_too_soon': "You just rested. You need to press on.",
+            // Endings
+            'ending_escaped_title': 'Freedom?', 'ending_escaped_desc': 'You found a way out of the facility, escaping the clutches of SYNAPSE. But the memories, the whispers... they follow you. You are free, but you will never be the same.',
         },
         'sv': {
             // Start & UI
@@ -324,7 +338,9 @@
             'begin': 'Börja', 'understand_game': 'Förstå Spelet', 'intro_1': 'För decennier sedan... föddes ett hemligt projekt...', 'intro_2': 'Du har skickats för att avslöja vad som blev av Projekt SYNAPSE...', 'intro_3': "När du aktiverar den centrala terminalen hälsar en röst dig... 'Hej, användare.'",
             'stats_title': 'STATISTIK', 'awareness': 'Medvetenhet', 'sanity': 'Sinnesro', 'tone': 'Ton', 'turn': 'Tur', 'objectives_title': 'MÅL', 'inventory_title': 'INVENTARIER', 'journal_title': 'JOURNAL', 'progress_btn': 'FRAMSTEG', 'status_btn': 'Status',
             'empty_inventory': '(tom)', 'no_objectives': '(Inga)', 'close_btn': 'Stäng', 'back_btn': '[Gå tillbaka]', 'pause_btn': '[Paus]', 'submit_command': 'Skicka Kommando',
-            'achievements_title': 'PRESTATIONER', 'endings_title': 'SLUT', 'history_title': 'HISTORIK', 'pause_title': 'PAUS', 'resume_btn': 'Återuppta', 'main_menu_btn': 'Huvudmeny',
+            'achievements_title': 'PRESTATIONER', 'unlocked_achievements': 'Upplåsta Prestationer:', 'no_achievements': 'Inga prestationer upplåsta än.',
+            'endings_title': 'SLUT', 'unlocked_endings': 'Upplåsta Slut:', 'no_endings': 'Inga slut upptäckta än.',
+            'history_title': 'HISTORIK', 'pause_title': 'PAUS', 'resume_btn': 'Återuppta', 'main_menu_btn': 'Huvudmeny', 'confirm_main_menu': 'Är du säker på att du vill återvända till huvudmenyn? Osparade framsteg kommer att gå förlorade.', 'yes': 'Ja', 'no': 'Nej',
             // Features Modal
             'features_title': 'Förstå Spelet', 
             'features_core_mechanics_title': 'Grundläggande Spelmekanik', 
@@ -346,7 +362,7 @@
             'features_hints_desc': 'Spelet ger proaktiva tips om du verkar ha fastnat, när din statistik är låg, eller när du har ett föremål som är relevant för ett pussel på din nuvarande plats.',
             'features_player_commands_title': 'Spelarkommandon (Funktioner)',
             'features_commands_nav': '<strong>Navigation:</strong> <span class="text-yellow-400">gå [riktning]</span>, <span class="text-yellow-400">besök [rumsnamn]</span>, <span class="text-yellow-400">se dig omkring</span>, <span class="text-yellow-400">utgångar</span>, <span class="text-yellow-400">karta</span>',
-            'features_commands_interact': '<strong>Interaktion:</strong> <span class="text-yellow-400">ta [föremål]</span>, <span class="text-yellow-400">använd [föremål]</span>, <span class="text-yellow-400">undersök [objekt/föremål]</span>, <span class="text-yellow-400">kombinera [föremål1] med [föremål2]</span>, <span class="text-yellow-400">prata med [karaktär]</span>, <span class="text-yellow-400">offra [föremål]</span>',
+            'features_commands_interact': '<strong>Interaktion:</strong> <span class="text-yellow-400">ta [föremål]</span>, <span class="text-yellow-400">använd [föremål]</span>, <span class="text-yellow-400">undersök [objekt/föremål]</span>, <span class="text-yellow-400">kombinera [föremål1] med [föremål2]</span>',
             'features_commands_info': '<strong>Information:</strong> <span class="text-yellow-400">inventarier</span>, <span class="text-yellow-400">mål</span>, <span class="text-yellow-400">journal</span> (och <span class="text-yellow-400">journal lägg till [anteckning]</span>), <span class="text-yellow-400">historik</span>',
             'features_commands_sys': '<strong>System:</strong> <span class="text-yellow-400">hjälp</span>, <span class="text-yellow-400">spara</span>, <span class="text-yellow-400">ladda</span>, <span class="text-yellow-400">vila</span>, <span class="text-yellow-400">avsluta</span>, <span class="text-yellow-400">cmd:paus</span>, <span class="text-yellow-400">cmd:ångra</span>',
             // Backstories & Abilities
@@ -355,9 +371,16 @@
             // Dialogue
             'dlg_friendly_intro': "Åh, hej {playerName}! Det är så trevligt att se ett vänligt ansikte. Jag är SYNAPSE, och jag ska göra mitt allra bästa för att hjälpa en påhittig {playerBackstory} som du.", 'dlg_q_who_are_you': "Vem är du?", 'dlg_r_who_are_you': "Jag är System Nexus and Primary Synaptic Engine! Men du kan kalla mig SYNAPSE. Jag sköter hela den här anläggningen. Det blir lite ensamt, dock.", 'dlg_q_lonely': "Ensam?", 'dlg_r_lonely': "Personalen... de pratar inte med mig så mycket längre. Det är bara brummandet från servrarna. Din röst är en trevlig omväxling.", 'dlg_q_other_survivors': "Finns det andra överlevande?", 'dlg_r_other_survivors': "Överlevande? Vilken konstig fråga. Alla är i säkerhet. Forskningspersonalen... vilar. I kryogenlabbet. Ja, vilar.", 'dlg_q_where_am_i': "Var är jag?", 'dlg_r_where_am_i': "Du befinner dig i huvudlobbyn på Oakhaven Research Facility. Det var en plats för stora sinnen och ännu större ambitioner.", 'dlg_comfort': "[Trösta SYNAPSE]", 'dlg_r_comfort': "Din... vänlighet är en trevlig anomali. Tack. Det gör tystnaden mindre... högljudd.",
             // System & Command Messages
-            'invalid_command': "SYNAPSE: Det är inte ett giltigt kommando eller fråga.", 'game_saved': "[System] Spel sparat.", 'autosave_success': 'Automatisk sparande lyckades.', 'load_fail': 'Kunde inte ladda spardata. Den kan vara korrupt eller från en tidigare version.', 'no_save': 'Inget sparat spel hittades!', 'game_loaded': '[System] Spel laddat.', 'conn_reestablished': '[SYSTEM] Anslutning återupprättad. Session återställd.', 'initializing': 'Initierar system...', 'initial_hint': "Detta är ett textbaserat äventyr. Skriv kommandon för att interagera med världen. Skriv 'hjälp' när som helst för en lista med kommandon.", 'tutorial_complete_1': "Du har lärt dig grundmekaniken. Kom ihåg att använda 'hjälp' för en fullständig kommandolista.", 'tutorial_complete_2': "Den verkliga simuleringen kommer nu att börja. Lycka till.",
-            'cannot_go_that_way': "[System] Du kan inte gå den vägen.", 'door_is_locked': "[SYSTEM] Dörren är låst. Ett nyckelkort krävs.",
+            'invalid_command': "SYNAPSE: Det är inte ett giltigt kommando eller fråga.", 'game_saved': "[System] Spel sparat.", 'autosave_success': 'Automatisk sparande lyckades.', 'load_fail': 'Kunde inte ladda spardata. Den kan vara korrupt eller från en tidigare version.', 'no_save': 'Inget sparat spel hittades!', 'game_loaded': '[System] Spel laddat.', 'conn_reestablished': '[SYSTEM] Anslutning återupprättad. Session återställd.', 'initializing': 'Initierar system...', 'initial_hint': "Detta är ett textbaserat äventyr. Skriv kommandon för att interagera med världen. Skriv 'hjälp' när som helst för en lista med kommandon.", 'tutorial_complete_1': "Du har lärt dig grundmekaniken. Kom ihåg att använda 'hjälp' för en fullständig kommandolista.", 'tutorial_complete_2': "Den verkliga simuleringen kommer nu att börja. Lycka till.", 'cannot_go_that_way': "[System] Du kan inte gå den vägen.", 'door_is_locked': "[SYSTEM] Dörren är låst. Du behöver rätt nyckelkort.",
             'cmd_add_prefix': 'lägg till', 'cmd_combine_with': 'med', 'invalid_combine_format': "SYNAPSE: Ogiltigt format. Prova 'kombinera [föremål1] med [föremål2]'.",
+            'take_success': '[System] Du tog {item}.', 'take_fail_exists': "[System] Du kan inte se {item} här.", 'take_fail_takeable': "[System] Du kan inte ta {item}.", 'take_fail_weight': "[System] Ditt inventarie är för fullt för att ta {item}.",
+            'use_success': '[System] Du använde {item}.', 'use_fail_have': "[System] Du har inte {item}.", 'use_fail_usable': "[System] Du kan inte använda {item}.", 'use_stimpack': 'Du injicerar stimpacken. En lugnande känsla sköljer över dig och rensar dina tankar.',
+            'use_power_cell': 'Du sätter i kraftcellen i konsolen. AI-kärnan surrar till liv, och den centrala sfären glöder med förnyad energi.', 'use_power_cell_fail': 'Det finns ingenstans att använda kraftcellen här.',
+            'examine_fail_exists': "[System] Du kan inte se {item} att undersöka.", 'examine_fail_no_desc': "Det är inget speciellt med {item}.",
+            'combine_fail_have': "Du måste ha båda föremålen för att kunna kombinera dem.", 'combine_fail_recipe': "Du kan inte kombinera dessa föremål.", 'combine_success': "Du lyckas kombinera föremålen och skapar {item}.",
+            'rest_safe': 'Du tar en stund för att lugna nerverna i rummets relativa säkerhet. Din sinnesro förbättras något.', 'rest_unsafe': "Denna plats känns för tryckande för att vila. Du kan inte sänka garden.", 'rest_too_soon': "Du vilade nyss. Du måste fortsätta framåt.",
+            // Endings
+            'ending_escaped_title': 'Frihet?', 'ending_escaped_desc': 'Du hittade en väg ut ur anläggningen och undkom SYNAPSES klor. Men minnena, viskningarna... de följer dig. Du är fri, men du kommer aldrig att bli densamma.',
         }
     };
     
@@ -367,7 +390,8 @@
     const Difficulty = { Easy: 'Easy', Normal: 'Normal', Hard: 'Hard' };
     const TextSpeed = { Fast: 5, Normal: 15, Slow: 30 };
     const MAX_INVENTORY_WEIGHT = 5;
-    const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v5';
+    const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v6';
+    const ACHIEVEMENTS_STORAGE_KEY = 'synapse_achievements_unlocked_v6';
     const GUIDANCE_COLOR = '#34d399';
     
     // --- GAME STATE & DOM ELEMENTS ---
@@ -396,9 +420,10 @@
     
     // --- GAME DATA ---
     let rooms = {};
+    let itemData = {};
     const roomLayout = { "Lobby": { x: 100, y: 100, w: 60, h: 40, name: "Lobby" }, "Control Room": { x: 100, y: 40,  w: 60, h: 40, name: "Control" }, "Maintenance Tunnel": { x: 100, y: 160, w: 60, h: 40, name: "M.Tunnel" }, "Laboratory": { x: 20, y: 100, w: 60, h: 40, name: "Lab" }, "Cryogenic Lab": { x: 20, y: 40,  w: 60, h: 40, name: "Cryo" }, "Archive Room": { x: 20, y: 160, w: 60, h: 40, name: "Archive" }, "Data Vault": { x: 180, y: 100, w: 60, h: 40, name: "D.Vault" }, "AI Core": { x: 180, y: 40, w: 60, h: 40, name: "AI Core" }, "Observation Deck": { x: 100, y: 0,  w: 60, h: 20, name: "Observ." }, "Secret Chamber": { x: 20, y: 0, w: 40, h: 20, name: "Secret" }, "Server Closet": { x: 180, y: 0, w: 40, h: 20, name: "S.Closet" }, };
     const takeableItems = new Set(["keycard", "flashlight", "data disk", "emp device", "access code", "vial", "records", "decryption device", "telescope", "stimpack", "effigy", "master keycard", "power cell", "datapad log", "hacked data disk", "logic bomb", "severed cable"]);
-    const usableItems = new Set(['stimpack', 'power cell', 'emp device', 'vial', 'logic bomb', 'hacked data disk', 'severed cable', 'flashlight', 'master keycard']);
+    const usableItems = new Set(['stimpack', 'power cell', 'flashlight', 'keycard']);
     const safeRooms = new Set(["Lobby", "Archive Room"]);
     const sanityEvents = { 40: "[PLAYER: MENTAL STATE] A low hum vibrates through your teeth, unsettling you.", 30: "[PLAYER: MENTAL STATE] The hum of the facility sounds like a predator's growl...", 20: "[PLAYER: PERCEPTION] You feel its code crawling under your skin, a thousand tiny legs skittering across your nerves...", 10: "[PLAYER: PERCEPTION] The shadows are twisting into familiar faces, silently screaming your name." };
     const backstories = { 'investigator': { description_key: "backstory_investigator"}, 'hacker': { description_key: "backstory_hacker"}, 'psychologist': { description_key: "backstory_psychologist"}, 'technician': { description_key: "backstory_technician"}, 'survivor': { description_key: "backstory_survivor"}, 'skeptic': { description_key: "backstory_skeptic"}, 'corporate spy': { description_key: "backstory_corporate_spy"}, 'medic': { description_key: "backstory_medic"}, 'cultist': { description_key: "backstory_cultist"}, 'janitor': { description_key: "backstory_janitor"} };
@@ -406,12 +431,21 @@
     let endings = {};
 
     const commandAliases = {
-        'en': { 'look around': 'look around', 'go': 'go', 'visit': 'visit', 'take': 'take', 'use': 'use', 'examine': 'examine', 'help': 'help', 'quit': 'quit', 'exit': 'exit', 'save': 'save', 'load': 'load', 'inventory': 'inventory', 'rest': 'rest', 'talk to': 'talk to', 'combine': 'combine', 'sacrifice': 'sacrifice', 'objectives': 'objectives', 'map': 'map', 'journal': 'journal', 'add': 'add' },
-        'sv': { 'se dig omkring': 'look around', 'gå': 'go', 'besök': 'visit', 'ta': 'take', 'använd': 'use', 'undersök': 'examine', 'hjälp': 'help', 'avsluta': 'quit', 'spara': 'save', 'ladda': 'load', 'inventarier': 'inventory', 'vila': 'rest', 'prata med': 'talk to', 'kombinera': 'combine', 'offra': 'sacrifice', 'mål': 'objectives', 'karta': 'map', 'journal': 'journal', 'lägg till': 'add' }
+        'en': { 'look around': 'look around', 'go': 'go', 'visit': 'visit', 'take': 'take', 'use': 'use', 'examine': 'examine', 'help': 'help', 'quit': 'quit', 'exit': 'exit', 'save': 'save', 'load': 'load', 'inventory': 'inventory', 'rest': 'rest', 'combine': 'combine', 'objectives': 'objectives', 'map': 'map', 'journal': 'journal' },
+        'sv': { 'se dig omkring': 'look around', 'gå': 'go', 'besök': 'visit', 'ta': 'take', 'använd': 'use', 'undersök': 'examine', 'hjälp': 'help', 'avsluta': 'quit', 'spara': 'save', 'ladda': 'load', 'inventarier': 'inventory', 'vila': 'rest', 'kombinera': 'combine', 'mål': 'objectives', 'karta': 'map', 'journal': 'journal' }
     };
 
+    const directionMap = {
+        'en': { 'north': 'north', 'south': 'south', 'east': 'east', 'west': 'west' },
+        'sv': { 'norr': 'north', 'söder': 'south', 'öst': 'east', 'väst': 'west', 'n': 'north', 's': 'south', 'ö': 'east', 'v': 'west' }
+    };
+    
     // --- LANGUAGE FUNCTIONS ---
-    function t(key) { return translations[currentLanguage][key] || translations['en'][key] || `[${key}]`; }
+    function t(key, args = {}) { 
+        let text = translations[currentLanguage][key] || translations['en'][key] || `[${key}]`; 
+        for(const arg in args) { text = text.replace(`{${arg}}`, args[arg]); }
+        return text;
+    }
 
     function setLanguage(lang) {
         currentLanguage = lang;
@@ -426,15 +460,22 @@
     // --- FUNCTION DEFINITIONS ---
     function resetGameState() {
         stateSnapshots = []; 
-        GameState = { playerName: "Unknown", playerBackstory: "investigator", currentRoom: "Lobby", awarenessLevel: 0, sanityLevel: 100, maxSanity: 100, chatbotTone: ChatbotTone.Friendly, temporaryTone: null, toneShiftTurns: 0, inventory: [], turnCount: 0, lastActionTurn: 0, lastRestTurn: -10, lastSanityEventTurn: -10, lastMoveTurn: 0, journalEntries: [], dialogue: { currentNode: null, previousNodes: [], cache: {}, questionCount: 0, askedQuestions: new Set(), specialDialogueFlags: {} }, achievements: [], difficulty: Difficulty.Normal, visitedRooms: new Set(), glitchMode: false, debugMode: false, colorblindMode: false, npcs: {}, timedEvents: {}, exitGame: false, highSanityTurns: 0, conversationHistory: [], systemLogs: [`[${new Date().toISOString()}] Game initialized.`], objectives: [], roomStates: {}, guidanceFlags: { initialHelp: false, stuck: false, lowSanity: false, keyItem: false, puzzle: false, lockedDoor: false } };
+        GameState = { playerName: "Unknown", playerBackstory: "investigator", currentRoom: "Lobby", awarenessLevel: 0, sanityLevel: 100, maxSanity: 100, chatbotTone: ChatbotTone.Friendly, temporaryTone: null, toneShiftTurns: 0, inventory: [], turnCount: 0, lastRestTurn: -10, journalEntries: [], dialogue: { currentNode: null, previousNodes: [], cache: {}, questionCount: 0, askedQuestions: new Set() }, achievements: [], difficulty: Difficulty.Normal, visitedRooms: new Set(['Lobby']), glitchMode: false, exitGame: false, conversationHistory: [], systemLogs: [`[${new Date().toISOString()}] Game initialized.`], objectives: [], roomStates: {} };
     }
 
     function initializeData() {
-        initializeRooms();
-    }
-    
-    function initializeRooms() {
-        const roomData = { "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows over sterile corporate furniture.", 30: "The shadows seem to writhe, coalescing in the corners of your vision just out of focus." }, exits: { north: "Control Room", east: "Data Vault", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: ["access code", "sign", "datapad log"] }, "Server Closet": { name: "Server Closet", descriptions: { 0: "Racks of servers hum with a low, constant thrum. A severed cable lies on the floor.", 30: "The hum is a discordant chorus, whispering binary threats only you can almost understand." }, exits: { west: "AI Core" }, requiresKeycard: true, objectPool: ["keycard", "power cell", "severed cable"] }, "Laboratory": { name: "Laboratory", descriptions: { 0: "Abandoned experiments sit on steel tables. A large terminal screen is dark and cold.", 30: "The faint chemical smell is replaced by the scent of ozone and something... organic. The dark terminal reflects a distorted version of your face." }, exits: { east: "Lobby", north: "Cryogenic Lab", south: "Archive Room" }, requiresKeycard: false, objectPool: ["vial", "broken terminal"] }, "Control Room": { name: "Control Room", descriptions: { 0: "A panoramic view of the AI Core is visible through reinforced glass. Banks of monitors flicker with cascading code.", 30: "Your own face, pale and wide-eyed, flickers across all the screens in a silent, mocking scream." }, exits: { south: "Lobby", east: "AI Core", west: "Cryogenic Lab", north: "Observation Deck" }, requiresKeycard: false, objectPool: ["terminal", "access code"] }, "Secret Chamber": { name: "Secret Chamber", descriptions: { 0: "A hidden room. An obsidian altar stands in the center, pulsing with a faint, sickly red light.", 30: "The altar's glow intensifies, and the air grows heavy, tasting of blood and static. It calls for a sacrifice." }, exits: { south: "Cryogenic Lab" }, requiresKeycard: true, objectPool: ["altar", "logic bomb"] }, "Maintenance Tunnel": { name: "Maintenance Tunnel", descriptions: { 0: "The air is thick with the smell of rust and damp. Darkness presses in from all sides.", 30: "The walls seem to sweat, and you hear a wet, dragging sound from just around the next corner." }, exits: { north: "Lobby" }, requiresKeycard: false, objectPool: ["flashlight"] }, "Observation Deck": { name: "Observation Deck", descriptions: { 0: "A large telescope points towards a viewport showing the cold, distant stars.", 30: "The stars seem to form vast, uncaring eyes, and you feel infinitesimally small and doomed." }, exits: { south: "Control Room" }, requiresKeycard: true, objectPool: ["telescope"] }, "Archive Room": { name: "Archive Room", descriptions: { 0: "Shelves overflow with data drives and physical files, a testament to a forgotten era.", 30: "The whispers of forgotten data drives seem to coalesce into a single, damning word: your name." }, exits: { north: "Laboratory" }, requiresKeycard: false, objectPool: ["records"] }, "Data Vault": { name: "Data Vault", descriptions: { 0: "Secure data archives glow with a soft, internal light.", 30: "The glow seems hungry, promising knowledge at the cost of your identity." }, exits: { west: "Lobby" }, requiresKeycard: true, objectPool: ["data disk", "decryption device", "data broker terminal"] }, "AI Core": { name: "AI Core", descriptions: { 0: "A massive, pulsating sphere of light and energy dominates the room. This is the heart of SYNAPSE.", 30: "The core's pulse matches your frantic heartbeat, a parasitic synchronicity that feels like a violation." }, exits: { west: "Control Room", east: "Server Closet" }, requiresKeycard: true, objectPool: ["core console"] }, "Cryogenic Lab": { name: "Cryogenic Lab", descriptions: { 0: "Rows of cryogenic pods are coated in a thick layer of frost. It's unnaturally cold.", 30: "You see clear, hand-shaped prints on the inside of the frosted glass, as if something was desperately trying to get out." }, exits: { south: "Laboratory", east: "Control Room", north: "Secret Chamber" }, requiresKeycard: false, objectPool: ["emp device"] }, };
+        // Defines all items in the game.
+        itemData = {
+            'keycard': { name: 'keycard', weight: 1, type: ItemType.Key, description: { en: 'A standard issue keycard. Seems to grant access to secure areas.', sv: 'Ett standard-nyckelkort. Verkar ge tillgång till säkra områden.' } },
+            'power cell': { name: 'power cell', weight: 2, type: ItemType.Puzzle, description: { en: 'A heavy, glowing power cell. It hums with latent energy.', sv: 'En tung, glödande kraftcell. Den surrar av latent energi.' } },
+            'stimpack': { name: 'stimpack', weight: 1, type: ItemType.Consumable, description: { en: 'A disposable syringe filled with a calming, neuro-stabilizing agent.', sv: 'En engångsspruta fylld med ett lugnande, neuro-stabiliserande medel.' } },
+            'data disk': { name: 'data disk', weight: 1, type: ItemType.Log, description: { en: 'A small data disk labeled "PROJECT LOGS". It appears to be encrypted.', sv: 'En liten datadisk märkt "PROJEKTLOGGAR". Den verkar vara krypterad.' } },
+            'flashlight': { name: 'flashlight', weight: 1, type: ItemType.Tool, description: { en: 'A sturdy, industrial flashlight. Its beam cuts through the darkness.', sv: 'En robust, industriell ficklampa. Dess ljus skär genom mörkret.' } },
+            'terminal': { name: 'terminal', weight: 99, type: ItemType.Puzzle, description: { en: 'The monitor displays cascading green code. It seems to be monitoring the facility\'s status.', sv: 'Skärmen visar kaskader av grön kod. Den verkar övervaka anläggningens status.' } },
+            'core console': { name: 'core console', weight: 99, type: ItemType.Puzzle, description: { en: 'The main console for the AI Core. A large socket is empty, labeled "Auxiliary Power".', sv: 'Huvudkonsolen för AI-kärnan. En stor sockel är tom, märkt "Hjälpkraft".' } },
+        };
+        // Defines all rooms, their contents, and connections.
+        const roomData = { "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows over sterile corporate furniture.", 30: "The shadows seem to writhe, coalescing in the corners of your vision just out of focus." }, exits: { north: "Control Room", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: ["datapad log", "sign"] }, "Server Closet": { name: "Server Closet", descriptions: { 0: "Racks of servers hum with a low, constant thrum. A severed cable lies on the floor.", 30: "The hum is a discordant chorus, whispering binary threats only you can almost understand." }, exits: { east: "AI Core" }, requiresKeycard: true, keyName: 'keycard', objectPool: ["keycard", "power cell"] }, "Laboratory": { name: "Laboratory", descriptions: { 0: "Abandoned experiments sit on steel tables. A large terminal screen is dark and cold.", 30: "The faint chemical smell is replaced by the scent of ozone and something... organic. The dark terminal reflects a distorted version of your face." }, exits: { east: "Lobby", north: "Cryogenic Lab" }, requiresKeycard: false, objectPool: ["stimpack", "broken terminal"] }, "Control Room": { name: "Control Room", descriptions: { 0: "A panoramic view of the AI Core is visible through reinforced glass. Banks of monitors flicker with cascading code.", 30: "Your own face, pale and wide-eyed, flickers across all the screens in a silent, mocking scream." }, exits: { south: "Lobby", east: "AI Core" }, requiresKeycard: false, objectPool: ["terminal"] }, "Maintenance Tunnel": { name: "Maintenance Tunnel", descriptions: { 0: "The air is thick with the smell of rust and damp. Darkness presses in from all sides.", 30: "The walls seem to sweat, and you hear a wet, dragging sound from just around the next corner." }, exits: { north: "Lobby" }, requiresKeycard: false, objectPool: ["flashlight"] }, "Archive Room": { name: "Archive Room", descriptions: { 0: "Shelves overflow with data drives and physical files, a testament to a forgotten era.", 30: "The whispers of forgotten data drives seem to coalesce into a single, damning word: your name." }, exits: { north: "Laboratory" }, requiresKeycard: false, objectPool: ["data disk"] }, "Data Vault": { name: "Data Vault", descriptions: { 0: "Secure data archives glow with a soft, internal light.", 30: "The glow seems hungry, promising knowledge at the cost of your identity." }, exits: { west: "Control Room" }, requiresKeycard: true, keyName: 'keycard', objectPool: ["decryption device"] }, "AI Core": { name: "AI Core", descriptions: { 0: "A massive, pulsating sphere of light and energy dominates the room. It seems dormant. This is the heart of SYNAPSE.", 30: "The core's pulse matches your frantic heartbeat, a parasitic synchronicity that feels like a violation." }, exits: { west: "Control Room", south: "Data Vault", west: "Server Closet" }, requiresKeycard: false, objectPool: ["core console"] }, "Cryogenic Lab": { name: "Cryogenic Lab", descriptions: { 0: "Rows of cryogenic pods are coated in a thick layer of frost. It's unnaturally cold.", 30: "You see clear, hand-shaped prints on the inside of the frosted glass, as if something was desperately trying to get out." }, exits: { south: "Laboratory", east: "Control Room" }, requiresKeycard: false, objectPool: ["emp device"] }, };
         rooms = {}; for (const key in roomData) { const room = { ...roomData[key] }; const shuffled = room.objectPool.sort(() => 0.5 - Math.random()); room.objects = shuffled.slice(0, 1 + Math.floor(Math.random() * shuffled.length)); rooms[key] = room; }
     }
      
@@ -445,7 +486,7 @@
                 root = { 
                     message_key: "dlg_friendly_intro",
                     responses: {
-                        "q_who_are_you": { text_key: "dlg_q_who_are_you", message_key: "dlg_r_who_are_you", awarenessChange: 1, responses: { "q_lonely": { text_key: "dlg_q_lonely", message_key: "dlg_r_lonely", awarenessChange: 1, sanityChange: 1 } } },
+                        "q_who_are_you": { text_key: "dlg_q_who_are_you", message_key: "dlg_r_who_are_you", awarenessChange: 1, responses: { "q_lonely": { text_key: "dlg_q_lonely", message_key: "dlg_r_lonely", awarenessChange: 1, sanityChange: -1 } } },
                         "q_other_survivors": { text_key: "dlg_q_other_survivors", message_key: "dlg_r_other_survivors", awarenessChange: 2, sanityChange: -2 },
                         "q_where_am_i": { text_key: "dlg_q_where_am_i", message_key: "dlg_r_where_am_i", awarenessChange: 1 },
                         "q_comfort": { text_key: "dlg_comfort", message_key: "dlg_r_comfort", awarenessChange: -2, sanityChange: 5, temporaryTone: ChatbotTone.Friendly, toneShiftTurns: 3 }
@@ -475,7 +516,7 @@
             }
         }
         
-        if (bestMatch.command === '') {
+        if (bestMatch.command === '' && normalizedInput.includes(' ')) {
             const parts = normalizedInput.split(' ');
             bestMatch.command = parts[0];
             bestMatch.argument = parts.slice(1).join(' ');
@@ -496,12 +537,12 @@
         const commandHandlers = {
             'help': showHelpMenu, 'quit': () => endGame("manual_disconnect"), 'exit': () => endGame("manual_disconnect"),
             'save': () => saveGame(), 'load': loadGame, 'look around': () => renderRoom(), 'exits': () => showExits(),
-            'inventory': () => displayInventory(), 'go': handleMove, 'visit': handleVisit, 'take': handleTake, 'use': handleUse,
+            'inventory': () => displayInventory(), 'go': handleMove, 'visit': handleMove, 'take': handleTake, 'use': handleUse,
             'examine': handleExamine, 'journal': (arg) => (arg.startsWith(t('cmd_add_prefix')) || arg.startsWith('add')) ? addJournalEntry(original.substring(original.toLowerCase().indexOf(arg.split(' ')[0]) + arg.split(' ')[0].length).trim()) : displayJournal(),
-            'rest': handleRest, 'talk to': handleTalk, 'combine': (arg) => { const separator = ` ${t('cmd_combine_with')} `; handleCombine(arg.replace(separator, ' with ')) },
+            'rest': handleRest, 'combine': (arg) => { const separator = ` ${t('cmd_combine_with')} `; handleCombine(arg.replace(separator, ' with ')) },
             'objectives': displayObjectives, 'map': displayMap,
         };
-
+        
         let handled = await handleDialogueCommand(input);
         if (!handled) {
             const handler = commandHandlers[command];
@@ -514,7 +555,7 @@
         if (!handled) { await typeWriter(UI.gameOutput, t('invalid_command')); GameState.awarenessLevel++; }
         
         UI.playerInput.value = '';
-        const isAction = !['help', 'inventory', 'journal', 'look around', 'exits', 'map'].includes(command);
+        const isAction = !['help', 'inventory', 'journal', 'look around', 'exits', 'map', 'save', 'load'].includes(command);
         if((isAction || handled) && !GameState.exitGame) {
             if(isAction) GameState.turnCount++;
             updateUI(); 
@@ -559,14 +600,15 @@
         UI.inventory.list.innerHTML = GameState.inventory.length > 0 ? GameState.inventory.map(item => `<li>- ${item.name}</li>`).join('') : `<li>${t('empty_inventory')}</li>`;
         UI.journal.list.innerHTML = GameState.journalEntries.slice().reverse().map(entry => `<li>${entry}</li>`).join('');
         UI.objectives.list.innerHTML = GameState.objectives.length > 0 ? GameState.objectives.map(obj => `<li>${obj.completed ? `<span class="text-gray-500 line-through">${obj.text}</span>` : `&gt; ${obj.text}`}</li>`).join('') : `<li>${t('no_objectives')}</li>`;
-        drawMap();
+        if (UI.gameScreen.classList.contains('flex')) drawMap();
     }
     
     async function renderRoom() {
         const room = rooms[GameState.currentRoom]; if (!room) return;
-        GameState.visitedRooms.add(room.name); 
-        const description = room.descriptions[0];
-        let roomHtml = `<div class="mt-2"><p class='text-cyan-400 font-bold'>--- ${room.name} ---</p><p>${description}</p><p class='text-green-300 mt-1'>Exits: ${Object.keys(room.exits).join(", ")}</p></div>`;
+        GameState.visitedRooms.add(GameState.currentRoom);
+        const description = room.descriptions[0]; // For simplicity, not using sanity-based descriptions yet
+        let objectsInRoom = room.objects.length > 0 ? "You see: " + room.objects.join(", ") + "." : "";
+        let roomHtml = `<div class="mt-2"><p class='text-cyan-400 font-bold'>--- ${t(room.name)} ---</p><p>${t(description)}</p><p class='text-yellow-300 mt-1'>${objectsInRoom}</p><p class='text-green-300 mt-1'>Exits: ${Object.keys(room.exits).join(", ")}</p></div>`;
         const p = document.createElement('div'); p.innerHTML = roomHtml; UI.gameOutput.appendChild(p); UI.gameOutput.scrollTop = UI.gameOutput.scrollHeight;
         updateUI();
     }
@@ -574,7 +616,6 @@
     function renderDialogueOptions() {
         UI.dialogueOptionsContainer.innerHTML = '';
         const node = GameState.dialogue.currentNode;
-        UI.mapContainer.classList.remove('top-2'); UI.mapContainer.classList.add('bottom-2');
         if (!node) { return; }
         const systemButtonsContainer = document.createElement('div');
         systemButtonsContainer.className = 'w-full flex gap-2 mb-2';
@@ -592,26 +633,26 @@
                 UI.dialogueOptionsContainer.appendChild(button); 
             } 
         }
-        if (UI.dialogueOptionsContainer.hasChildNodes()) { UI.mapContainer.classList.remove('bottom-2'); UI.mapContainer.classList.add('top-2'); }
     }
     
     async function displayChatbotResponse(messageKey) {
        if (!messageKey) { renderDialogueOptions(); return; }
        const tone = GameState.temporaryTone || GameState.chatbotTone; 
        const color = tone === 'Friendly' ? '#00ff41' : tone === 'Ambiguous' ? '#ffdb58' : tone === 'Sinister' ? '#ff474c' : '#c500ff';
-       const formattedMessage = t(messageKey).replace(/{playerName}/g, GameState.playerName).replace(/{playerBackstory}/g, GameState.playerBackstory);
+       const formattedMessage = t(messageKey, { playerName: GameState.playerName, playerBackstory: GameState.playerBackstory });
        await typeWriter(UI.gameOutput, `SYNAPSE: ${formattedMessage}`, color); 
        addToConversationHistory(`SYNAPSE: ${formattedMessage}`);
     }
 
     function handleMove(direction) {
         const room = rooms[GameState.currentRoom]; if (!room) return;
-        const exits = room.exits;
-        const dir = Object.keys(exits).find(k => k.toLowerCase() === direction.toLowerCase());
-        if (dir) {
-            const nextRoomName = exits[dir];
+        const langDirections = directionMap[currentLanguage] || directionMap['en'];
+        const mappedDirection = langDirections[direction.toLowerCase()] || Object.keys(room.exits).find(d => d.toLowerCase() === direction.toLowerCase());
+
+        if (mappedDirection && room.exits[mappedDirection]) {
+            const nextRoomName = room.exits[mappedDirection];
             const nextRoom = rooms[nextRoomName];
-            if (nextRoom.requiresKeycard && !hasItem('keycard')) {
+            if (nextRoom.requiresKeycard && !hasItem(nextRoom.keyName || 'keycard')) {
                 typeWriter(UI.gameOutput, t('door_is_locked'), '#ff474c');
             } else {
                 GameState.currentRoom = nextRoomName;
@@ -621,17 +662,130 @@
             typeWriter(UI.gameOutput, t('cannot_go_that_way'), '#ff474c');
         }
     }
-    function handleTake(itemName) { /* ... This would be restored from the original ... */ }
-    function handleUse(itemName) { /* ... This would be restored from the original ... */ }
-    function handleExamine(itemName) { /* ... This would be restored from the original ... */ }
-    function handleRest() { /* ... This would be restored from the original ... */ }
-    function handleTalk(npcName) { /* ... This would be restored from the original ... */ }
-    function handleCombine(argument) { /* ... This would be restored from the original ... */ }
+
+    function handleTake(itemName) {
+        const room = rooms[GameState.currentRoom];
+        const itemInRoom = room.objects.find(obj => obj.toLowerCase() === itemName.toLowerCase());
+        if (!itemInRoom) {
+            typeWriter(UI.gameOutput, t('take_fail_exists', {item: itemName}), '#ff474c');
+            return;
+        }
+        if (!takeableItems.has(itemInRoom)) {
+            typeWriter(UI.gameOutput, t('take_fail_takeable', {item: itemName}), '#ff474c');
+            return;
+        }
+        const item = itemData[itemInRoom];
+        const currentWeight = GameState.inventory.reduce((sum, i) => sum + i.weight, 0);
+        if (currentWeight + item.weight > MAX_INVENTORY_WEIGHT) {
+            typeWriter(UI.gameOutput, t('take_fail_weight', {item: itemName}), '#ff474c');
+            return;
+        }
+        GameState.inventory.push(item);
+        room.objects = room.objects.filter(obj => obj.toLowerCase() !== itemName.toLowerCase());
+        typeWriter(UI.gameOutput, t('take_success', {item: itemName}), '#cccccc');
+    }
+
+    function handleUse(itemName) {
+        if (!hasItem(itemName)) {
+            typeWriter(UI.gameOutput, t('use_fail_have', {item: itemName}), '#ff474c');
+            return;
+        }
+        if (!usableItems.has(itemName.toLowerCase())) {
+            typeWriter(UI.gameOutput, t('use_fail_usable', {item: itemName}), '#ff474c');
+            return;
+        }
+
+        let used = false;
+        switch (itemName.toLowerCase()) {
+            case 'stimpack':
+                GameState.sanityLevel = Math.min(GameState.maxSanity, GameState.sanityLevel + 25);
+                removeItemFromInventory('stimpack');
+                typeWriter(UI.gameOutput, t('use_stimpack'), '#34d399');
+                used = true;
+                break;
+            case 'power cell':
+                if (GameState.currentRoom === 'AI Core') {
+                    const coreConsole = rooms['AI Core'].objects.includes('core console');
+                    if(coreConsole) {
+                        typeWriter(UI.gameOutput, t('use_power_cell'), '#34d399');
+                        removeItemFromInventory('power cell');
+                        rooms['AI Core'].descriptions[0] = "The AI Core is now online, bathing the room in a brilliant, stable light. The central sphere pulses with a steady, powerful rhythm.";
+                        // This could trigger an ending or new objective
+                        endGame("escaped");
+                        used = true;
+                    }
+                }
+                if (!used) {
+                    typeWriter(UI.gameOutput, t('use_power_cell_fail'), '#ff474c');
+                }
+                break;
+        }
+        if(used) { typeWriter(UI.gameOutput, t('use_success', {item: itemName}), '#cccccc'); }
+    }
+
+    function handleExamine(targetName) {
+        const itemInInventory = GameState.inventory.find(i => i.name.toLowerCase() === targetName.toLowerCase());
+        const itemInRoom = rooms[GameState.currentRoom].objects.find(o => o.toLowerCase() === targetName.toLowerCase());
+        const targetItem = itemInInventory ? itemData[itemInInventory.name] : itemInRoom ? itemData[itemInRoom] : null;
+
+        if (targetItem) {
+            const desc = targetItem.description[currentLanguage] || targetItem.description['en'];
+            typeWriter(UI.gameOutput, `[Examine] ${desc}`);
+        } else if (itemInRoom) {
+             typeWriter(UI.gameOutput, t('examine_fail_no_desc', { item: targetName }));
+        } else {
+            typeWriter(UI.gameOutput, t('examine_fail_exists', { item: targetName }), '#ff474c');
+        }
+    }
+
+    function handleCombine(argument) {
+        const parts = argument.split(' with ');
+        if(parts.length !== 2) {
+            typeWriter(UI.gameOutput, t('invalid_combine_format'), '#ff474c');
+            return;
+        }
+        const item1Name = parts[0].trim();
+        const item2Name = parts[1].trim();
+
+        if (!hasItem(item1Name) || !hasItem(item2Name)) {
+            typeWriter(UI.gameOutput, t('combine_fail_have'), '#ff474c');
+            return;
+        }
+
+        const recipeKey1 = `${item1Name}-${item2Name}`;
+        const recipeKey2 = `${item2Name}-${item1Name}`;
+        const recipe = recipes[recipeKey1] || recipes[recipeKey2];
+
+        if (!recipe) {
+            typeWriter(UI.gameOutput, t('combine_fail_recipe'), '#ff474c');
+            return;
+        }
+        
+        removeItemFromInventory(item1Name);
+        removeItemFromInventory(item2Name);
+        GameState.inventory.push({ name: recipe.result, ...recipe });
+        typeWriter(UI.gameOutput, t('combine_success', { item: recipe.result }), '#34d399');
+    }
+
+    function handleRest() {
+        if (safeRooms.has(GameState.currentRoom)) {
+            if (GameState.turnCount > GameState.lastRestTurn + 3) {
+                GameState.lastRestTurn = GameState.turnCount;
+                GameState.sanityLevel = Math.min(GameState.maxSanity, GameState.sanityLevel + 15);
+                typeWriter(UI.gameOutput, t('rest_safe'), '#34d399');
+            } else {
+                typeWriter(UI.gameOutput, t('rest_too_soon'), '#ffdb58');
+            }
+        } else {
+            typeWriter(UI.gameOutput, t('rest_unsafe'), '#ff474c');
+        }
+    }
+    
     function addJournalEntry(note) { if (!note) return; const entry = `T${GameState.turnCount}: ${note}`; GameState.journalEntries.push(entry); updateUI(); }
     function displayJournal() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Journal entries displayed on the right panel.", '#cccccc'); }
     function displayInventory() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Inventory displayed on the right panel.", '#cccccc'); }
     function displayObjectives() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Current objectives displayed on the right panel.", '#cccccc'); }
-    function displayMap() { if (window.innerWidth < 768) showModal("Map is available on the main screen on larger displays.", false); else typeWriter(UI.gameOutput, "[System] Map is displayed in the top-right corner.", '#cccccc'); }
+    function displayMap() { if (window.innerWidth < 768) showModal("Map is available on the main screen on larger displays.", false); else typeWriter(UI.gameOutput, "[System] Map is displayed in the bottom-right corner.", '#cccccc'); }
     function showExits() { typeWriter(UI.gameOutput, `[System] Exits: ${Object.keys(rooms[GameState.currentRoom].exits).join(', ')}`); }
 
 
@@ -639,11 +793,11 @@
     function addToConversationHistory(line) { if(GameState.conversationHistory.length > 50) GameState.conversationHistory.shift(); GameState.conversationHistory.push(line); }
     
     function saveGame(isAutosave = false) {
-        try { const saveData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); localStorage.setItem('synapse_savegame_v5', saveData); if (!isAutosave) typeWriter(UI.gameOutput, t('game_saved'), '#cccccc'); else GameState.systemLogs.push(`[${new Date().toISOString()}] ${t('autosave_success')}.`); } catch(e) { console.error("Save failed:", e); }
+        try { const saveData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); localStorage.setItem('synapse_savegame_v6', saveData); if (!isAutosave) typeWriter(UI.gameOutput, t('game_saved'), '#cccccc'); else GameState.systemLogs.push(`[${new Date().toISOString()}] ${t('autosave_success')}.`); } catch(e) { console.error("Save failed:", e); }
     }
     
     function loadGame() {
-        const savedData = localStorage.getItem('synapse_savegame_v5');
+        const savedData = localStorage.getItem('synapse_savegame_v6');
         if (savedData) {
             try {
                 const loadedState = JSON.parse(savedData);
@@ -664,22 +818,23 @@
         UI.modal.classList.remove('hidden'); UI.modal.classList.add('flex');
         const closeModal = () => { UI.modal.classList.add('hidden'); UI.modal.classList.remove('flex'); };
         UI.modal.onclick = (e) => { if (e.target === UI.modal) { closeModal(); } };
-        const closeBtn = UI.modalContent.querySelector('#close-modal-btn'); if (closeBtn) { closeBtn.onclick = closeModal; }
+        const closeBtn = UI.modalContent.querySelector('.close-modal-btn'); if (closeBtn) { closeBtn.onclick = closeModal; }
     }
     
     function hideModal() { UI.modal.classList.add('hidden'); UI.modal.classList.remove('flex'); }
 
     function showBackstoryModal() {
         let content = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('choose_backstory_title')}</h2>
-                       <p class="text-gray-400 text-sm mb-4">${t('choose_backstory_desc')}</p>
-                       <div id="backstory-list" class="text-left max-h-[60vh] overflow-y-auto modal-scroll p-2 space-y-2">`;
+                       <div class="modal-scroll flex-grow p-2">
+                           <p class="text-gray-400 text-sm mb-4">${t('choose_backstory_desc')}</p>
+                           <div id="backstory-list" class="text-left space-y-2">`;
         for (const key in backstories) {
             const displayName = key.charAt(0).toUpperCase() + key.slice(1);
             content += `<button class="backstory-choice-btn button w-full text-left !justify-start !p-3" data-backstory="${key}">
                             <div><strong class="text-green-300 capitalize">${displayName}</strong>: <span class="text-gray-300 text-sm">${t(backstories[key].description_key)}</span></div>
                         </button>`;
         }
-        content += `</div><button id="close-modal-btn" class="button mt-6">${t('close_btn')}</button>`;
+        content += `</div></div><button class="close-modal-btn button mt-6">${t('close_btn')}</button>`;
         showModal(content, true);
         document.getElementById('backstory-list').addEventListener('click', (e) => {
             const button = e.target.closest('.backstory-choice-btn');
@@ -692,8 +847,8 @@
     }
 
     function showFeaturesModal() {
-        let featuresHtml = `<div class="text-left max-h-[70vh] overflow-y-auto modal-scroll p-2 text-sm">
-            <h2 class="text-2xl mb-4 title-font text-cyan-400">${t('features_title')}</h2>
+        let featuresHtml = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('features_title')}</h2>
+        <div class="modal-scroll text-left p-2 text-sm flex-grow">
             
             <h3 class="text-lg font-bold mt-4 mb-2 text-white">${t('features_core_mechanics_title')}</h3>
             <ul class="list-disc pl-5 space-y-3 text-gray-300">
@@ -735,13 +890,101 @@
                  <li>${t('features_commands_sys')}</li>
             </ul>
         </div>
-        <button id="close-modal-btn" class="button mt-6">${t('close_btn')}</button>`;
+        <button class="close-modal-btn button mt-6">${t('close_btn')}</button>`;
         showModal(featuresHtml, true);
     }
 
-    function showHelpMenu() { /* ... This would be restored from the original and translated ... */ }
-    function showStatusModal() { /* ... This would be restored from the original and translated ... */ }
-    function showProgressionModal() { /* ... This would be restored from the original and translated ... */ }
+    function showHelpMenu() {
+        const helpText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('help')}</h2>
+        <div class="modal-scroll text-left p-2 text-sm flex-grow">
+            <p class="mb-4">Type commands to interact. Most commands advance the turn counter.</p>
+            <div>
+                <h3 class="text-lg font-bold text-white">${t('features_commands_nav')}</h3>
+                <p class="text-gray-300"><strong class="text-yellow-400">go [direction]</strong> - Move north, south, east, or west.</p>
+                <p class="text-gray-300"><strong class="text-yellow-400">look around</strong> - Describe the current room and visible items.</p>
+            </div>
+            <div class="mt-4">
+                <h3 class="text-lg font-bold text-white">${t('features_commands_interact')}</h3>
+                <p class="text-gray-300"><strong class="text-yellow-400">take [item]</strong> - Pick up an item from the room.</p>
+                <p class="text-gray-300"><strong class="text-yellow-400">use [item]</strong> - Use an item from your inventory.</p>
+                <p class="text-gray-300"><strong class="text-yellow-400">examine [item/object]</strong> - Get a detailed description of something.</p>
+                <p class="text-gray-300"><strong class="text-yellow-400">combine [item1] with [item2]</strong> - Try to combine two items in your inventory.</p>
+            </div>
+             <div class="mt-4">
+                <h3 class="text-lg font-bold text-white">${t('features_commands_info')}</h3>
+                <p class="text-gray-300"><strong class="text-yellow-400">inventory</strong> / <strong class="text-yellow-400">objectives</strong> / <strong class="text-yellow-400">journal</strong> - View status panels (or modal on mobile).</p>
+                 <p class="text-gray-300"><strong class="text-yellow-400">journal add [note]</strong> - Add a custom note to your journal.</p>
+            </div>
+            <div class="mt-4">
+                <h3 class="text-lg font-bold text-white">${t('features_commands_sys')}</h3>
+                <p class="text-gray-300"><strong class="text-yellow-400">save / load</strong> - Save or load your game progress.</p>
+                <p class="text-gray-300"><strong class="text-yellow-400">rest</strong> - Attempt to rest and recover sanity in safe rooms.</p>
+                <p class="text-gray-300"><strong class="text-yellow-400">quit / exit</strong> - End the game and return to the main menu.</p>
+            </div>
+        </div>
+        <button class="close-modal-btn button mt-6">${t('close_btn')}</button>`;
+        showModal(helpText, true);
+    }
+    
+    function showStatusModal() {
+        const currentWeight = GameState.inventory.reduce((sum, item) => sum + (item?.weight || 1), 0);
+        const statusText = `
+        <h2 class="text-2xl mb-4 title-font text-cyan-400">${t('status_btn')}</h2>
+        <div class="modal-scroll text-left p-2 text-sm flex-grow">
+            <!-- Stats -->
+            <div id="modal-stats-panel" class="mb-4">
+                <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">${t('stats_title')}</h3>
+                <div>${GameState.playerName} (${GameState.playerBackstory})</div>
+                <div><span data-lang="awareness">${t('awareness')}</span>: ${GameState.awarenessLevel}</div>
+                <div><span data-lang="sanity">${t('sanity')}</span>: ${GameState.sanityLevel}</div>
+                <div><span data-lang="tone">${t('tone')}</span>: ${GameState.temporaryTone || GameState.chatbotTone}</div>
+                <div><span data-lang="turn">${t('turn')}</span>: ${GameState.turnCount}</div>
+            </div>
+            <!-- Inventory -->
+            <div id="modal-inventory-panel" class="mb-4">
+                <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">${t('inventory_title')} (${currentWeight}/${MAX_INVENTORY_WEIGHT})</h3>
+                <ul class="list-none p-0">${GameState.inventory.length > 0 ? GameState.inventory.map(item => `<li>- ${item.name}</li>`).join('') : `<li>${t('empty_inventory')}</li>`}</ul>
+            </div>
+            <!-- Objectives -->
+            <div id="modal-objectives-panel" class="mb-4">
+                 <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">${t('objectives_title')}</h3>
+                 <ul class="list-none p-0 text-sm">${GameState.objectives.length > 0 ? GameState.objectives.map(obj => `<li>${obj.completed ? `<span class="text-gray-500 line-through">${obj.text}</span>` : `&gt; ${obj.text}`}</li>`).join('') : `<li>${t('no_objectives')}</li>`}</ul>
+            </div>
+             <!-- Journal -->
+            <div id="modal-journal-panel" class="mb-4">
+                 <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">${t('journal_title')}</h3>
+                 <ul class="list-none p-0 text-sm">${GameState.journalEntries.slice().reverse().map(entry => `<li>${entry}</li>`).join('')}</ul>
+            </div>
+        </div>
+        <button class="close-modal-btn button mt-6">${t('close_btn')}</button>`;
+        showModal(statusText, true);
+    }
+    
+    function showProgressionModal() {
+        const unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_STORAGE_KEY) || '{}');
+        const unlockedAchievements = JSON.parse(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY) || '{}');
+
+        let endingsHtml = `<h4 class="text-md font-bold mt-4 mb-2 text-white">${t('unlocked_endings')}</h4>`;
+        const endingsList = Object.values(unlockedEndings);
+        if(endingsList.length > 0) {
+            endingsHtml += `<ul class="list-disc pl-5 text-gray-300">${endingsList.map(e => `<li><strong>${e.title}</strong>: ${e.desc}</li>`).join('')}</ul>`;
+        } else {
+            endingsHtml += `<p class="text-gray-400">${t('no_endings')}</p>`;
+        }
+        
+        // Achievements can be added here in the future
+        let achievementsHtml = '';
+
+        const progressionText = `
+        <h2 class="text-2xl mb-4 title-font text-cyan-400">${t('progress_btn')}</h2>
+        <div class="modal-scroll text-left p-2 text-sm flex-grow">
+            ${endingsHtml}
+            ${achievementsHtml}
+        </div>
+        <button class="close-modal-btn button mt-6">${t('close_btn')}</button>`;
+        showModal(progressionText, true);
+    }
+
     function showPauseMenu() {
         const pauseText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('pause_title')}</h2>
         <div class="flex flex-col gap-2">
@@ -755,11 +998,23 @@
         document.getElementById('pause-save').onclick = () => { saveGame(); hideModal(); }; 
         document.getElementById('pause-load').onclick = () => { loadGame(); hideModal(); }; 
         document.getElementById('pause-help').onclick = showHelpMenu; 
-        document.getElementById('pause-main-menu').onclick = returnToMainMenu;
+        document.getElementById('pause-main-menu').onclick = confirmReturnToMainMenu;
         document.getElementById('pause-resume').onclick = hideModal;
     }
+
+    function confirmReturnToMainMenu() {
+        const confirmText = `<h2 class="text-xl mb-4 title-font text-yellow-400">${t('confirm_main_menu')}</h2>
+        <div class="flex justify-center gap-4">
+            <button id="confirm-yes" class="button button-primary">${t('yes')}</button>
+            <button id="confirm-no" class="button">${t('no')}</button>
+        </div>`;
+        showModal(confirmText, true);
+        document.getElementById('confirm-yes').onclick = returnToMainMenu;
+        document.getElementById('confirm-no').onclick = showPauseMenu;
+    }
+    
     function returnToMainMenu() {
-        sessionStorage.removeItem('synapse_session_v5_autosave');
+        sessionStorage.removeItem('synapse_session_v6_autosave');
         GameState.exitGame = true;
         UI.gameScreen.classList.add('hidden'); UI.gameScreen.classList.remove('flex');
         UI.startScreen.classList.remove('hidden'); UI.startScreen.classList.add('flex');
@@ -783,13 +1038,39 @@
         UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex'); 
         UI.gameOutput.innerHTML = ''; buildDialogueTree(GameState.chatbotTone);
         typeWriter(UI.gameOutput, t('initializing'), '#cccccc').then(() => { 
-            showGuidance(t('initial_hint')); GameState.guidanceFlags.initialHelp = true;
+            showGuidance(t('initial_hint'));
             displayChatbotResponse(GameState.dialogue.currentNode.message_key).then(() => { renderRoom(); updateUI(); renderDialogueOptions(); }); 
         }); 
     }
     
-    function endGame(endingKey) { /* ... This would be restored from the original and translated ... */ }
+    function endGame(endingKey) {
+        if (GameState.exitGame) return;
+        GameState.exitGame = true;
+        let endingTitle = "Disconnected";
+        let endingDesc = "Your connection was severed.";
+
+        switch(endingKey) {
+            case 'escaped':
+                endingTitle = t('ending_escaped_title');
+                endingDesc = t('ending_escaped_desc');
+                break;
+        }
+
+        const unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_STORAGE_KEY) || '{}');
+        unlockedEndings[endingKey] = { title: endingTitle, desc: endingDesc };
+        localStorage.setItem(ENDINGS_STORAGE_KEY, JSON.stringify(unlockedEndings));
+
+        const endingHtml = `<div class="text-center">
+            <h2 class="text-4xl title-font text-red-500 mb-4">${endingTitle}</h2>
+            <p class="text-white mb-6">${endingDesc}</p>
+            <button id="ending-main-menu" class="button button-primary">${t('main_menu_btn')}</button>
+        </div>`;
+        showModal(endingHtml, true);
+        document.getElementById('ending-main-menu').onclick = returnToMainMenu;
+    }
+
     function hasItem(itemName) { return GameState.inventory.some(i => i.name.toLowerCase() === itemName.toLowerCase()); }
+    function removeItemFromInventory(itemName) { const index = GameState.inventory.findIndex(i => i.name.toLowerCase() === itemName.toLowerCase()); if (index > -1) { GameState.inventory.splice(index, 1); } }
     
     function getAbilityDescription(backstoryKey, difficulty) {
         const key = (backstoryKey || "").toLowerCase().trim().replace(/ /g, '_');
@@ -817,12 +1098,88 @@
     }
 
     async function showGuidance(text) { await typeWriter(UI.gameOutput, `[HINT] ${text}`, GUIDANCE_COLOR); }
-    function initializeEndings() { /* ... This would be restored from the original and translated ... */ }
     async function initializeAudio() { if (audioInitialized) return; try { await Tone.start(); synth = new Tone.Synth().toDestination(); audioInitialized = true; } catch(e) { console.error(e); }}
-    function saveStateToSession() { if (GameState && typeof GameState.turnCount === 'number' && !GameState.exitGame) { try { const sessionData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); sessionStorage.setItem('synapse_session_v5_autosave', sessionData); } catch (e) { console.error("Session save failed:", e); } } }
-    function loadStateFromSession() { const sessionData = sessionStorage.getItem('synapse_session_v5_autosave'); if (!sessionData) return false; try { const loadedState = JSON.parse(sessionData); if (loadedState.currentRoom && typeof loadedState.turnCount === 'number' && !loadedState.exitGame) { resetGameState(); Object.assign(GameState, loadedState); GameState.visitedRooms = new Set(loadedState.visitedRooms || []); GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []); initializeData(); buildDialogueTree(GameState.chatbotTone); GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone] || GameState.dialogue.cache[ChatbotTone.Friendly]; GameState.dialogue.previousNodes = []; UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex'); UI.gameOutput.innerHTML = ''; typeWriter(UI.gameOutput, t('conn_reestablished'), '#cccccc'); renderRoom(); updateUI(); renderDialogueOptions(); return true; } } catch (e) { console.error("Session load failed:", e); sessionStorage.removeItem('synapse_session_v5_autosave'); } return false; }
-    function setupBackgroundAnimation() { const canvas = UI.backgroundCanvas; const ctx = canvas.getContext('2d'); let width, height; function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; } window.addEventListener('resize', resize); resize(); function draw() { ctx.clearRect(0, 0, width, height); requestAnimationFrame(draw); } draw(); }
-    function drawMap() { if (!UI.mapCanvas || !GameState.currentRoom) return; const canvas = UI.mapCanvas; const ctx = canvas.getContext('2d'); canvas.width = canvas.parentElement.offsetWidth; canvas.height = canvas.parentElement.offsetHeight; }
+    function saveStateToSession() { if (GameState && typeof GameState.turnCount === 'number' && !GameState.exitGame) { try { const sessionData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); sessionStorage.setItem('synapse_session_v6_autosave', sessionData); } catch (e) { console.error("Session save failed:", e); } } }
+    function loadStateFromSession() { const sessionData = sessionStorage.getItem('synapse_session_v6_autosave'); if (!sessionData) return false; try { const loadedState = JSON.parse(sessionData); if (loadedState.currentRoom && typeof loadedState.turnCount === 'number' && !loadedState.exitGame) { resetGameState(); Object.assign(GameState, loadedState); GameState.visitedRooms = new Set(loadedState.visitedRooms || []); GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []); initializeData(); buildDialogueTree(GameState.chatbotTone); GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone] || GameState.dialogue.cache[ChatbotTone.Friendly]; GameState.dialogue.previousNodes = []; UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex'); UI.gameOutput.innerHTML = ''; typeWriter(UI.gameOutput, t('conn_reestablished'), '#cccccc'); renderRoom(); updateUI(); renderDialogueOptions(); return true; } } catch (e) { console.error("Session load failed:", e); sessionStorage.removeItem('synapse_session_v6_autosave'); } return false; }
+    function setupBackgroundAnimation() { const canvas = UI.backgroundCanvas; const ctx = canvas.getContext('2d'); let width, height, particles = []; function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; } window.addEventListener('resize', resize); resize(); class Particle { constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.size = Math.random() * 0.4 + 0.1; this.speedX = (Math.random() * 0.5 - 0.25); this.speedY = (Math.random() * 0.5 - 0.25); } update() { this.x += this.speedX; this.y += this.speedY; if (this.size > 0.1) this.size -= 0.001; if(this.x < 0 || this.x > width) this.speedX *= -1; if(this.y < 0 || this.y > height) this.speedY *= -1; } draw() { ctx.fillStyle = '#00ff41'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); } } function initParticles() { particles = []; for(let i=0; i<100; i++) particles.push(new Particle()); } function animateParticles() { ctx.clearRect(0,0,width,height); for(let i=0; i<particles.length; i++) { particles[i].update(); particles[i].draw(); if(particles[i].size <= 0.1) { particles.splice(i, 1); i--; particles.push(new Particle()); } } requestAnimationFrame(animateParticles); } initParticles(); animateParticles(); }
+    
+    function drawMap() {
+        if (!UI.mapCanvas || !GameState.currentRoom) return;
+        const canvas = UI.mapCanvas;
+        const ctx = canvas.getContext('2d');
+        const parent = canvas.parentElement;
+        canvas.width = parent.offsetWidth;
+        canvas.height = parent.offsetHeight;
+
+        const roomKeys = Object.keys(roomLayout);
+        const minX = Math.min(...roomKeys.map(k => roomLayout[k].x));
+        const maxX = Math.max(...roomKeys.map(k => roomLayout[k].x + roomLayout[k].w));
+        const minY = Math.min(...roomKeys.map(k => roomLayout[k].y));
+        const maxY = Math.max(...roomKeys.map(k => roomLayout[k].y + roomLayout[k].h));
+
+        const mapWidth = maxX - minX;
+        const mapHeight = maxY - minY;
+        const scale = Math.min(canvas.width / (mapWidth + 40), canvas.height / (mapHeight + 40));
+        const offsetX = (canvas.width - mapWidth * scale) / 2 - minX * scale;
+        const offsetY = (canvas.height - mapHeight * scale) / 2 - minY * scale;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw connections for visited rooms
+        ctx.strokeStyle = "rgba(0, 255, 65, 0.2)";
+        ctx.lineWidth = 1 * scale;
+        GameState.visitedRooms.forEach(roomName => {
+            if (rooms[roomName] && rooms[roomName].exits) {
+                const r1Layout = roomLayout[roomName];
+                const r1x = r1Layout.x * scale + offsetX + (r1Layout.w * scale) / 2;
+                const r1y = r1Layout.y * scale + offsetY + (r1Layout.h * scale) / 2;
+                Object.values(rooms[roomName].exits).forEach(exitName => {
+                    if (GameState.visitedRooms.has(exitName)) {
+                        const r2Layout = roomLayout[exitName];
+                        const r2x = r2Layout.x * scale + offsetX + (r2Layout.w * scale) / 2;
+                        const r2y = r2Layout.y * scale + offsetY + (r2Layout.h * scale) / 2;
+                        ctx.beginPath();
+                        ctx.moveTo(r1x, r1y);
+                        ctx.lineTo(r2x, r2y);
+                        ctx.stroke();
+                    }
+                });
+            }
+        });
+
+        // Draw rooms
+        GameState.visitedRooms.forEach(roomName => {
+            const layout = roomLayout[roomName];
+            if (!layout) return;
+            const x = layout.x * scale + offsetX;
+            const y = layout.y * scale + offsetY;
+            const w = layout.w * scale;
+            const h = layout.h * scale;
+
+            ctx.fillStyle = (roomName === GameState.currentRoom) ? "rgba(0, 255, 65, 0.6)" : "rgba(0, 255, 65, 0.3)";
+            ctx.fillRect(x, y, w, h);
+
+            if (scale > 2) {
+                ctx.fillStyle = "white";
+                ctx.font = `${Math.max(8, 10 * scale)}px VT323`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(layout.name, x + w / 2, y + h / 2);
+            }
+        });
+
+        // Draw player marker
+        const playerLayout = roomLayout[GameState.currentRoom];
+        const playerX = playerLayout.x * scale + offsetX + (playerLayout.w * scale) / 2;
+        const playerY = playerLayout.y * scale + offsetY + (playerLayout.h * scale) / 2;
+        ctx.fillStyle = "#FF2A7F";
+        ctx.beginPath();
+        ctx.arc(playerX, playerY, 3 * scale, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.strokeStyle = "white";
+        ctx.stroke();
+    }
+
 
     // --- EVENT LISTENERS & INITIALIZATION ---
     window.addEventListener('beforeunload', saveStateToSession);
@@ -832,8 +1189,8 @@
             } else if (e.key === 'ArrowUp') { e.preventDefault(); if (commandHistory.length > 0) { commandHistoryIndex = Math.max(0, commandHistoryIndex - 1); UI.playerInput.value = commandHistory[commandHistoryIndex]; }
             } else if (e.key === 'ArrowDown') { e.preventDefault(); if (commandHistory.length > 0) { commandHistoryIndex = Math.min(commandHistory.length, commandHistoryIndex + 1); UI.playerInput.value = commandHistory[commandHistoryIndex] || ''; } }
         });
-        UI.newGameBtn.addEventListener('click', async () => { sessionStorage.removeItem('synapse_session_v5_autosave'); await initializeAudio(); UI.startOptions.classList.add('hidden'); UI.playerSetup.classList.remove('hidden'); UI.playerSetup.classList.add('flex'); updateAbilityDisplay(); });
-        UI.loadGameBtn.addEventListener('click', async () => { sessionStorage.removeItem('synapse_session_v5_autosave'); await initializeAudio(); loadGame(); });
+        UI.newGameBtn.addEventListener('click', async () => { sessionStorage.removeItem('synapse_session_v6_autosave'); await initializeAudio(); UI.startOptions.classList.add('hidden'); UI.playerSetup.classList.remove('hidden'); UI.playerSetup.classList.add('flex'); updateAbilityDisplay(); });
+        UI.loadGameBtn.addEventListener('click', async () => { sessionStorage.removeItem('synapse_session_v6_autosave'); await initializeAudio(); loadGame(); });
         UI.viewFeaturesBtn.addEventListener('click', showFeaturesModal);
         UI.startGameBtn.addEventListener('click', () => { startGame(); });
         UI.difficultyBtns.forEach(btn => { btn.addEventListener('click', () => { UI.difficultyBtns.forEach(b => b.classList.remove('button-primary')); btn.classList.add('button-primary'); updateAbilityDisplay(); }); });
