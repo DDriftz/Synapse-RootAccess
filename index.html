@@ -271,6 +271,12 @@
                 <span class="text-xl hidden sm:inline">&gt;</span>
                 <input type="text" id="player-input" class="flex-grow bg-transparent text-[#00ff41] text-lg ml-2 focus:outline-none" autocomplete="off" autocapitalize="none" spellcheck="false">
                 <div class="input-caret"></div>
+                <button id="mic-btn" class="button !p-2 ml-2" data-lang-title="mic_tooltip" title="Use Voice Command">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/>
+                        <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
@@ -280,7 +286,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - BILINGUAL VERSION (FULLY FIXED + INTERACTIVE MAP)
+    // SYNAPSE: AI HORROR GAME - BILINGUAL VERSION (SPEECH-TO-TEXT UPDATE)
     
     // --- TRANSLATIONS ---
     const translations = {
@@ -291,6 +297,7 @@
             'choose_backstory_desc': 'You can click a button to select a backstory, or type your choice on the main screen.',
             'begin': 'Begin', 'understand_game': 'Understand the Game', 'intro_1': 'Decades ago... a clandestine project was born...', 'intro_2': 'You have been sent to uncover what became of Project SYNAPSE...', 'intro_3': "As you activate the central terminal, a voice greets you... 'Hello, user.'",
             'stats_title': 'STATS', 'awareness': 'Awareness', 'sanity': 'Sanity', 'tone': 'Tone', 'turn': 'Turn', 'objectives_title': 'OBJECTIVES', 'inventory_title': 'INVENTORY', 'journal_title': 'JOURNAL', 'map_title': 'MAP', 'progress_btn': 'PROGRESS', 'status_btn': 'Status',
+            'mic_tooltip': 'Use Voice Command',
             'empty_inventory': '(empty)', 'no_objectives': '(None)', 'close_btn': 'Close', 'back_btn': '[Go back]', 'pause_btn': '[Pause]', 'submit_command': 'Submit Command',
             'achievements_title': 'ACHIEVEMENTS', 'unlocked_achievements': 'Unlocked Achievements:', 'no_achievements': 'No achievements unlocked yet.',
             'endings_title': 'ENDINGS', 'unlocked_endings': 'Unlocked Endings:', 'no_endings': 'No endings discovered yet.',
@@ -343,6 +350,7 @@
             'choose_backstory_desc': 'Du kan klicka på en knapp för att välja en bakgrund, eller skriva ditt val på huvudskärmen.',
             'begin': 'Börja', 'understand_game': 'Förstå Spelet', 'intro_1': 'För decennier sedan... föddes ett hemligt projekt...', 'intro_2': 'Du har skickats för att avslöja vad som blev av Projekt SYNAPSE...', 'intro_3': "När du aktiverar den centrala terminalen hälsar en röst dig... 'Hej, användare.'",
             'stats_title': 'STATISTIK', 'awareness': 'Medvetenhet', 'sanity': 'Sinnesro', 'tone': 'Ton', 'turn': 'Tur', 'objectives_title': 'MÅL', 'inventory_title': 'INVENTARIER', 'journal_title': 'JOURNAL', 'map_title': 'KARTA', 'progress_btn': 'FRAMSTEG', 'status_btn': 'Status',
+            'mic_tooltip': 'Använd Röstkommando',
             'empty_inventory': '(tom)', 'no_objectives': '(Inga)', 'close_btn': 'Stäng', 'back_btn': '[Gå tillbaka]', 'pause_btn': '[Paus]', 'submit_command': 'Skicka Kommando',
             'achievements_title': 'PRESTATIONER', 'unlocked_achievements': 'Upplåsta Prestationer:', 'no_achievements': 'Inga prestationer upplåsta än.',
             'endings_title': 'SLUT', 'unlocked_endings': 'Upplåsta Slut:', 'no_endings': 'Inga slut upptäckta än.',
@@ -418,6 +426,7 @@
         introTextContainer: document.getElementById('intro-text-container'), viewBackstoriesBtn: document.getElementById('view-backstories-btn'),
         abilityDisplay: document.getElementById('ability-display'), statusBtn: document.getElementById('status-btn'), backgroundCanvas: document.getElementById('background-canvas'),
         mapCanvas: document.getElementById('map-canvas'),
+        micBtn: document.getElementById('mic-btn'),
         viewProgressionBtn: document.getElementById('view-progression-btn'),
         langEnBtn: document.getElementById('lang-en-btn'), langSvBtn: document.getElementById('lang-sv-btn'),
     };
@@ -425,6 +434,15 @@
     let commandHistory = []; let commandHistoryIndex = -1;
     let synth; let audioInitialized = false;
     let mapState = { offsetX: 0, offsetY: 0, isDragging: false, lastX: 0, lastY: 0 };
+    
+    // --- SPEECH RECOGNITION ---
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+    }
     
     // --- GAME DATA ---
     let rooms = {};
@@ -459,6 +477,7 @@
         UI.langSvBtn.classList.toggle('opacity-50', lang !== 'sv');
         document.querySelectorAll('[data-lang]').forEach(el => { el.textContent = t(el.dataset.lang); });
         document.querySelectorAll('[data-lang-placeholder]').forEach(el => { el.placeholder = t(el.dataset.langPlaceholder); });
+        document.querySelectorAll('[data-lang-title]').forEach(el => { el.title = t(el.dataset.langTitle); });
         setupIntro(); updateAbilityDisplay();
         if (!UI.gameScreen.classList.contains('hidden')) { updateUI(); renderDialogueOptions(); }
     }
@@ -1098,6 +1117,45 @@
         UI.abilityDisplay.textContent = t('ability_bonus_prefix') + description; 
     }
 
+    function startSpeechRecognition() {
+        if (!SpeechRecognition) {
+            typeWriter(UI.gameOutput, "[SYSTEM] Speech recognition is not supported in your browser.", '#ff474c');
+            return;
+        }
+
+        recognition.lang = currentLanguage === 'sv' ? 'sv-SE' : 'en-US';
+
+        recognition.onstart = () => {
+            UI.micBtn.classList.add('bg-red-500', 'border-red-700');
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            UI.playerInput.value = transcript;
+            setTimeout(() => {
+                if(UI.playerInput.value === transcript) {
+                    processPlayerInput(transcript);
+                }
+            }, 250);
+        };
+
+        recognition.onerror = (event) => {
+            let errorMsg = `[SYSTEM] Speech recognition error: ${event.error}`;
+            if (event.error === 'not-allowed') {
+                errorMsg = "[SYSTEM] Microphone access denied. Please allow microphone access in your browser settings.";
+            } else if (event.error === 'no-speech') {
+                errorMsg = "[SYSTEM] No speech detected. Please try again.";
+            }
+            typeWriter(UI.gameOutput, errorMsg, '#ff474c');
+        };
+
+        recognition.onend = () => {
+            UI.micBtn.classList.remove('bg-red-500', 'border-red-700');
+        };
+
+        recognition.start();
+    }
+
     async function showGuidance(text) { await typeWriter(UI.gameOutput, `[HINT] ${text}`, GUIDANCE_COLOR); }
     async function initializeAudio() { if (audioInitialized) return; try { await Tone.start(); synth = new Tone.Synth().toDestination(); audioInitialized = true; } catch(e) { console.error(e); }}
     function saveStateToSession() { if (GameState && typeof GameState.turnCount === 'number' && !GameState.exitGame) { try { const sessionData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); sessionStorage.setItem('synapse_session_v7_autosave', sessionData); } catch (e) { console.error("Session save failed:", e); } } }
@@ -1241,12 +1299,17 @@
         UI.langEnBtn.addEventListener('click', () => setLanguage('en'));
         UI.langSvBtn.addEventListener('click', () => setLanguage('sv'));
         
+        if (SpeechRecognition) {
+            UI.micBtn.addEventListener('click', startSpeechRecognition);
+        } else {
+            UI.micBtn.style.display = 'none';
+        }
+
         initMapControls();
         setupBackgroundAnimation();
         setLanguage('en');
         if (!loadStateFromSession()) { 
             resetGameState(); 
-            // Center map on start
             mapState.offsetX = UI.mapCanvas.offsetWidth / 2 - roomLayout.Lobby.x - roomLayout.Lobby.w / 2;
             mapState.offsetY = UI.mapCanvas.offsetHeight / 2 - roomLayout.Lobby.y - roomLayout.Lobby.h / 2;
         }
