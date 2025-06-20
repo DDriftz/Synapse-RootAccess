@@ -407,6 +407,10 @@
     const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v7';
     const ACHIEVEMENTS_STORAGE_KEY = 'synapse_achievements_unlocked_v7';
     const GUIDANCE_COLOR = '#34d399';
+    const questionWords = {
+        'en': ['who', 'what', 'where', 'when', 'why', 'how', 'are', 'is', 'can', 'do', 'does', 'did', 'which'],
+        'sv': ['vem', 'vad', 'var', 'när', 'varför', 'hur', 'är', 'kan', 'gör', 'gjorde', 'vilken', 'vilket', 'vilka']
+    };
     
     // --- GAME STATE & DOM ELEMENTS ---
     let GameState = {};
@@ -1130,12 +1134,18 @@
         };
 
         recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
+            let transcript = event.results[0][0].transcript;
+            const lowerTranscript = transcript.toLowerCase();
+            const langQuestionWords = questionWords[currentLanguage] || questionWords['en'];
+            const isQuestion = langQuestionWords.some(word => lowerTranscript.startsWith(word + ' '));
+
+            if (isQuestion && !lowerTranscript.endsWith('?')) {
+                transcript += '?';
+            }
+            
             UI.playerInput.value = transcript;
             setTimeout(() => {
-                if(UI.playerInput.value === transcript) {
-                    processPlayerInput(transcript);
-                }
+                processPlayerInput(transcript);
             }, 250);
         };
 
