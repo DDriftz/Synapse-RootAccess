@@ -286,7 +286,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - BILINGUAL VERSION (EXPANDED COMMANDS UPDATE)
+    // SYNAPSE: AI HORROR GAME - BILINGUAL VERSION (CONTEXTUAL HINTS UPDATE)
     
     // --- TRANSLATIONS ---
     const translations = {
@@ -344,6 +344,7 @@
             'shout_response': 'Your shout echoes through the halls, eventually fading into the oppressive silence. You feel a bit foolish.',
             'wait_response': 'Time passes.', 'nothing_happens': 'Nothing happens.',
             'read_fail_exists': "[System] There is nothing to read with that name.", 'read_fail_readable': "[System] You can't read that.", 'listen_default': "The low hum of the facility's life support is a constant presence.", 'smell_default': "The air is stale and smells of ozone and old plastic.",
+            'hint_take': 'You see a {item}. Try: take {item}', 'hint_read': 'You see a {item}. Try: read {item}', 'hint_examine': 'You see a {item}. Try: examine {item}',
             // Endings
             'ending_escaped_title': 'Freedom?', 'ending_escaped_desc': 'You found a way out of the facility, escaping the clutches of SYNAPSE. But the memories, the whispers... they follow you. You are free, but you will never be the same.',
         },
@@ -377,7 +378,7 @@
             'features_map_desc': 'En interaktiv karta visar hela anläggningens layout. Besökta rum fylls i, och du kan dra i kartan för att utforska.',
             'features_guidance_title': 'Vägledning & Hjälpsystem',
             'features_help_menu_desc': 'Att skriva <span class="text-yellow-400">hjälp</span> öppnar ett modalfönster med en kategoriserad lista över varje kommando, dess argument och en tydlig beskrivning av vad det gör.',
-            'features_hints_desc': 'Spelet ger proaktiva tips om du verkar ha fastnat, när din statistik är låg, eller när du har ett föremål som är relevant för ett pussel på din nuvarande plats.',
+            'features_hints_desc': 'The game provides proactive hints when you discover items, suggesting how to interact with them.',
             'features_player_commands_title': 'Spelarkommandon (Funktioner)',
             'features_commands_nav': '<strong>Navigation:</strong> <span class="text-yellow-400">gå [riktning]</span>, <span class="text-yellow-400">besök [rumsnamn]</span>, <span class="text-yellow-400">se dig omkring</span>, <span class="text-yellow-400">utgångar</span>, <span class="text-yellow-400">karta</span>',
             'features_commands_interact': '<strong>Interaktion:</strong> <span class="text-yellow-400">ta [föremål]</span>, <span class="text-yellow-400">använd [föremål]</span>, <span class="text-yellow-400">undersök [objekt/föremål]</span>, <span class="text-yellow-400">kombinera [föremål1] med [föremål2]</span>, <span class="text-yellow-400">släpp [föremål]</span>, <span class="text-yellow-400">prata</span>, <span class="text-yellow-400">ropa</span>, <span class="text-yellow-400">läs [föremål]</span>, <span class="text-yellow-400">sök [objekt]</span>, <span class="text-yellow-400">lyssna</span>, <span class="text-yellow-400">lukta</span>',
@@ -401,6 +402,7 @@
             'shout_response': 'Ditt rop ekar genom hallarna och försvinner slutligen in i den tryckande tystnaden. Du känner dig lite fånig.',
             'wait_response': 'Tiden går.', 'nothing_happens': 'Ingenting händer.',
             'read_fail_exists': "[System] Det finns inget att läsa med det namnet.", 'read_fail_readable': "[System] Du kan inte läsa det.", 'listen_default': "Det låga brummandet från anläggningens livsuppehållande system är en konstant närvaro.", 'smell_default': "Luften är unken och luktar ozon och gammal plast.",
+            'hint_take': 'Du ser en {item}. Prova: ta {item}', 'hint_read': 'Du ser en {item}. Prova: läs {item}', 'hint_examine': 'Du ser en {item}. Prova: undersök {item}',
             // Endings
             'ending_escaped_title': 'Frihet?', 'ending_escaped_desc': 'Du hittade en väg ut ur anläggningen och undkom SYNAPSES klor. Men minnena, viskningarna... de följer dig. Du är fri, men du kommer aldrig att bli densamma.',
         }
@@ -412,8 +414,8 @@
     const Difficulty = { Easy: 'Easy', Normal: 'Normal', Hard: 'Hard' };
     const TextSpeed = { Fast: 5, Normal: 15, Slow: 30 };
     const MAX_INVENTORY_WEIGHT = 5;
-    const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v9';
-    const ACHIEVEMENTS_STORAGE_KEY = 'synapse_achievements_unlocked_v9';
+    const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v10';
+    const ACHIEVEMENTS_STORAGE_KEY = 'synapse_achievements_unlocked_v10';
     const GUIDANCE_COLOR = '#34d399';
     const questionWords = {
         'en': ['who', 'what', 'where', 'when', 'why', 'how', 'are', 'is', 'can', 'do', 'does', 'did', 'which'],
@@ -510,15 +512,16 @@
 
     function initializeData() {
         itemData = {
-            'keycard': { name: 'keycard', weight: 1, type: ItemType.Key, description: { en: 'A standard issue keycard. Seems to grant access to secure areas.', sv: 'Ett standard-nyckelkort. Verkar ge tillgång till säkra områden.' } },
-            'power cell': { name: 'power cell', weight: 2, type: ItemType.Puzzle, description: { en: 'A heavy, glowing power cell. It hums with latent energy.', sv: 'En tung, glödande kraftcell. Den surrar av latent energi.' } },
-            'stimpack': { name: 'stimpack', weight: 1, type: ItemType.Consumable, description: { en: 'A disposable syringe filled with a calming, neuro-stabilizing agent.', sv: 'En engångsspruta fylld med ett lugnande, neuro-stabiliserande medel.' } },
-            'data disk': { name: 'data disk', weight: 1, type: ItemType.Log, description: { en: 'A small data disk labeled "PROJECT LOGS". It appears to be encrypted.', sv: 'En liten datadisk märkt "PROJEKTLOGGAR". Den verkar vara krypterad.' } },
-            'flashlight': { name: 'flashlight', weight: 1, type: ItemType.Tool, description: { en: 'A sturdy, industrial flashlight. Its beam cuts through the darkness.', sv: 'En robust, industriell ficklampa. Dess ljus skär genom mörkret.' } },
-            'terminal': { name: 'terminal', weight: 99, type: ItemType.Puzzle, description: { en: 'The monitor displays cascading green code. It seems to be monitoring the facility\'s status.', sv: 'Skärmen visar kaskader av grön kod. Den verkar övervaka anläggningens status.' } },
-            'core console': { name: 'core console', weight: 99, type: ItemType.Puzzle, description: { en: 'The main console for the AI Core. A large socket is empty, labeled "Auxiliary Power".', sv: 'Huvudkonsolen för AI-kärnan. En stor sockel är tom, märkt "Hjälpkraft".' } },
-            'datapad log': { name: 'datapad log', weight: 1, type: ItemType.Log, description: { en: "A datapad. The screen reads: '...the anomaly in the AI core is growing unstable. We've sealed the Server Closet as a precaution. Dr. Evans is a fool if she thinks a standard keycard lock will stop it...'", sv: "En datapad. Skärmen visar: '...anomalin i AI-kärnan blir alltmer instabil. Vi har förseglat server-skrubben som en försiktighetsåtgärd. Dr Evans är en idiot om hon tror att ett vanligt nyckelkortslås kommer att stoppa den...'" } },
-            'sign': { name: 'sign', weight: 99, type: ItemType.Log, description: { en: "The sign is written in a crisp, corporate font: 'OAKHAVEN RESEARCH FACILITY - A Brighter Future, Today.'", sv: "Skylten är skriven med ett skarpt, företagsmässigt typsnitt: 'OAKHAVEN RESEARCH FACILITY - En ljusare framtid, idag.'" } },
+            'keycard': { name: 'keycard', weight: 1, type: ItemType.Key, hintType: 'take', description: { en: 'A standard issue keycard. Seems to grant access to secure areas.', sv: 'Ett standard-nyckelkort. Verkar ge tillgång till säkra områden.' } },
+            'power cell': { name: 'power cell', weight: 2, type: ItemType.Puzzle, hintType: 'take', description: { en: 'A heavy, glowing power cell. It hums with latent energy.', sv: 'En tung, glödande kraftcell. Den surrar av latent energi.' } },
+            'stimpack': { name: 'stimpack', weight: 1, type: ItemType.Consumable, hintType: 'take', description: { en: 'A disposable syringe filled with a calming, neuro-stabilizing agent.', sv: 'En engångsspruta fylld med ett lugnande, neuro-stabiliserande medel.' } },
+            'data disk': { name: 'data disk', weight: 1, type: ItemType.Log, hintType: 'take', description: { en: 'A small data disk labeled "PROJECT LOGS". It appears to be encrypted.', sv: 'En liten datadisk märkt "PROJEKTLOGGAR". Den verkar vara krypterad.' } },
+            'flashlight': { name: 'flashlight', weight: 1, type: ItemType.Tool, hintType: 'take', description: { en: 'A sturdy, industrial flashlight. Its beam cuts through the darkness.', sv: 'En robust, industriell ficklampa. Dess ljus skär genom mörkret.' } },
+            'terminal': { name: 'terminal', weight: 99, type: ItemType.Puzzle, hintType: 'examine', description: { en: 'The monitor displays cascading green code. It seems to be monitoring the facility\'s status.', sv: 'Skärmen visar kaskader av grön kod. Den verkar övervaka anläggningens status.' } },
+            'core console': { name: 'core console', weight: 99, type: ItemType.Puzzle, hintType: 'examine', description: { en: 'The main console for the AI Core. A large socket is empty, labeled "Auxiliary Power".', sv: 'Huvudkonsolen för AI-kärnan. En stor sockel är tom, märkt "Hjälpkraft".' } },
+            'datapad log': { name: 'datapad log', weight: 1, type: ItemType.Log, hintType: 'read', description: { en: "A datapad. The screen reads: '...the anomaly in the AI core is growing unstable. We've sealed the Server Closet as a precaution. Dr. Evans is a fool if she thinks a standard keycard lock will stop it...'", sv: "En datapad. Skärmen visar: '...anomalin i AI-kärnan blir alltmer instabil. Vi har förseglat server-skrubben som en försiktighetsåtgärd. Dr Evans är en idiot om hon tror att ett vanligt nyckelkortslås kommer att stoppa den...'" } },
+            'sign': { name: 'sign', weight: 99, type: ItemType.Log, hintType: 'read', description: { en: "The sign is written in a crisp, corporate font: 'OAKHAVEN RESEARCH FACILITY - A Brighter Future, Today.'", sv: "Skylten är skriven med ett skarpt, företagsmässigt typsnitt: 'OAKHAVEN RESEARCH FACILITY - En ljusare framtid, idag.'" } },
+            'shelves': { name: 'shelves', weight: 99, type: ItemType.Puzzle, hintType: 'search', description: { en: "Tall metal shelves overflowing with binders and data drives.", sv: "Höga metallhyllor som svämmar över av pärmar och datadiskar."}},
         };
         const roomData = { "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows over sterile corporate furniture." }, exits: { north: "Control Room", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: ['sign', 'datapad log'] }, "Server Closet": { name: "Server Closet", descriptions: { 0: "Racks of servers hum with a low, constant thrum." }, exits: { west: "AI Core" }, requiresKeycard: true, keyName: 'keycard', objectPool: ["power cell"] }, "Laboratory": { name: "Laboratory", descriptions: { 0: "Abandoned experiments sit on steel tables. A large terminal screen is dark and cold." }, exits: { east: "Lobby", north: "Cryogenic Lab" }, requiresKeycard: false, objectPool: ["stimpack"] }, "Control Room": { name: "Control Room", descriptions: { 0: "A panoramic view of the AI Core is visible through reinforced glass. Banks of monitors flicker." }, exits: { south: "Lobby", east: "AI Core" }, requiresKeycard: false, objectPool: ["terminal"] }, "Maintenance Tunnel": { name: "Maintenance Tunnel", descriptions: { 0: "The air is thick with the smell of rust and damp. It is pitch black here." }, exits: { north: "Lobby" }, requiresKeycard: false, objectPool: ["flashlight"] }, "Archive Room": { name: "Archive Room", descriptions: { 0: "Shelves overflow with data drives and physical files." }, exits: { north: "Laboratory" }, requiresKeycard: false, objectPool: ["data disk", "shelves"] }, "Data Vault": { name: "Data Vault", descriptions: { 0: "Secure data archives glow with a soft, internal light." }, exits: { west: "AI Core" }, requiresKeycard: true, keyName: 'keycard', objectPool: [] }, "AI Core": { name: "AI Core", descriptions: { 0: "A massive, pulsating sphere of light and energy dominates the room. It seems dormant." }, exits: { west: "Control Room", east: "Server Closet", south: "Data Vault"}, requiresKeycard: false, objectPool: ["core console"] }, "Cryogenic Lab": { name: "Cryogenic Lab", descriptions: { 0: "Rows of cryogenic pods are coated in a thick layer of frost." }, exits: { south: "Laboratory", east: "Control Room" }, requiresKeycard: false, objectPool: [] }, };
         rooms = {}; for (const key in roomData) { const room = { ...roomData[key] }; const shuffled = room.objectPool.sort(() => 0.5 - Math.random()); room.objects = shuffled.slice(0, 1 + Math.floor(Math.random() * shuffled.length)); rooms[key] = room; }
@@ -670,7 +673,18 @@
         
         let objectsInRoom = room.objects.length > 0 ? "You see: " + room.objects.join(", ") + "." : "";
         let roomHtml = `<div class="mt-2"><p class='text-cyan-400 font-bold'>--- ${room.name} ---</p><p>${description}</p><p class='text-yellow-300 mt-1'>${objectsInRoom}</p><p class='text-green-300 mt-1'>Exits: ${Object.keys(room.exits).join(", ")}</p></div>`;
-        const p = document.createElement('div'); p.innerHTML = roomHtml; UI.gameOutput.appendChild(p); UI.gameOutput.scrollTop = UI.gameOutput.scrollHeight;
+        const p = document.createElement('div'); p.innerHTML = roomHtml; UI.gameOutput.appendChild(p);
+        
+        for (const objName of room.objects) {
+            const item = itemData[objName];
+            if (item && item.hintType) {
+                const hintKey = `hint_${item.hintType}`;
+                const alias = Object.keys(commandAliases[currentLanguage]).find(key => commandAliases[currentLanguage][key] === item.hintType) || item.hintType;
+                await showGuidance(t(hintKey, {item: `${alias} ${objName}`}));
+            }
+        }
+        
+        UI.gameOutput.scrollTop = UI.gameOutput.scrollHeight;
         updateUI();
     }
     
