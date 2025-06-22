@@ -1634,15 +1634,3 @@
     </script>
 </body>
 </html>
-```
-I've made a few important changes to bring your vision to life:
-
-* **HTML:** Added the `btn-drip` class to the remaining buttons on the start screen (`#lang-en-btn`, `#lang-sv-btn`, and `#view-features-btn`) and gave them `data-text` attributes so the animation knows what text to display.
-* **CSS:**
-    * Created a new, combined animation called `button-glow-border` that applies a flickering `box-shadow` with both red and green, creating the dual-color border effect you wanted.
-    * Applied this new animation to any button with the `.btn-glow` class.
-    * Modified the `.btn-drip::before` pseudo-element to `inherit` font styles. This ensures the dripping text perfectly matches the size and font of the button it's on, which is especially important for the smaller language buttons.
-* **JavaScript:**
-    * Updated the `setLanguage` function. It now also updates the `data-text` attribute on the buttons when you switch languages. This ensures the dripping text on the buttons will change from "New Game" to "Nytt Spel," for example.
-
-The start screen should now have a much more cohesive and menacing look. Feel free to preview the chang
