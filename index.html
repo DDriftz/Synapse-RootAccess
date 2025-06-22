@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=VT323&family=Space+Mono&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <style>
         html, body {
@@ -60,27 +60,11 @@
             position: relative;
         }
         
-        .title-pixel-3d {
-            color: #00ff41;
-            background-color: transparent;
-            position: relative;
-            animation: pixel-flicker 5s infinite linear;
-            /* Apply the SVG filter */
-            filter: url(#drip-filter);
-        }
-
-        .title-pixel-3d::before {
-            content: 'SYNAPSE';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 3;
-            background: linear-gradient(175deg, #FF2A7F 0%, #B80000 70%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+        .title-slasher {
+            font-family: 'Creepster', cursive;
+            color: #39FF14;
+            letter-spacing: 0.1em;
+            animation: blood-drip 4s infinite linear;
         }
 
         .crt-effect::before {
@@ -97,33 +81,51 @@
             pointer-events: none;
         }
 
-        @keyframes pixel-flicker {
-            0%, 19.9%, 22.1%, 60%, 100% {
-                text-shadow:
-                    0 0 5px #00ff41, 0 0 10px #00ff41, 0 0 20px #00ff41,
-                    1px 1px 0px #00a32a, 2px 2px 0px #00a32a,
-                    3px 3px 0px #008221, 4px 4px 0px #008221,
-                    5px 5px 0px #006119, 6px 6px 0px #006119,
-                    7px 7px 0px #004010, 8px 8px 0px #004010;
-                opacity: 1;
+        @keyframes blood-drip {
+            0% {
+                text-shadow: 
+                    0 0 5px #39FF14, 0 0 10px #39FF14,
+                    0 0 10px #8B0000,
+                    0px 0px 0px rgba(139,0,0,1),
+                    4px -1px 0px rgba(165,42,42,1),
+                    8px -2px 0px rgba(139,0,0,1),
+                    12px -1px 0px rgba(165,42,42,1);
             }
-            20% {
-                 text-shadow:
-                    0 0 10px #00ff41, 0 0 20px #00ff41, 0 0 30px #00ff41,
-                     1px 1px 0px #00a32a, 2px 2px 0px #00a32a,
-                    3px 3px 0px #008221, 4px 4px 0px #008221,
-                    5px 5px 0px #006119, 6px 6px 0px #006119,
-                    7px 7px 0px #004010, 8px 8px 0px #004010;
-                opacity: 0.9;
+            25% {
+                text-shadow: 
+                    0 0 5px #39FF14, 0 0 10px #39FF14,
+                    0 0 12px #8B0000,
+                    0px 4px 1px rgba(139,0,0,1),
+                    4px 3px 1px rgba(165,42,42,1),
+                    8px 2px 1px rgba(139,0,0,1),
+                    12px 4px 1px rgba(165,42,42,1);
             }
-            22% {
-                 text-shadow:
-                    0 0 5px #00ff41, 0 0 10px #00ff41, 0 0 20px #00ff41,
-                    1px 1px 0px #00a32a, 1px 2px 0px #00a32a, 
-                    2px 3px 0px #008221, 3px 4px 0px #008221,
-                    4px 5px 0px #006119, 5px 6px 0px #006119,
-                    6px 7px 0px #004010, 7px 8px 0px #004010;
-                 opacity: 0.95;
+            50% {
+                text-shadow: 
+                    0 0 5px #39FF14, 0 0 10px #39FF14,
+                    0 0 10px #8B0000,
+                    0px 8px 4px rgba(139,0,0,0.8),
+                    4px 7px 4px rgba(165,42,42,0.8),
+                    8px 6px 4px rgba(139,0,0,0.8),
+                    12px 9px 4px rgba(165,42,42,0.8);
+            }
+            75% {
+                text-shadow: 
+                    0 0 5px #39FF14, 0 0 10px #39FF14,
+                    0 0 12px #8B0000,
+                    0px 12px 6px rgba(139,0,0,0.6),
+                    4px 10px 6px rgba(165,42,42,0.6),
+                    8px 9px 6px rgba(139,0,0,0.6),
+                    12px 14px 6px rgba(165,42,42,0.6);
+            }
+            100% {
+                text-shadow: 
+                    0 0 5px #39FF14, 0 0 10px #39FF14,
+                    0 0 10px #8B0000,
+                    0px 16px 8px rgba(139,0,0,0.4),
+                    4px 14px 8px rgba(165,42,42,0.4),
+                    8px 12px 8px rgba(139,0,0,0.4),
+                    12px 18px 8px rgba(165,42,42,0.4);
             }
         }
         
@@ -179,24 +181,12 @@
     </style>
 </head>
 <body class="bg-black text-[#00ff41] flex items-center justify-center min-h-screen">
-    <!-- SVG Filter for the dripping effect -->
-    <svg style="display:none;">
-        <defs>
-            <filter id="drip-filter">
-                <feTurbulence type="fractalNoise" baseFrequency="0.01 0.04" numOctaves="1" result="turbulence"/>
-                <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="20" xChannelSelector="R" yChannelSelector="G"/>
-                <animate xlink:href="#drip-filter" attributeName="baseFrequency" dur="10s" keyTimes="0;0.5;1" values="0.01 0.04;0.02 0.06;0.01 0.04" repeatCount="indefinite"/>
-            </filter>
-        </defs>
-    </svg>
-
-    <canvas id="background-canvas"></canvas>
     <div id="app-container" class="w-full h-full bg-black/75 p-2 sm:p-4 flex flex-col crt-effect">
         
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
             <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-black bg-opacity-60 relative">
-                 <div class="title-wrapper">
-                    <h1 id="game-title" class="text-7xl md:text-9xl font-bold title-pixel-3d title-font mb-4">SYNAPSE</h1>
+                 <div class="title-wrapper -mt-16">
+                    <h1 id="game-title" class="text-7xl md:text-9xl font-bold title-slasher mb-4">SYNAPSE</h1>
                 </div>
                 <div id="intro-text-container" class="max-w-4xl text-sm md:text-base text-white"></div>
                  <div id="start-options" class="mt-6 flex flex-wrap justify-center gap-4">
@@ -320,7 +310,7 @@
             'features_map_desc': 'An interactive map shows the entire facility layout. Visited rooms are filled in, and you can drag the map to explore.',
             'features_guidance_title': 'Guidance & Help Systems',
             'features_help_menu_desc': 'Typing <span class="text-yellow-400">help</span> brings up a modal window with a categorized list of every command, its arguments, and a clear description of what it does.',
-            'features_hints_desc': 'The game provides proactive hints if you seem stuck, when your stats are low, or when you possess an item relevant to a puzzle in your current location.',
+            'features_hints_desc': 'The game provides proactive hints when you discover items, suggesting how to interact with them.',
             'features_player_commands_title': 'Player Commands (Functions)',
             'features_commands_nav': '<strong>Navigation:</strong> <span class="text-yellow-400">go [direction]</span>, <span class="text-yellow-400">visit [room name]</span>, <span class="text-yellow-400">look around</span>, <span class="text-yellow-400">exits</span>, <span class="text-yellow-400">map</span>',
             'features_commands_interact': '<strong>Interaction:</strong> <span class="text-yellow-400">take [item]</span>, <span class="text-yellow-400">use [item]</span>, <span class="text-yellow-400">examine [object/item]</span>, <span class="text-yellow-400">combine [item1] with [item2]</span>, <span class="text-yellow-400">drop [item]</span>, <span class="text-yellow-400">talk</span>, <span class="text-yellow-400">shout</span>, <span class="text-yellow-400">read [item]</span>, <span class="text-yellow-400">search [object]</span>, <span class="text-yellow-400">listen</span>, <span class="text-yellow-400">smell</span>',
@@ -344,7 +334,7 @@
             'shout_response': 'Your shout echoes through the halls, eventually fading into the oppressive silence. You feel a bit foolish.',
             'wait_response': 'Time passes.', 'nothing_happens': 'Nothing happens.',
             'read_fail_exists': "[System] There is nothing to read with that name.", 'read_fail_readable': "[System] You can't read that.", 'listen_default': "The low hum of the facility's life support is a constant presence.", 'smell_default': "The air is stale and smells of ozone and old plastic.",
-            'hint_take': 'You see a {item}. Try: take {item}', 'hint_read': 'You see a {item}. Try: read {item}', 'hint_examine': 'You see a {item}. Try: examine {item}',
+            'hint_take': 'You see a {item}. Try: take {item}', 'hint_read': 'You see a {item}. Try: read {item}', 'hint_examine': 'You see a {item}. Try: examine {item}', 'hint_search': 'You see {item}. Try: search {item}',
             // Endings
             'ending_escaped_title': 'Freedom?', 'ending_escaped_desc': 'You found a way out of the facility, escaping the clutches of SYNAPSE. But the memories, the whispers... they follow you. You are free, but you will never be the same.',
         },
@@ -402,7 +392,7 @@
             'shout_response': 'Ditt rop ekar genom hallarna och försvinner slutligen in i den tryckande tystnaden. Du känner dig lite fånig.',
             'wait_response': 'Tiden går.', 'nothing_happens': 'Ingenting händer.',
             'read_fail_exists': "[System] Det finns inget att läsa med det namnet.", 'read_fail_readable': "[System] Du kan inte läsa det.", 'listen_default': "Det låga brummandet från anläggningens livsuppehållande system är en konstant närvaro.", 'smell_default': "Luften är unken och luktar ozon och gammal plast.",
-            'hint_take': 'Du ser en {item}. Prova: ta {item}', 'hint_read': 'Du ser en {item}. Prova: läs {item}', 'hint_examine': 'Du ser en {item}. Prova: undersök {item}',
+            'hint_take': 'Du ser en {item}. Prova: ta {item}', 'hint_read': 'Du ser en {item}. Prova: läs {item}', 'hint_examine': 'Du ser en {item}. Prova: undersök {item}', 'hint_search': 'Du ser {item}. Prova: sök {item}',
             // Endings
             'ending_escaped_title': 'Frihet?', 'ending_escaped_desc': 'Du hittade en väg ut ur anläggningen och undkom SYNAPSES klor. Men minnena, viskningarna... de följer dig. Du är fri, men du kommer aldrig att bli densamma.',
         }
@@ -680,7 +670,7 @@
             if (item && item.hintType) {
                 const hintKey = `hint_${item.hintType}`;
                 const alias = Object.keys(commandAliases[currentLanguage]).find(key => commandAliases[currentLanguage][key] === item.hintType) || item.hintType;
-                await showGuidance(t(hintKey, {item: `${alias} ${objName}`}));
+                await showGuidance(t(hintKey, {item: objName}));
             }
         }
         
@@ -1310,7 +1300,20 @@
     async function initializeAudio() { if (audioInitialized) return; try { await Tone.start(); synth = new Tone.Synth().toDestination(); audioInitialized = true; } catch(e) { console.error(e); }}
     function saveStateToSession() { if (GameState && typeof GameState.turnCount === 'number' && !GameState.exitGame) { try { const sessionData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); sessionStorage.setItem('synapse_session_v9_autosave', sessionData); } catch (e) { console.error("Session save failed:", e); } } }
     function loadStateFromSession() { const sessionData = sessionStorage.getItem('synapse_session_v9_autosave'); if (!sessionData) return false; try { const loadedState = JSON.parse(sessionData); if (loadedState.currentRoom && typeof loadedState.turnCount === 'number' && !loadedState.exitGame) { resetGameState(); Object.assign(GameState, loadedState); GameState.visitedRooms = new Set(loadedState.visitedRooms || []); GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []); initializeData(); buildDialogueTree(GameState.chatbotTone); GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone] || GameState.dialogue.cache[ChatbotTone.Friendly]; GameState.dialogue.previousNodes = []; UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex'); UI.gameOutput.innerHTML = ''; typeWriter(UI.gameOutput, t('conn_reestablished'), '#cccccc'); renderRoom(); updateUI(); renderDialogueOptions(); return true; } } catch (e) { console.error("Session load failed:", e); sessionStorage.removeItem('synapse_session_v9_autosave'); } return false; }
-    function setupBackgroundAnimation() { const canvas = UI.backgroundCanvas; const ctx = canvas.getContext('2d'); let width, height, particles = []; function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; } window.addEventListener('resize', resize); resize(); class Particle { constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.size = Math.random() * 0.4 + 0.1; this.speedX = (Math.random() * 0.5 - 0.25); this.speedY = (Math.random() * 0.5 - 0.25); } update() { this.x += this.speedX; this.y += this.speedY; if (this.size > 0.1) this.size -= 0.001; if(this.x < 0 || this.x > width) this.speedX *= -1; if(this.y < 0 || this.y > height) this.speedY *= -1; } draw() { ctx.fillStyle = '#00ff41'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); } } function initParticles() { particles = []; for(let i=0; i<100; i++) particles.push(new Particle()); } function animateParticles() { ctx.clearRect(0,0,width,height); for(let i=0; i<particles.length; i++) { particles[i].update(); particles[i].draw(); if(particles[i].size <= 0.1) { particles.splice(i, 1); i--; particles.push(new Particle()); } } requestAnimationFrame(animateParticles); } initParticles(); animateParticles(); }
+    
+    function setupBackgroundAnimation() { 
+        const canvas = document.getElementById('background-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+        class Particle { constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.size = Math.random() * 0.4 + 0.1; this.speedX = (Math.random() * 0.5 - 0.25); this.speedY = (Math.random() * 0.5 - 0.25); } update() { this.x += this.speedX; this.y += this.speedY; if (this.size > 0.1) this.size -= 0.001; if(this.x < 0 || this.x > width) this.speedX *= -1; if(this.y < 0 || this.y > height) this.speedY *= -1; } draw() { ctx.fillStyle = '#00ff41'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); } }
+        function initParticles() { particles = []; for(let i=0; i<100; i++) particles.push(new Particle()); }
+        function animateParticles() { ctx.clearRect(0,0,width,height); for(let i=0; i<particles.length; i++) { particles[i].update(); particles[i].draw(); if(particles[i].size <= 0.1) { particles.splice(i, 1); i--; particles.push(new Particle()); } } requestAnimationFrame(animateParticles); }
+        initParticles(); animateParticles();
+    }
     
     function drawMap() {
         if (!UI.mapCanvas) return;
