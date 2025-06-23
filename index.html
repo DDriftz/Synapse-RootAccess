@@ -1907,8 +1907,7 @@
                 // --- Text Rendering ---
                 // Calculate font size to be larger on zoom-in, but have a minimum size on zoom-out.
                 const baseFontSize = 12; // Increased base size for better visibility.
-                // When zooming out (scale < 1), this keeps the screen font size at a constant `baseFontSize`.
-                // When zooming in (scale > 1), this makes the screen font size grow (`baseFontSize * scale`).
+                // This ensures the font size on the screen doesn't get too small when zooming out.
                 const fontSize = Math.max(baseFontSize, baseFontSize / mapState.scale);
                 ctx.font = `${fontSize}px VT323`;
 
@@ -2130,51 +2129,50 @@
         }
 
         // --- Session Restoration Logic on Page Load ---
-        let sessionLoaded = false;
-        const screenStateData = sessionStorage.getItem('synapse_session_v11_screen_state');
+        let restored = false;
 
-        // First, try to restore to the start/setup screen
-        if (screenStateData) {
-            try {
-                const startState = JSON.parse(screenStateData);
-                setLanguage(startState.language || 'en'); // Restore language first
+        // 1. Prioritize restoring an in-progress game session.
+        if (loadStateFromSession()) {
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            gameLoop();
+            restored = true;
+        } 
+        // 2. If no game was restored, check for a start screen session.
+        else {
+            const screenStateData = sessionStorage.getItem('synapse_session_v11_screen_state');
+            if (screenStateData) {
+                try {
+                    const startState = JSON.parse(screenStateData);
+                    setLanguage(startState.language || 'en'); 
 
-                if (startState.isPlayerSetupVisible) {
-                    UI.startOptions.classList.add('hidden');
-                    UI.playerSetup.classList.remove('hidden');
-                    UI.playerSetup.classList.add('flex');
-                    
-                    UI.playerNameInput.value = startState.playerName || '';
-                    UI.playerBackstoryInput.value = startState.playerBackstory || '';
-                    UI.difficultyBtns.forEach(btn => btn.classList.remove('button-primary'));
-                    const difficultyBtn = Array.from(UI.difficultyBtns).find(b => b.dataset.difficulty === startState.difficulty);
-                    if (difficultyBtn) {
+                    if (startState.isPlayerSetupVisible) {
+                        // Show character creation screen
+                        UI.startOptions.classList.add('hidden');
+                        UI.playerSetup.classList.remove('hidden');
+                        UI.playerSetup.classList.add('flex');
+                        
+                        // Restore input values
+                        UI.playerNameInput.value = startState.playerName || '';
+                        UI.playerBackstoryInput.value = startState.playerBackstory || '';
+                        UI.difficultyBtns.forEach(btn => btn.classList.remove('button-primary'));
+                        const difficultyBtn = Array.from(UI.difficultyBtns).find(b => b.dataset.difficulty === startState.difficulty) || UI.difficultyBtns[1];
                         difficultyBtn.classList.add('button-primary');
-                    } else {
-                        UI.difficultyBtns[1].classList.add('button-primary'); // Default to normal
+                        updateAbilityDisplay();
                     }
-                    updateAbilityDisplay();
+                    // If isPlayerSetupVisible is false, it just stays on the default start screen, which is correct.
+                    restored = true;
+                } catch (e) {
+                    console.error("Failed to restore screen state:", e);
+                    sessionStorage.removeItem('synapse_session_v11_screen_state');
                 }
-                sessionLoaded = true;
-            } catch(e) {
-                console.error("Failed to restore screen state:", e);
-                sessionStorage.removeItem('synapse_session_v11_screen_state');
-            }
-        }
-        
-        // If not restored to start screen, try restoring an in-progress game
-        if (!sessionLoaded) {
-            if (loadStateFromSession()) {
-                 if (animationFrameId) cancelAnimationFrame(animationFrameId);
-                 gameLoop();
-                 sessionLoaded = true;
             }
         }
 
-        // If nothing was loaded, perform a fresh start
-        if (!sessionLoaded) {
+        // 3. If nothing was restored, initialize a fresh start.
+        if (!restored) {
             setLanguage('en');
             resetGameState();
+            // Delay map offset calculation to ensure canvas is rendered
             setTimeout(() => {
                 const playerLayout = roomLayout[GameState.currentRoom];
                 if(playerLayout && UI.mapCanvas.offsetWidth > 0 && UI.mapCanvas.offsetHeight > 0) {
@@ -2184,6 +2182,7 @@
             }, 100);
         }
 
+        // Initialize map and background regardless of state
         initMapControls();
         setupBackgroundAnimation();
     });
