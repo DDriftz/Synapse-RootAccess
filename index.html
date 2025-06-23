@@ -374,7 +374,6 @@
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
             <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-black bg-opacity-60 relative">
                  <div class="title-wrapper -mt-24">
-                    <!-- Added data-text attribute for the ::before pseudo-element -->
                     <h1 id="game-title" data-text="SYNAPSE" class="text-7xl md:text-9xl font-bold title-slasher mb-4">SYNAPSE</h1>
                 </div>
                 <div id="intro-text-container" class="max-w-4xl text-sm md:text-base text-white mt-20"></div>
@@ -397,7 +396,9 @@
 
         <div id="player-setup" class="hidden flex-col items-center justify-center text-center h-full overflow-y-auto">
              <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-black bg-opacity-60 relative">
-                 <h2 class="text-4xl title-font text-cyan-400 mb-8" data-lang="new_game">New Game</h2>
+                 <div class="title-wrapper -mt-12 mb-8">
+                     <h1 data-text="SYNAPSE" class="text-6xl md:text-7xl font-bold title-slasher">SYNAPSE</h1>
+                 </div>
                  <p class="mb-4" data-lang="select_difficulty">Select difficulty:</p>
                  <div class="flex gap-4 mb-6">
                      <button class="difficulty-btn button" data-difficulty="Easy" data-lang="easy">Easy</button>
@@ -410,10 +411,22 @@
                      <button id="view-backstories-btn" class="button text-xs px-2 py-1" data-lang="view_choices">View Choices</button>
                  </div>
                  <div id="ability-display" class="text-center text-cyan-400 min-h-[4rem] mt-2 mb-4 p-2 border border-cyan-400/30 rounded-md bg-black/50 w-full max-w-md flex items-center justify-center"></div>
-                 <button id="start-game-btn" class="button button-primary" data-lang="begin">Begin</button>
-                 <div class="absolute bottom-4 left-4">
+                 <div class="flex gap-4">
                     <button id="back-to-start-btn" data-lang="go_back_btn" data-text="Go Back" class="button btn-glow btn-drip">Go Back</button>
-                </div>
+                    <button id="start-game-btn" class="button button-primary" data-lang="begin">Begin</button>
+                 </div>
+
+                 <!-- Buttons added to match start screen -->
+                 <div id="setup-lang-buttons" class="absolute top-4 right-4 flex gap-2">
+                    <button data-lang="en_lang_short" data-text="EN" class="button text-xs !px-2 !py-1 btn-drip">EN</button>
+                    <button data-lang="sv_lang_short" data-text="SV" class="button text-xs !px-2 !py-1 opacity-50 btn-drip">SV</button>
+                 </div>
+                 <div class="absolute top-4 left-4">
+                    <button id="setup-settings-btn" data-lang="settings_btn" data-text="Settings" class="button btn-glow btn-drip">Settings</button>
+                 </div>
+                 <div class="absolute bottom-4 right-4">
+                    <button id="setup-features-btn" data-lang="understand_game" data-text="Understand the Game" class="button btn-glow btn-drip">Understand the Game</button>
+                 </div>
             </div>
         </div>
 
@@ -657,6 +670,9 @@
         micBtn: document.getElementById('mic-btn'),
         viewProgressionBtn: document.getElementById('view-progression-btn'),
         langEnBtn: document.getElementById('lang-en-btn'), langSvBtn: document.getElementById('lang-sv-btn'),
+        setupLangButtons: document.getElementById('setup-lang-buttons'),
+        setupSettingsBtn: document.getElementById('setup-settings-btn'),
+        setupFeaturesBtn: document.getElementById('setup-features-btn'),
     };
     let currentTextSpeed = TextSpeed.Normal;
     let commandHistory = []; let commandHistoryIndex = -1;
@@ -722,18 +738,27 @@
         currentLanguage = lang;
         UI.langEnBtn.classList.toggle('opacity-50', lang !== 'en');
         UI.langSvBtn.classList.toggle('opacity-50', lang !== 'sv');
+        const setupLangEnBtn = UI.setupLangButtons.children[0];
+        const setupLangSvBtn = UI.setupLangButtons.children[1];
+        setupLangEnBtn.classList.toggle('opacity-50', lang !== 'en');
+        setupLangSvBtn.classList.toggle('opacity-50', lang !== 'sv');
+
         document.querySelectorAll('[data-lang]').forEach(el => { 
             const translatedText = t(el.dataset.lang);
             el.textContent = translatedText;
-            // If the element has a data-text attribute for animations, keep it in sync
             if (el.hasAttribute('data-text')) {
                 el.setAttribute('data-text', translatedText);
             }
         });
         document.querySelectorAll('[data-lang-placeholder]').forEach(el => { el.placeholder = t(el.dataset.langPlaceholder); });
         document.querySelectorAll('[data-lang-title]').forEach(el => { el.title = t(el.dataset.langTitle); });
-        setupIntro(); updateAbilityDisplay();
-        if (!UI.gameScreen.classList.contains('hidden')) { updateUI(); renderDialogueOptions(); }
+        
+        setupIntro(); 
+        updateAbilityDisplay();
+        if (!UI.gameScreen.classList.contains('hidden')) { 
+            updateUI(); 
+            renderDialogueOptions(); 
+        }
     }
     
     // --- SOUND FUNCTIONS ---
@@ -1726,70 +1751,56 @@
     async function showGuidance(text) { await typeWriter(UI.gameOutput, `[HINT] ${text}`, GUIDANCE_COLOR); }
     
     // START: AUTOSAVE/SESSION RESTORE LOGIC
-    /**
-     * @description Saves the current state (either in-game or on the start screen) to session storage.
-     * This is intended to be called by the 'beforeunload' event to prevent data loss on refresh.
-     */
     function saveStateToSession() {
-        // If we are on the game screen and the game hasn't ended, save the full game state.
         if (!UI.gameScreen.classList.contains('hidden') && GameState && typeof GameState.turnCount === 'number' && !GameState.exitGame) {
             try {
                 const sessionData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value);
                 sessionStorage.setItem('synapse_session_v11_autosave', sessionData);
-                // Clear screen state to avoid conflicts if the player goes back to menu and then into a game.
                 sessionStorage.removeItem('synapse_session_v11_screen_state');
             } catch (e) {
                 console.error("Session game state save failed:", e);
             }
         } 
-        // If we are on the start screen (including character setup), save the screen's state.
-        else if (!UI.gameScreen.classList.contains('hidden')) { // This condition is now correct, only save screen state when not in game
+        else if (!UI.playerSetup.classList.contains('hidden')) {
             try {
                 const startState = {
-                    isPlayerSetupVisible: !UI.playerSetup.classList.contains('hidden'),
+                    isPlayerSetupVisible: true,
                     playerName: UI.playerNameInput.value,
                     playerBackstory: UI.playerBackstoryInput.value,
                     difficulty: Array.from(UI.difficultyBtns).find(b => b.classList.contains('button-primary'))?.dataset.difficulty || Difficulty.Normal,
                     language: currentLanguage
                 };
                 sessionStorage.setItem('synapse_session_v11_screen_state', JSON.stringify(startState));
-                // Clear game state to avoid conflicts.
                 sessionStorage.removeItem('synapse_session_v11_autosave');
             } catch (e) {
                 console.error("Session screen state save failed:", e);
             }
+        } else {
+             sessionStorage.removeItem('synapse_session_v11_autosave');
+             sessionStorage.removeItem('synapse_session_v11_screen_state');
         }
     }
 
-    /**
-     * @description Loads the game state from session storage. Used for restoring a game after a refresh.
-     * @returns {boolean} - True if a session was successfully loaded, false otherwise.
-     */
     function loadStateFromSession() {
         const sessionData = sessionStorage.getItem('synapse_session_v11_autosave');
         if (!sessionData) return false;
         try {
             const loadedState = JSON.parse(sessionData);
-            // Check if the loaded data looks like a valid game state.
             if (loadedState.currentRoom && typeof loadedState.turnCount === 'number' && !loadedState.exitGame) {
                 resetGameState();
                 Object.assign(GameState, loadedState);
-                GameState.soundSettings = loadSoundSettings(); // Reload sound settings separately
+                GameState.soundSettings = loadSoundSettings();
                 GameState.visitedRooms = new Set(loadedState.visitedRooms || []);
                 GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []);
-                
                 initializeData(); 
                 buildDialogueTree(GameState.chatbotTone);
                 GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone] || GameState.dialogue.cache[ChatbotTone.Friendly];
                 GameState.dialogue.previousNodes = [];
-
-                // Switch to the game screen
                 UI.startScreen.classList.add('hidden');
                 UI.playerSetup.classList.add('hidden');
                 UI.gameScreen.classList.remove('hidden');
                 UI.gameScreen.classList.add('flex');
                 UI.gameOutput.innerHTML = '';
-                
                 typeWriter(UI.gameOutput, t('conn_reestablished'), '#cccccc');
                 renderRoom();
                 updateUI();
@@ -1798,7 +1809,7 @@
             }
         } catch (e) {
             console.error("Session load failed:", e);
-            sessionStorage.removeItem('synapse_session_v11_autosave'); // Clear corrupted data
+            sessionStorage.removeItem('synapse_session_v11_autosave');
         }
         return false;
     }
@@ -2146,8 +2157,18 @@
         setupButtonClick(UI.statusBtn, showStatusModal);
         setupButtonClick(UI.viewProgressionBtn, showProgressionModal);
         setupButtonClick(UI.mapToggleBtn, toggleMapFullscreen);
+        
+        // Language buttons on both screens
         setupButtonClick(UI.langEnBtn, setLanguage, 'en');
         setupButtonClick(UI.langSvBtn, setLanguage, 'sv');
+        const setupLangEnBtn = UI.setupLangButtons.children[0];
+        const setupLangSvBtn = UI.setupLangButtons.children[1];
+        setupButtonClick(setupLangEnBtn, setLanguage, 'en');
+        setupButtonClick(setupLangSvBtn, setLanguage, 'sv');
+
+        // Settings and Features buttons on setup screen
+        setupButtonClick(UI.setupSettingsBtn, () => showSettingsModal(false));
+        setupButtonClick(UI.setupFeaturesBtn, showFeaturesModal);
 
         UI.difficultyBtns.forEach(btn => { setupButtonClick(btn, () => { UI.difficultyBtns.forEach(b => b.classList.remove('button-primary')); btn.classList.add('button-primary'); updateAbilityDisplay(); }); });
         UI.playerBackstoryInput.addEventListener('input', updateAbilityDisplay);
