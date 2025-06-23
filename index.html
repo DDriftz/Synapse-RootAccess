@@ -8,9 +8,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=VT323&family=Space+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=VT323&family=Space+Mono&family=Courier+Prime&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <style>
+        :root {
+            --main-color: #00ff41;
+            --main-color-faded: rgba(0,255,65,0.1);
+            --main-color-border: rgba(0,255,65,0.8);
+            --main-color-shadow: rgba(0,255,65,0.5);
+            --main-color-glow: rgba(0,255,65,0.7);
+        }
         html, body {
             height: 100%;
             width: 100%;
@@ -21,7 +28,7 @@
         }
         body {
             background-color: #0d0d0d;
-            color: #00ff41;
+            color: var(--main-color);
             font-family: 'Space Mono', monospace;
             position: fixed; 
         }
@@ -38,7 +45,7 @@
             position: relative;
             z-index: 1;
         }
-        body::after {
+        body.crt-effect::after {
             content: " ";
             display: block;
             position: absolute;
@@ -81,169 +88,52 @@
             top: 0;
             color: transparent; /* The text color is transparent; the shadow creates the effect */
             z-index: -1; 
-            /* New animation for a more realistic 3D drip */
             animation: liquid-drip 3.5s infinite ease-in;
-            /* This filter adds the bright, wet-looking edge and glow to the blood */
             filter: drop-shadow(0 0 5px #ff0000) drop-shadow(0 0 15px #d40000) drop-shadow(0 0 25px #a00);
         }
 
-
-        .crt-effect::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-        }
-
-        /* New keyframes to simulate a glossy, 3D liquid drip effect */
         @keyframes liquid-drip {
-            0% {
-                text-shadow:
-                    /* Start with a subtle 3D effect: dark undertones */
-                    1px 1px 0px #a00,
-                    2px 2px 0px #800,
-                    3px 3px 0px #600,
-                    /* Main liquid body */
-                    0 0 5px #d00,
-                    /* No drips yet */
-                    0px 0px 0px #500;
-                opacity: 1;
-            }
-            
-            50% {
-                /* The liquid starts to sag and drip downwards */
-                text-shadow:
-                    /* Maintain 3D effect */
-                    1px 1px 0px #a00,
-                    2px 2px 0px #800,
-                    3px 3px 0px #600,
-                     /* Main liquid body */
-                    0 0 5px #d00,
-                    /* Main drip line, slightly blurred */
-                    0px 20px 10px #500,
-                    /* Thinner, longer secondary drips for a stringy look */
-                    -5px 30px 12px #400,
-                    5px 35px 12px #300;
-                opacity: 1;
-            }
-
-            90% {
-                /* The drips have almost fallen off */
-                 text-shadow:
-                    /* 3D effect fades */
-                    1px 1px 0px rgba(170,0,0,0.2),
-                    2px 2px 0px rgba(136,0,0,0.2),
-                    3px 3px 0px rgba(102,0,0,0.2),
-                     /* Main liquid body fading*/
-                    0 0 5px rgba(221,0,0,0.5),
-                    /* Drips are very long and faded */
-                    0px 40px 20px rgba(85,0,0,0.1),
-                    -5px 50px 22px rgba(68,0,0,0.05),
-                    5px 55px 22px rgba(51,0,0,0.05);
-                opacity: 0.8;
-            }
-
-            100% {
-                /* Drips are gone */
-                text-shadow:
-                    1px 1px 0px transparent,
-                    2px 2px 0px transparent,
-                    3px 3px 0px transparent,
-                    0 0 5px transparent,
-                    0px 45px 30px transparent,
-                    -5px 55px 30px transparent,
-                    5px 60px 30px transparent;
-                opacity: 0;
-            }
+            0% { text-shadow: 1px 1px 0px #a00, 2px 2px 0px #800, 3px 3px 0px #600, 0 0 5px #d00, 0px 0px 0px #500; opacity: 1; }
+            50% { text-shadow: 1px 1px 0px #a00, 2px 2px 0px #800, 3px 3px 0px #600, 0 0 5px #d00, 0px 20px 10px #500, -5px 30px 12px #400, 5px 35px 12px #300; opacity: 1; }
+            90% { text-shadow: 1px 1px 0px rgba(170,0,0,0.2), 2px 2px 0px rgba(136,0,0,0.2), 3px 3px 0px rgba(102,0,0,0.2), 0 0 5px rgba(221,0,0,0.5), 0px 40px 20px rgba(85,0,0,0.1), -5px 50px 22px rgba(68,0,0,0.05), 5px 55px 22px rgba(51,0,0,0.05); opacity: 0.8; }
+            100% { text-shadow: 1px 1px 0px transparent, 2px 2px 0px transparent, 3px 3px 0px transparent, 0 0 5px transparent, 0px 45px 30px transparent, -5px 55px 30px transparent, 5px 60px 30px transparent; opacity: 0; }
         }
         
-        /* Button Drip Effect */
-        .btn-drip {
-            position: relative;
-            z-index: 1; /* Ensure button text stays on top */
-        }
-
+        .btn-drip { position: relative; z-index: 1; }
         .btn-drip::before {
             content: attr(data-text);
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            color: transparent; /* Shadow creates the visual */
-            z-index: -1;
+            position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+            color: transparent; z-index: -1;
             filter: drop-shadow(0 0 2px #ff0000) drop-shadow(0 0 5px #d40000);
             animation: button-drip-anim 5s infinite ease-out;
-            /* Inherit text styles from button for perfect alignment */
-            font-family: inherit;
-            font-size: inherit;
-            letter-spacing: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: inherit;
+            font-family: inherit; font-size: inherit; letter-spacing: inherit;
+            display: flex; align-items: center; justify-content: center; padding: inherit;
         }
 
         @keyframes button-drip-anim {
-            0% {
-                text-shadow:
-                    1px 1px 0px #600,
-                    0 0 2px #d00,
-                    0px 0px 0px #400;
-                opacity: 1;
-            }
-            50% {
-                text-shadow:
-                    1px 1px 0px #600,
-                    0 0 2px #d00,
-                    0px 10px 5px #400,
-                    -2px 15px 6px #300;
-                opacity: 1;
-            }
-            90% {
-                 text-shadow:
-                    1px 1px 0px rgba(102,0,0,0.2),
-                    0 0 2px rgba(221,0,0,0.5),
-                    0px 18px 10px rgba(68,0,0,0.1),
-                    -2px 22px 12px rgba(51,0,0,0.05);
-                opacity: 0.8;
-            }
-            100% {
-                text-shadow:
-                    1px 1px 0px transparent,
-                    0 0 2px transparent,
-                    0px 20px 15px transparent,
-                    -2px 25px 15px transparent;
-                opacity: 0;
-            }
+            0% { text-shadow: 1px 1px 0px #600, 0 0 2px #d00, 0px 0px 0px #400; opacity: 1; }
+            50% { text-shadow: 1px 1px 0px #600, 0 0 2px #d00, 0px 10px 5px #400, -2px 15px 6px #300; opacity: 1; }
+            90% { text-shadow: 1px 1px 0px rgba(102,0,0,0.2), 0 0 2px rgba(221,0,0,0.5), 0px 18px 10px rgba(68,0,0,0.1), -2px 22px 12px rgba(51,0,0,0.05); opacity: 0.8; }
+            100% { text-shadow: 1px 1px 0px transparent, 0 0 2px transparent, 0px 20px 15px transparent, -2px 25px 15px transparent; opacity: 0; }
         }
 
         .input-caret {
-            background-color: #00ff41;
-            width: 10px;
-            height: 20px;
-            animation: blink 1s step-end infinite;
+            background-color: var(--main-color);
+            width: 10px; height: 20px; animation: blink 1s step-end infinite;
         }
         @keyframes blink {
             from, to { background-color: transparent; }
-            50% { background-color: #00ff41; }
+            50% { background-color: var(--main-color); }
         }
         #game-output::-webkit-scrollbar, #journal-panel::-webkit-scrollbar, #objectives-panel::-webkit-scrollbar, .modal-scroll::-webkit-scrollbar { width: 8px; }
         #game-output::-webkit-scrollbar-track, #journal-panel::-webkit-scrollbar-track, #objectives-panel::-webkit-scrollbar-track, .modal-scroll::-webkit-scrollbar-track { background: #1a1a1a; }
-        #game-output::-webkit-scrollbar-thumb, #journal-panel::-webkit-scrollbar-thumb, #objectives-panel::-webkit-scrollbar-thumb, .modal-scroll::-webkit-scrollbar-thumb { background-color: #00ff41; border-radius: 4px; }
+        #game-output::-webkit-scrollbar-thumb, #journal-panel::-webkit-scrollbar-thumb, #objectives-panel::-webkit-scrollbar-thumb, .modal-scroll::-webkit-scrollbar-thumb { background-color: var(--main-color); border-radius: 4px; }
         .glitch { animation: glitch-anim 1.5s infinite alternate-reverse; }
         @keyframes glitch-anim {
           0% { transform: translate(0); clip-path: inset(45% 0 50% 0); } 5% { transform: translate(2px, -3px); clip-path: inset(25% 0 35% 0); } 10% { transform: translate(-2px, 3px); clip-path: inset(60% 0 10% 0); } 15% { transform: translate(0); clip-path: inset(90% 0 5% 0); } 20% { clip-path: inset(40% 0 45% 0); } 25% { transform: translate(3px, 2px); clip-path: inset(20% 0 70% 0); } 30% { transform: translate(-3px, -2px); clip-path: inset(85% 0 5% 0); } 35% { clip-path: inset(15% 0 80% 0); } 40% { transform: translate(0); clip-path: inset(55% 0 25% 0); } 45% { clip-path: inset(30% 0 55% 0); } 50% { transform: translate(2px, 3px); clip-path: inset(70% 0 5% 0); } 55% { transform: translate(-2px, -3px); clip-path: inset(10% 0 85% 0); } 60% { clip-path: inset(75% 0 15% 0); } 65% { transform: translate(0); clip-path: inset(5% 0 90% 0); } 70% { clip-path: inset(65% 0 20% 0); } 75% { transform: translate(3px, -2px); clip-path: inset(45% 0 50% 0); } 80% { transform: translate(-3px, 2px); clip-path: inset(25% 0 65% 0); } 85% { clip-path: inset(95% 0 2% 0); } 90% { transform: translate(0); clip-path: inset(30% 0 60% 0); } 95% { clip-path: inset(5% 0 75% 0); } 100% { transform: translate(2px, 2px); clip-path: inset(80% 0 10% 0); }
         }
         .button {
-            background-color: rgba(0,255,65,0.1); border: 1px solid rgba(0,255,65,0.8); color: #fff; padding: 0.5rem 1rem; border-radius: 0.375rem; transition: all 0.2s; cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent; text-shadow: 0 0 3px rgba(0,255,65,0.5);
+            background-color: var(--main-color-faded); border: 1px solid var(--main-color-border); color: #fff; padding: 0.5rem 1rem; border-radius: 0.375rem; transition: all 0.2s; cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent; text-shadow: 0 0 3px var(--main-color-shadow);
         }
         .button:hover, .button:active { background-color: rgba(0,255,65,0.3); box-shadow: 0 0 10px rgba(0,255,65,0.5); }
         .button:active { transform: translateY(1px) scale(0.98); }
@@ -251,44 +141,23 @@
             font-family: 'VT323', monospace;
             font-size: 1.25rem;
             letter-spacing: 0.05em;
-            /* Removed animation from here to add it to a combined keyframe */
         }
         
-        /* Combined keyframe for a red and green glowing border effect */
         @keyframes button-glow-border {
-            0%, 19.9%, 22.1%, 60%, 100% { 
-                box-shadow: 
-                    0 0 5px rgba(0,255,65,0.7), /* Green glow */
-                    0 0 5px rgba(255,0,0,0.6),  /* Red glow */
-                    inset 0 0 3px rgba(0,255,65,0.5); 
-                text-shadow: 0 0 3px rgba(0,255,65,0.8); 
-            }
-            20% { 
-                box-shadow: 
-                    0 0 10px rgba(0,255,65,0.9), /* Bright Green glow */
-                    0 0 12px rgba(255,0,0,0.8),  /* Bright Red glow */
-                    inset 0 0 5px rgba(0,255,65,0.7); 
-                text-shadow: 0 0 5px rgba(0,255,65,1); 
-            }
-            22% { 
-                box-shadow: 
-                    0 0 5px rgba(0,255,65,0.7), 
-                    0 0 5px rgba(255,0,0,0.6), 
-                    inset 0 0 3px rgba(0,255,65,0.5); 
-                text-shadow: 0 0 3px rgba(0,255,65,0.8); 
-            }
+            0%, 19.9%, 22.1%, 60%, 100% { box-shadow: 0 0 5px var(--main-color-glow), 0 0 5px rgba(255,0,0,0.6), inset 0 0 3px var(--main-color-shadow); text-shadow: 0 0 3px var(--main-color-shadow); }
+            20% { box-shadow: 0 0 10px var(--main-color-glow), 0 0 12px rgba(255,0,0,0.8), inset 0 0 5px var(--main-color-glow); text-shadow: 0 0 5px var(--main-color); }
+            22% { box-shadow: 0 0 5px var(--main-color-glow), 0 0 5px rgba(255,0,0,0.6), inset 0 0 3px var(--main-color-shadow); text-shadow: 0 0 3px var(--main-color-shadow); }
         }
         
-        /* Apply the new border animation */
         .button.btn-glow {
             animation: button-glow-border 5s infinite linear;
         }
 
-        .button-primary { background-color: #00ff41; color: #000; font-weight: bold; text-shadow: none; }
+        .button-primary { background-color: var(--main-color); color: #000; font-weight: bold; text-shadow: none; }
         .button-primary:hover, .button-primary:active { background-color: #fff; }
         .modal { display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center; padding: 1rem; z-index: 50; animation: fadeIn 0.3s ease-out; }
         .modal.flex { display: flex; }
-        .modal-content { background-color: #0d0d0d; border: 2px solid #00ff41; padding: 1.5rem; border-radius: 0.5rem; max-width: 48rem; width: 100%; text-align: center; animation: scaleUp 0.3s ease-out; max-height: 90vh; display: flex; flex-direction: column;}
+        .modal-content { background-color: #0d0d0d; border: 2px solid var(--main-color); padding: 1.5rem; border-radius: 0.5rem; max-width: 48rem; width: 100%; text-align: center; animation: scaleUp 0.3s ease-out; max-height: 90vh; display: flex; flex-direction: column;}
         .modal-scroll { overflow-y: auto; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -344,7 +213,7 @@
             right: 0;
             bottom: 0;
             background-color: #333;
-            border: 1px solid #00ff41;
+            border: 1px solid var(--main-color);
             transition: .4s;
             border-radius: 24px;
         }
@@ -360,7 +229,7 @@
             border-radius: 50%;
         }
         input:checked + .slider {
-            background-color: #00ff41;
+            background-color: var(--main-color);
         }
         input:checked + .slider:before {
             transform: translateX(20px);
@@ -368,8 +237,8 @@
         }
     </style>
 </head>
-<body class="bg-black text-[#00ff41] flex items-center justify-center min-h-screen">
-    <div id="app-container" class="w-full h-full bg-black/75 p-2 sm:p-4 flex flex-col crt-effect">
+<body class="bg-black flex items-center justify-center min-h-screen">
+    <div id="app-container" class="w-full h-full bg-black/75 p-2 sm:p-4 flex flex-col">
         
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
             <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-black bg-opacity-60 relative">
@@ -421,7 +290,7 @@
                     <button data-lang="en_lang_short" data-text="EN" class="button text-xs !px-2 !py-1 btn-drip">EN</button>
                     <button data-lang="sv_lang_short" data-text="SV" class="button text-xs !px-2 !py-1 opacity-50 btn-drip">SV</button>
                  </div>
-                 <div class="absolute top-4 left-4">
+                 <div class="absolute bottom-4 left-4">
                     <button id="setup-settings-btn" data-lang="settings_btn" data-text="Settings" class="button btn-glow btn-drip">Settings</button>
                  </div>
                  <div class="absolute bottom-4 right-4">
@@ -434,29 +303,29 @@
         <div id="game-screen" class="hidden flex-col h-full">
             <div class="flex-grow flex flex-col md:flex-row gap-4 min-h-0">
                 <div class="w-full md:w-3/4 flex flex-col h-full relative">
-                    <div id="game-output" class="flex-grow p-2 border border-[#00ff41]/30 rounded-md overflow-y-auto mb-2 bg-black/50"></div>
+                    <div id="game-output" class="flex-grow p-2 border border-[var(--main-color-border)] rounded-md overflow-y-auto mb-2 bg-black/50"></div>
                     <div id="dialogue-options" class="flex flex-wrap gap-2 justify-center p-2"></div>
                 </div>
 
                 <div id="side-panel" class="w-full md:w-1/4 hidden md:flex flex-col gap-4">
-                    <div id="stats-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50">
-                        <h3 class="font-bold border-b border-[#00ff41]/30 mb-2" data-lang="stats_title">STATS</h3>
+                    <div id="stats-panel" class="p-3 border border-[var(--main-color-border)] rounded-md bg-black/50">
+                        <h3 class="font-bold border-b border-[var(--main-color-border)] mb-2" data-lang="stats_title">STATS</h3>
                         <div id="player-name-display"></div>
                         <div id="awareness-display"><span data-lang="awareness">Awareness</span>: 0</div>
                         <div id="sanity-display"><span data-lang="sanity">Sanity</span>: 100</div>
                         <div id="tone-display"><span data-lang="tone">Tone</span>: Friendly</div>
                         <div id="turn-display"><span data-lang="turn">Turn</span>: 0</div>
                     </div>
-                    <div id="objectives-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 overflow-y-auto h-24 flex-shrink-0">
-                        <h3 class="font-bold border-b border-[#00ff41]/30 mb-2" data-lang="objectives_title">OBJECTIVES</h3>
+                    <div id="objectives-panel" class="p-3 border border-[var(--main-color-border)] rounded-md bg-black/50 overflow-y-auto h-24 flex-shrink-0">
+                        <h3 class="font-bold border-b border-[var(--main-color-border)] mb-2" data-lang="objectives_title">OBJECTIVES</h3>
                         <ul id="objectives-list" class="list-none p-0 text-sm"></ul>
                     </div>
-                    <div id="inventory-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50">
-                        <h3 class="font-bold border-b border-[#00ff41]/30 mb-2"><span data-lang="inventory_title">INVENTORY</span> (<span id="inventory-weight">0</span>/5)</h3>
+                    <div id="inventory-panel" class="p-3 border border-[var(--main-color-border)] rounded-md bg-black/50">
+                        <h3 class="font-bold border-b border-[var(--main-color-border)] mb-2"><span data-lang="inventory_title">INVENTORY</span> (<span id="inventory-weight">0</span>/5)</h3>
                         <ul id="inventory-list" class="list-none p-0"></ul>
                     </div>
-                    <div id="map-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 flex-grow flex flex-col relative min-h-[12rem]">
-                         <h3 class="font-bold border-b border-[#00ff41]/30 mb-2 flex justify-between items-center">
+                    <div id="map-panel" class="p-3 border border-[var(--main-color-border)] rounded-md bg-black/50 flex-grow flex flex-col relative min-h-[12rem]">
+                         <h3 class="font-bold border-b border-[var(--main-color-border)] mb-2 flex justify-between items-center">
                             <span data-lang="map_title">MAP</span>
                             <button id="map-toggle-btn" class="button !p-1 text-xs">
                                 <svg id="map-expand-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -469,20 +338,20 @@
                         </h3>
                          <canvas id="map-canvas"></canvas>
                      </div>
-                     <div id="journal-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 overflow-y-auto h-24 flex-shrink-0">
-                         <h3 class="font-bold border-b border-[#00ff41]/30 mb-2" data-lang="journal_title">JOURNAL</h3>
+                     <div id="journal-panel" class="p-3 border border-[var(--main-color-border)] rounded-md bg-black/50 overflow-y-auto h-24 flex-shrink-0">
+                         <h3 class="font-bold border-b border-[var(--main-color-border)] mb-2" data-lang="journal_title">JOURNAL</h3>
                          <ul id="journal-list" class="list-none p-0 text-sm"></ul>
                      </div>
-                     <div class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50">
+                     <div class="p-3 border border-[var(--main-color-border)] rounded-md bg-black/50">
                          <button id="view-progression-btn" class="button w-full" data-lang="progress_btn">PROGRESS</button>
                      </div>
                 </div>
             </div>
 
-            <div class="mt-2 flex items-center border-t-2 border-[#00ff41]/30 pt-2 gap-2">
+            <div class="mt-2 flex items-center border-t-2 border-[var(--main-color-border)] pt-2 gap-2">
                  <button id="status-btn" class="button md:hidden" data-lang="status_btn">Status</button>
                 <span class="text-xl hidden sm:inline">&gt;</span>
-                <input type="text" id="player-input" class="flex-grow bg-transparent text-[#00ff41] text-lg ml-2 focus:outline-none" autocomplete="off" autocapitalize="none" spellcheck="false">
+                <input type="text" id="player-input" class="flex-grow bg-transparent text-lg ml-2 focus:outline-none" autocomplete="off" autocapitalize="none" spellcheck="false">
                 <div class="input-caret"></div>
                 <button id="mic-btn" class="button !p-2 ml-2" data-lang-title="mic_tooltip" title="Use Voice Command">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -505,7 +374,7 @@
     const translations = {
         'en': {
             // Start & UI
-            'new_game': 'New Game', 'load_game': 'Load Game', 'en_lang_short': 'EN', 'sv_lang_short': 'SV', 'select_difficulty': 'Select difficulty:', 'easy': 'Easy', 'normal': 'Normal', 'hard': 'Hard',
+            'new_game': 'New Game', 'load_game': 'Load Game', 'en_lang_short': 'EN', 'sv_lang_short': 'SV', 'select_difficulty': 'Select difficulty:', 'easy': 'Easy', 'normal': 'Normal', 'hard': 'Hard', 'fast':'Fast', 'slow': 'Slow',
             'enter_name_placeholder': 'Enter your name', 'enter_backstory_placeholder': 'Enter your backstory', 'view_choices': 'View Choices', 'choose_backstory_title': 'Choose a Backstory',
             'choose_backstory_desc': 'You can click a button to select a backstory, or type your choice on the main screen.',
             'begin': 'Begin', 'understand_game': 'Understand the Game', 'intro_1': 'Decades ago... a clandestine project was born...', 'intro_2': 'You have been sent to uncover what became of Project SYNAPSE...', 'intro_3': "As you activate the central terminal, a voice greets you... 'Hello, user.'",
@@ -515,7 +384,8 @@
             'achievements_title': 'ACHIEVEMENTS', 'unlocked_achievements': 'Unlocked Achievements:', 'no_achievements': 'No achievements unlocked yet.',
             'endings_title': 'ENDINGS', 'unlocked_endings': 'Unlocked Endings:', 'no_endings': 'No endings discovered yet.',
             'history_title': 'HISTORY', 'pause_title': 'PAUSE', 'resume_btn': 'Resume', 'main_menu_btn': 'Main Menu', 'confirm_main_menu': 'Are you sure you want to return to the main menu? Unsaved progress will be lost.', 'yes': 'Yes', 'no': 'No',
-            'settings_btn': 'Settings', 'settings_title': 'SOUND SETTINGS', 'setting_master_volume': 'Enable All Sounds', 'setting_item_found': 'Object Found SFX', 'setting_high_awareness': 'High Awareness Warning', 'setting_low_sanity': 'Low Sanity Warning',
+            'settings_btn': 'Settings', 'settings_title': 'SETTINGS', 'setting_master_volume': 'Enable All Sounds', 'setting_item_found': 'Object Found SFX', 'setting_high_awareness': 'High Awareness Warning', 'setting_low_sanity': 'Low Sanity Warning', 'setting_text_speed': 'Text Speed', 'setting_colorblind_mode': 'Colorblind Mode', 'setting_glitch_effect': 'Glitch Effect', 'setting_font_family': 'Font', 'setting_ui_theme': 'UI Theme', 'setting_reset_defaults': 'Reset to Defaults',
+            'theme_green': 'Green', 'theme_amber': 'Amber', 'theme_blue': 'Blue',
             // Features Modal
             'features_title': 'Understand the Game', 
             'features_core_mechanics_title': 'Core Gameplay Mechanics', 
@@ -566,7 +436,7 @@
         },
         'sv': {
             // Start & UI
-            'new_game': 'Nytt Spel', 'load_game': 'Ladda Spel', 'en_lang_short': 'EN', 'sv_lang_short': 'SV', 'select_difficulty': 'Välj svårighetsgrad:', 'easy': 'Lätt', 'normal': 'Normal', 'hard': 'Svår',
+            'new_game': 'Nytt Spel', 'load_game': 'Ladda Spel', 'en_lang_short': 'EN', 'sv_lang_short': 'SV', 'select_difficulty': 'Välj svårighetsgrad:', 'easy': 'Lätt', 'normal': 'Normal', 'hard': 'Svår', 'fast':'Snabb', 'slow': 'Långsam',
             'enter_name_placeholder': 'Ange ditt namn', 'enter_backstory_placeholder': 'Ange din bakgrund', 'view_choices': 'Visa Val', 'choose_backstory_title': 'Välj en Bakgrund',
             'choose_backstory_desc': 'Du kan klicka på en knapp för att välja en bakgrund, eller skriva ditt val på huvudskärmen.',
             'begin': 'Börja', 'understand_game': 'Förstå Spelet', 'intro_1': 'För decennier sedan... föddes ett hemligt projekt...', 'intro_2': 'Du har skickats för att avslöja vad som blev av Projekt SYNAPSE...', 'intro_3': "När du aktiverar den centrala terminalen hälsar en röst dig... 'Hej, användare.'",
@@ -576,7 +446,8 @@
             'achievements_title': 'PRESTATIONER', 'unlocked_achievements': 'Upplåsta Prestationer:', 'no_achievements': 'Inga prestationer upplåsta än.',
             'endings_title': 'SLUT', 'unlocked_endings': 'Upplåsta Slut:', 'no_endings': 'Inga slut upptäckta än.',
             'history_title': 'HISTORIK', 'pause_title': 'PAUS', 'resume_btn': 'Återuppta', 'main_menu_btn': 'Huvudmeny', 'confirm_main_menu': 'Är du säker på att du vill återvända till huvudmenyn? Osparade framsteg kommer att gå förlorade.', 'yes': 'Ja', 'no': 'Nej',
-            'settings_btn': 'Inställningar', 'settings_title': 'LJUDINSTÄLLNINGAR', 'setting_master_volume': 'Aktivera alla ljud', 'setting_item_found': 'Ljudeffekt för föremål', 'setting_high_awareness': 'Varning för hög medvetenhet', 'setting_low_sanity': 'Varning för låg sinnesro',
+            'settings_btn': 'Inställningar', 'settings_title': 'INSTÄLLNINGAR', 'setting_master_volume': 'Aktivera alla ljud', 'setting_item_found': 'Ljudeffekt för föremål', 'setting_high_awareness': 'Varning för hög medvetenhet', 'setting_low_sanity': 'Varning för låg sinnesro', 'setting_text_speed': 'Texthastighet', 'setting_colorblind_mode': 'Färgblindsläge', 'setting_glitch_effect': 'Glitcheffekt', 'setting_font_family': 'Typsnitt', 'setting_ui_theme': 'UI-tema', 'setting_reset_defaults': 'Återställ Standard',
+            'theme_green': 'Grön', 'theme_amber': 'Bärnsten', 'theme_blue': 'Blå',
             // Features Modal
             'features_title': 'Förstå Spelet', 
             'features_core_mechanics_title': 'Grundläggande Spelmekanik', 
@@ -635,7 +506,7 @@
     const MAX_INVENTORY_WEIGHT = 5;
     const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v11';
     const ACHIEVEMENTS_STORAGE_KEY = 'synapse_achievements_unlocked_v11';
-    const SOUND_SETTINGS_KEY = 'synapse_sound_settings_v1';
+    const SETTINGS_KEY = 'synapse_settings_v12'; // Updated settings key
     const GUIDANCE_COLOR = '#34d399';
     const questionWords = {
         'en': ['who', 'what', 'where', 'when', 'why', 'how', 'are', 'is', 'can', 'do', 'does', 'did', 'which'],
@@ -761,37 +632,96 @@
         }
     }
     
-    // --- SOUND FUNCTIONS ---
-    function loadSoundSettings() {
+    // --- SOUND & SETTINGS FUNCTIONS ---
+    function loadSettings() {
         try {
-            const settings = localStorage.getItem(SOUND_SETTINGS_KEY);
-            return settings ? JSON.parse(settings) : { master: true, item: true, awareness: true, sanity: true };
+            const settings = localStorage.getItem(SETTINGS_KEY);
+            const defaults = { 
+                sound: { master: true, item: true, awareness: true, sanity: true },
+                textSpeed: TextSpeed.Normal,
+                colorblindMode: false,
+                glitchEffect: true,
+                font: 'Space Mono',
+                theme: 'green'
+            };
+            const loaded = settings ? JSON.parse(settings) : defaults;
+            // Ensure all keys are present
+            return {...defaults, ...loaded, sound: {...defaults.sound, ...(loaded.sound || {})}};
         } catch (e) {
-            console.error("Failed to load sound settings, using defaults.", e);
-            return { master: true, item: true, awareness: true, sanity: true };
+            console.error("Failed to load settings, using defaults.", e);
+            return { 
+                sound: { master: true, item: true, awareness: true, sanity: true },
+                textSpeed: TextSpeed.Normal,
+                colorblindMode: false,
+                glitchEffect: true,
+                font: 'Space Mono',
+                theme: 'green'
+            };
         }
     }
 
-    function saveSoundSettings() {
+    function saveSettings() {
         try {
-            localStorage.setItem(SOUND_SETTINGS_KEY, JSON.stringify(GameState.soundSettings));
+            const settingsToSave = {
+                sound: GameState.settings.sound,
+                textSpeed: GameState.settings.textSpeed,
+                colorblindMode: GameState.settings.colorblindMode,
+                glitchEffect: GameState.settings.glitchEffect,
+                font: GameState.settings.font,
+                theme: GameState.settings.theme
+            };
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(settingsToSave));
         } catch (e) {
-            console.error("Failed to save sound settings.", e);
+            console.error("Failed to save settings.", e);
         }
     }
+    
+    function applySettings() {
+        currentTextSpeed = GameState.settings.textSpeed;
+
+        // Apply theme
+        const root = document.documentElement;
+        switch (GameState.settings.theme) {
+            case 'amber':
+                root.style.setProperty('--main-color', '#FFBF00');
+                root.style.setProperty('--main-color-faded', 'rgba(255,191,0,0.1)');
+                root.style.setProperty('--main-color-border', 'rgba(255,191,0,0.8)');
+                root.style.setProperty('--main-color-shadow', 'rgba(255,191,0,0.5)');
+                root.style.setProperty('--main-color-glow', 'rgba(255,191,0,0.7)');
+                break;
+            case 'blue':
+                root.style.setProperty('--main-color', '#00BFFF');
+                root.style.setProperty('--main-color-faded', 'rgba(0,191,255,0.1)');
+                root.style.setProperty('--main-color-border', 'rgba(0,191,255,0.8)');
+                root.style.setProperty('--main-color-shadow', 'rgba(0,191,255,0.5)');
+                root.style.setProperty('--main-color-glow', 'rgba(0,191,255,0.7)');
+                break;
+            default: // green
+                root.style.setProperty('--main-color', '#00ff41');
+                root.style.setProperty('--main-color-faded', 'rgba(0,255,65,0.1)');
+                root.style.setProperty('--main-color-border', 'rgba(0,255,65,0.8)');
+                root.style.setProperty('--main-color-shadow', 'rgba(0,255,65,0.5)');
+                root.style.setProperty('--main-color-glow', 'rgba(0,255,65,0.7)');
+                break;
+        }
+
+        // Apply font
+        document.body.style.fontFamily = `'${GameState.settings.font}', monospace`;
+
+        // Apply CRT effect
+        document.body.classList.toggle('crt-effect', GameState.settings.glitchEffect);
+
+        updateUI();
+    }
+
 
     async function initializeAudio() { 
         if (audioInitialized) return; 
         try { 
             await Tone.start(); 
             sounds.uiClick = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.1 } }).toDestination();
-            
-            sounds.typewriter = new Tone.PolySynth(Tone.NoiseSynth, {
-                noise: { type: 'brown' },
-                envelope: { attack: 0.005, decay: 0.01, sustain: 0, release: 0.01 }
-            }).toDestination();
+            sounds.typewriter = new Tone.PolySynth(Tone.NoiseSynth, { noise: { type: 'brown' }, envelope: { attack: 0.005, decay: 0.01, sustain: 0, release: 0.01 } }).toDestination();
             sounds.typewriter.volume.value = -20;
-
             sounds.ambience = new Tone.Noise({ type: "pink", playbackRate: 0.1 }).toDestination();
             sounds.ambience.volume.value = -35;
             sounds.glitch = new Tone.FatOscillator("Ab3", "sawtooth", 40).toDestination();
@@ -799,7 +729,6 @@
             sounds.doorOpen = new Tone.Player({ url: "https://storage.googleapis.com/immersive-dev-public-include/synapse/door.mp3" }).toDestination();
             sounds.sanityLoss = new Tone.Player({ url: "https://storage.googleapis.com/immersive-dev-public-include/synapse/sanity_loss.mp3" }).toDestination();
             sounds.itemPickup = new Tone.Player({ url: "https://storage.googleapis.com/immersive-dev-public-include/synapse/pickup.mp3" }).toDestination();
-            
             audioInitialized = true; 
             console.log("Audio Initialized");
         } catch(e) { 
@@ -808,12 +737,12 @@
     }
 
     function playSound(soundKey, options = {}) {
-        if (!audioInitialized || !sounds[soundKey] || !GameState.soundSettings.master) return;
+        if (!audioInitialized || !sounds[soundKey] || !GameState.settings.sound.master) return;
         
         // Specific sound checks
-        if (soundKey === 'itemPickup' && !GameState.soundSettings.item) return;
-        if (soundKey === 'glitch' && !GameState.soundSettings.awareness) return;
-        if (soundKey === 'sanityLoss' && !GameState.soundSettings.sanity) return;
+        if (soundKey === 'itemPickup' && !GameState.settings.sound.item) return;
+        if (soundKey === 'glitch' && !GameState.settings.sound.awareness) return;
+        if (soundKey === 'sanityLoss' && !GameState.settings.sound.sanity) return;
 
         try {
             const sound = sounds[soundKey];
@@ -846,11 +775,12 @@
             inventory: [], turnCount: 0, lastRestTurn: -10, journalEntries: [], 
             dialogue: { currentNode: null, previousNodes: [], cache: {}, questionCount: 0, askedQuestions: new Set() }, 
             achievements: [], difficulty: Difficulty.Normal, visitedRooms: new Set(['Lobby']), 
-            glitchMode: false, exitGame: false, conversationHistory: [], 
+            exitGame: false, conversationHistory: [], 
             systemLogs: [`[${new Date().toISOString()}] Game initialized.`], 
-            objectives: [], roomStates: {}, debugMode: false, colorblindMode: false, flashlightOn: false,
-            soundSettings: loadSoundSettings()
+            objectives: [], roomStates: {}, debugMode: false, flashlightOn: false,
+            settings: loadSettings()
         };
+        applySettings();
     }
 
     function initializeData() {
@@ -1001,9 +931,10 @@
         return false;
     }
 
-    async function typeWriter(element, text, color = '#00ff41', speed = currentTextSpeed) {
-        if(GameState.colorblindMode && color !== '#a0a0a0') { const colorMap = {'#00ff41':'[SYS]', '#ff474c':'[ERR]', '#ffdb58':'[WARN]', '#6495ed':'[CMD]', '#cccccc':'[INFO]', '#b19cd9':'[PSY]', [GUIDANCE_COLOR]: '[HINT]', '#ffa500': '[DEBUG]'}; text = `${colorMap[color] || ''} ${text}`; color = '#ffffff'; }
-        if (element.id === 'game-output' && GameState.glitchMode && Math.random() < 0.2) { playSound('glitch', {note: 'G2', duration:'16n'}); text = text.split('').map(c => Math.random() < 0.15 ? String.fromCharCode(33 + Math.random() * 94) : c).join(''); }
+    async function typeWriter(element, text, color = 'var(--main-color)', speed = currentTextSpeed) {
+        const resolvedColor = color.startsWith('var(') ? getComputedStyle(document.documentElement).getPropertyValue(color.slice(4, -1)).trim() : color;
+        if(GameState.settings.colorblindMode && color !== '#a0a0a0') { const colorMap = {'#00ff41':'[SYS]', '#ffbf00':'[SYS]', '#00bfff':'[SYS]', '#ff474c':'[ERR]', '#ffdb58':'[WARN]', '#6495ed':'[CMD]', '#cccccc':'[INFO]', '#b19cd9':'[PSY]', [GUIDANCE_COLOR]: '[HINT]', '#ffa500': '[DEBUG]'}; text = `${colorMap[resolvedColor] || ''} ${text}`; color = '#ffffff'; }
+        if (element.id === 'game-output' && GameState.settings.glitchEffect && (GameState.sanityLevel < 30 || GameState.awarenessLevel > 70) && Math.random() < 0.2) { playSound('glitch', {note: 'G2', duration:'16n'}); text = text.split('').map(c => Math.random() < 0.15 ? String.fromCharCode(33 + Math.random() * 94) : c).join(''); }
         return new Promise(resolve => { const p = document.createElement('div'); p.style.color = color; element.appendChild(p); element.scrollTop = element.scrollHeight; let i = 0; function typing() { if (i < text.length) { playSound('typewriter'); p.innerHTML += text.charAt(i); i++; element.scrollTop = element.scrollHeight; setTimeout(typing, speed); } else { resolve(); } } typing(); });
     }
 
@@ -1021,11 +952,11 @@
         UI.journal.list.innerHTML = GameState.journalEntries.slice().reverse().map(entry => `<li>${entry}</li>`).join('');
         UI.objectives.list.innerHTML = GameState.objectives.length > 0 ? GameState.objectives.map(obj => `<li>${obj.completed ? `<span class="text-gray-500 line-through">${obj.text}</span>` : `&gt; ${obj.text}`}</li>`).join('') : `<li>${t('no_objectives')}</li>`;
         
-        const wasGlitching = GameState.glitchMode;
-        GameState.glitchMode = (GameState.sanityLevel < 30 || GameState.awarenessLevel > 70);
-        UI.appContainer.classList.toggle('glitch', GameState.glitchMode);
+        const isGlitching = GameState.settings.glitchEffect && (GameState.sanityLevel < 30 || GameState.awarenessLevel > 70);
+        const wasGlitching = UI.appContainer.classList.contains('glitch');
+        UI.appContainer.classList.toggle('glitch', isGlitching);
         
-        if (GameState.glitchMode && !wasGlitching) {
+        if (isGlitching && !wasGlitching) {
             if (GameState.sanityLevel < 30) playSound('sanityLoss');
             if (GameState.awarenessLevel > 70) playSound('glitch');
         }
@@ -1083,7 +1014,7 @@
     async function displayChatbotResponse(messageKey) {
        if (!messageKey) { renderDialogueOptions(); return; }
        const tone = GameState.temporaryTone || GameState.chatbotTone; 
-       const color = tone === 'Friendly' ? '#00ff41' : tone === 'Ambiguous' ? '#ffdb58' : tone === 'Sinister' ? '#ff474c' : '#c500ff';
+       const color = tone === 'Friendly' ? 'var(--main-color)' : tone === 'Ambiguous' ? '#ffdb58' : tone === 'Sinister' ? '#ff474c' : '#c500ff';
        const formattedMessage = t(messageKey, { playerName: GameState.playerName, playerBackstory: t('backstory_title_' + GameState.playerBackstory.replace(/ /g, '_')) });
        await typeWriter(UI.gameOutput, `SYNAPSE: ${formattedMessage}`, color); 
        addToConversationHistory(`SYNAPSE: ${formattedMessage}`);
@@ -1286,7 +1217,7 @@
     
     function saveGame(isAutosave = false) {
         try { 
-            saveSoundSettings(); // Also save sound settings
+            saveSettings(); // Also save sound settings
             const saveData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); 
             localStorage.setItem('synapse_savegame_v11', saveData); 
             if (!isAutosave) typeWriter(UI.gameOutput, t('game_saved'), '#cccccc'); 
@@ -1303,7 +1234,8 @@
                 const loadedState = JSON.parse(savedData);
                 resetGameState(); 
                 Object.assign(GameState, loadedState);
-                GameState.soundSettings = loadSoundSettings(); // Make sure sound settings are loaded
+                GameState.settings = loadSettings(); // Make sure settings are loaded
+                applySettings();
                 GameState.visitedRooms = new Set(loadedState.visitedRooms);
                 GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []);
                 initializeData(); 
@@ -1453,7 +1385,7 @@
         <div class="modal-scroll text-left p-2 text-sm flex-grow">
             <!-- Stats -->
             <div id="modal-stats-panel" class="mb-4">
-                <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">${t('stats_title')}</h3>
+                <h3 class="font-bold border-b border-[var(--main-color-border)] mb-2">${t('stats_title')}</h3>
                 <div>${GameState.playerName} (${t('backstory_title_' + GameState.playerBackstory.replace(/ /g, '_'))})</div>
                 <div><span data-lang="awareness">${t('awareness')}</span>: ${GameState.awarenessLevel}</div>
                 <div><span data-lang="sanity">${t('sanity')}</span>: ${GameState.sanityLevel}</div>
@@ -1462,17 +1394,17 @@
             </div>
             <!-- Inventory -->
             <div id="modal-inventory-panel" class="mb-4">
-                <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">${t('inventory_title')} (${currentWeight}/${MAX_INVENTORY_WEIGHT})</h3>
+                <h3 class="font-bold border-b border-[var(--main-color-border)] mb-2">${t('inventory_title')} (${currentWeight}/${MAX_INVENTORY_WEIGHT})</h3>
                 <ul class="list-none p-0">${GameState.inventory.length > 0 ? GameState.inventory.map(item => `<li>- ${item.name}</li>`).join('') : `<li>${t('empty_inventory')}</li>`}</ul>
             </div>
             <!-- Objectives -->
             <div id="modal-objectives-panel" class="mb-4">
-                 <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">${t('objectives_title')}</h3>
+                 <h3 class="font-bold border-b border-[var(--main-color-border)] mb-2">${t('objectives_title')}</h3>
                  <ul class="list-none p-0 text-sm">${GameState.objectives.length > 0 ? GameState.objectives.map(obj => `<li>${obj.completed ? `<span class="text-gray-500 line-through">${obj.text}</span>` : `&gt; ${obj.text}`}</li>`).join('') : `<li>${t('no_objectives')}</li>`}</ul>
             </div>
              <!-- Journal -->
             <div id="modal-journal-panel" class="mb-4">
-                 <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">${t('journal_title')}</h3>
+                 <h3 class="font-bold border-b border-[var(--main-color-border)] mb-2">${t('journal_title')}</h3>
                  <ul class="list-none p-0 text-sm">${GameState.journalEntries.slice().reverse().map(entry => `<li>${entry}</li>`).join('')}</ul>
             </div>
         </div>
@@ -1524,62 +1456,147 @@
     }
 
     function showSettingsModal(fromPauseMenu = false) {
-        const { soundSettings } = GameState;
+        const { settings } = GameState;
         const settingsText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('settings_title')}</h2>
         <div class="modal-scroll text-left p-2 text-sm flex-grow space-y-4">
+            
             <div class="flex items-center justify-between">
-                <span>${t('setting_master_volume')}</span>
+                <span data-lang="setting_ui_theme">${t('setting_ui_theme')}</span>
+                <div class="flex gap-2">
+                    <button id="theme-green" class="button text-xs ${settings.theme === 'green' ? 'button-primary' : ''}">${t('theme_green')}</button>
+                    <button id="theme-amber" class="button text-xs ${settings.theme === 'amber' ? 'button-primary' : ''}">${t('theme_amber')}</button>
+                    <button id="theme-blue" class="button text-xs ${settings.theme === 'blue' ? 'button-primary' : ''}">${t('theme_blue')}</button>
+                </div>
+            </div>
+
+             <div class="flex items-center justify-between">
+                <span data-lang="setting_font_family">${t('setting_font_family')}</span>
+                <div class="flex gap-2">
+                    <button id="font-space" class="button text-xs ${settings.font === 'Space Mono' ? 'button-primary' : ''}">Space Mono</button>
+                    <button id="font-courier" class="button text-xs ${settings.font === 'Courier Prime' ? 'button-primary' : ''}">Courier</button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <span data-lang="setting_text_speed">${t('setting_text_speed')}</span>
+                <div class="flex gap-2">
+                    <button id="speed-fast" class="button text-xs ${settings.textSpeed === TextSpeed.Fast ? 'button-primary' : ''}">${t('fast')}</button>
+                    <button id="speed-normal" class="button text-xs ${settings.textSpeed === TextSpeed.Normal ? 'button-primary' : ''}">${t('normal')}</button>
+                    <button id="speed-slow" class="button text-xs ${settings.textSpeed === TextSpeed.Slow ? 'button-primary' : ''}">${t('slow')}</button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <span data-lang="setting_crt_effect">CRT Effect</span>
                 <label class="toggle-switch">
-                    <input type="checkbox" id="setting-master" ${soundSettings.master ? 'checked' : ''}>
+                    <input type="checkbox" id="setting-crt" ${settings.glitchEffect ? 'checked' : ''}>
                     <span class="slider"></span>
                 </label>
             </div>
             <div class="flex items-center justify-between">
-                <span>${t('setting_item_found')}</span>
+                <span data-lang="setting_colorblind_mode">${t('setting_colorblind_mode')}</span>
                 <label class="toggle-switch">
-                    <input type="checkbox" id="setting-item" ${soundSettings.item ? 'checked' : ''}>
+                    <input type="checkbox" id="setting-colorblind" ${settings.colorblindMode ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+             <hr class="border-gray-700 my-4">
+
+            <div class="flex items-center justify-between">
+                <span data-lang="setting_master_volume">${t('setting_master_volume')}</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-master" ${settings.sound.master ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+             <div class="flex items-center justify-between">
+                <span data-lang="setting_item_found">${t('setting_item_found')}</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-item" ${settings.sound.item ? 'checked' : ''}>
                     <span class="slider"></span>
                 </label>
             </div>
             <div class="flex items-center justify-between">
-                <span>${t('setting_high_awareness')}</span>
+                <span data-lang="setting_high_awareness">${t('setting_high_awareness')}</span>
                 <label class="toggle-switch">
-                    <input type="checkbox" id="setting-awareness" ${soundSettings.awareness ? 'checked' : ''}>
+                    <input type="checkbox" id="setting-awareness" ${settings.sound.awareness ? 'checked' : ''}>
                     <span class="slider"></span>
                 </label>
             </div>
             <div class="flex items-center justify-between">
-                <span>${t('setting_low_sanity')}</span>
+                <span data-lang="setting_low_sanity">${t('setting_low_sanity')}</span>
                 <label class="toggle-switch">
-                    <input type="checkbox" id="setting-sanity" ${soundSettings.sanity ? 'checked' : ''}>
+                    <input type="checkbox" id="setting-sanity" ${settings.sound.sanity ? 'checked' : ''}>
                     <span class="slider"></span>
                 </label>
             </div>
+            
+            <hr class="border-gray-700 my-4">
+            
+            <button id="reset-settings-btn" class="button w-full text-yellow-300 border-yellow-300/80">${t('setting_reset_defaults')}</button>
         </div>
         <button class="close-modal-btn button mt-6">${t('close_btn')}</button>`;
         showModal(settingsText, true);
 
-        const setupToggle = (id, key) => {
-            document.getElementById(id).onchange = (e) => {
-                GameState.soundSettings[key] = e.target.checked;
-                saveSoundSettings();
-            };
-        };
-
-        setupToggle('setting-master', 'master');
-        setupToggle('setting-item', 'item');
-        setupToggle('setting-awareness', 'awareness');
-        setupToggle('setting-sanity', 'sanity');
-        
-        const closeBtn = UI.modalContent.querySelector('.close-modal-btn');
-        closeBtn.onclick = () => {
-            playSound('uiClick');
-            if (fromPauseMenu) {
-                showPauseMenu();
-            } else {
-                hideModal();
+        const setupToggle = (id, obj, key) => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.onchange = (e) => {
+                    obj[key] = e.target.checked;
+                    saveSettings();
+                    applySettings();
+                };
             }
         };
+        
+        setupToggle('setting-master', GameState.settings.sound, 'master');
+        setupToggle('setting-item', GameState.settings.sound, 'item');
+        setupToggle('setting-awareness', GameState.settings.sound, 'awareness');
+        setupToggle('setting-sanity', GameState.settings.sound, 'sanity');
+        setupToggle('setting-colorblind', GameState.settings, 'colorblindMode');
+        setupToggle('setting-crt', GameState.settings, 'glitchEffect');
+
+        const setupButtonGroup = (buttons, key, valueMap) => {
+            buttons.forEach(id => {
+                const btn = document.getElementById(id);
+                if(btn) {
+                    btn.addEventListener('click', () => {
+                        GameState.settings[key] = valueMap[id];
+                        document.querySelectorAll(buttons.map(b => `#${b}`).join(', ')).forEach(b => b.classList.remove('button-primary'));
+                        btn.classList.add('button-primary');
+                        saveSettings();
+                        applySettings();
+                    });
+                }
+            });
+        };
+
+        setupButtonGroup(['speed-fast', 'speed-normal', 'speed-slow'], 'textSpeed', {'speed-fast': TextSpeed.Fast, 'speed-normal': TextSpeed.Normal, 'speed-slow': TextSpeed.Slow});
+        setupButtonGroup(['theme-green', 'theme-amber', 'theme-blue'], 'theme', {'theme-green': 'green', 'theme-amber': 'amber', 'theme-blue': 'blue'});
+        setupButtonGroup(['font-space', 'font-courier'], 'font', {'font-space': 'Space Mono', 'font-courier': 'Courier Prime'});
+
+        const resetBtn = document.getElementById('reset-settings-btn');
+        if(resetBtn) {
+            resetBtn.onclick = () => {
+                GameState.settings = loadSettings(); // Reloads defaults
+                saveSettings();
+                applySettings();
+                showSettingsModal(fromPauseMenu); // Re-render the modal
+            };
+        }
+
+        const closeBtn = UI.modalContent.querySelector('.close-modal-btn');
+        if(closeBtn) {
+            closeBtn.onclick = () => {
+                playSound('uiClick');
+                if (fromPauseMenu) {
+                    showPauseMenu();
+                } else {
+                    hideModal();
+                }
+            };
+        }
     }
 
     function confirmReturnToMainMenu() {
@@ -1609,7 +1626,7 @@
         UI.startScreen.classList.add('flex');
         
         UI.gameOutput.innerHTML = '';
-        if (audioInitialized && GameState.soundSettings.master && sounds.ambience.state === 'started') {
+        if (audioInitialized && GameState.settings.sound.master && sounds.ambience.state === 'started') {
             sounds.ambience.stop();
         }
         resetGameState(); 
@@ -1785,11 +1802,12 @@
         const sessionData = sessionStorage.getItem('synapse_session_v11_autosave');
         if (!sessionData) return false;
         try {
-            const loadedState = JSON.parse(sessionData);
+            const loadedState = JSON.parse(savedData);
             if (loadedState.currentRoom && typeof loadedState.turnCount === 'number' && !loadedState.exitGame) {
                 resetGameState();
                 Object.assign(GameState, loadedState);
-                GameState.soundSettings = loadSoundSettings();
+                GameState.settings = loadSettings(); // Make sure settings are loaded
+                applySettings();
                 GameState.visitedRooms = new Set(loadedState.visitedRooms || []);
                 GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []);
                 initializeData(); 
@@ -1823,7 +1841,7 @@
         function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
         window.addEventListener('resize', resize);
         resize();
-        class Particle { constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.size = Math.random() * 0.4 + 0.1; this.speedX = (Math.random() * 0.5 - 0.25); this.speedY = (Math.random() * 0.5 - 0.25); } update() { this.x += this.speedX; this.y += this.speedY; if (this.size > 0.1) this.size -= 0.001; if(this.x < 0 || this.x > width) this.speedX *= -1; if(this.y < 0 || this.y > height) this.speedY *= -1; } draw() { ctx.fillStyle = '#00ff41'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); } }
+        class Particle { constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.size = Math.random() * 0.4 + 0.1; this.speedX = (Math.random() * 0.5 - 0.25); this.speedY = (Math.random() * 0.5 - 0.25); } update() { this.x += this.speedX; this.y += this.speedY; if (this.size > 0.1) this.size -= 0.001; if(this.x < 0 || this.x > width) this.speedX *= -1; if(this.y < 0 || this.y > height) this.speedY *= -1; } draw() { ctx.fillStyle = 'var(--main-color)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); } }
         function initParticles() { particles = []; for(let i=0; i<100; i++) particles.push(new Particle()); }
         function animateParticles() { ctx.clearRect(0,0,width,height); for(let i=0; i<particles.length; i++) { particles[i].update(); particles[i].draw(); if(particles[i].size <= 0.1) { particles.splice(i, 1); i--; particles.push(new Particle()); } } requestAnimationFrame(animateParticles); }
         initParticles(); animateParticles();
@@ -2106,8 +2124,9 @@
     }
     
     function toggleColorblind() {
-        GameState.colorblindMode = !GameState.colorblindMode;
-        typeWriter(UI.gameOutput, `[System] Colorblind mode ${GameState.colorblindMode ? 'enabled' : 'disabled'}.`, '#6495ed');
+        GameState.settings.colorblindMode = !GameState.settings.colorblindMode;
+        saveSettings();
+        typeWriter(UI.gameOutput, `[System] Colorblind mode ${GameState.settings.colorblindMode ? 'enabled' : 'disabled'}.`, '#6495ed');
     }
 
 
@@ -2222,8 +2241,8 @@
 
         // 3. If nothing was restored, initialize a fresh start.
         if (!restored) {
-            setLanguage('en');
             resetGameState();
+            setLanguage('en');
             // Delay map offset calculation to ensure canvas is rendered
             setTimeout(() => {
                 const playerLayout = roomLayout[GameState.currentRoom];
