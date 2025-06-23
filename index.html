@@ -301,6 +301,10 @@
             width: 100%;
             height: 100%;
             cursor: grab;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
         }
         #map-canvas:active {
             cursor: grabbing;
@@ -407,7 +411,7 @@
         </div>
 
         <div id="game-screen" class="hidden flex-col h-full">
-            <div class="flex-grow flex flex-col md:flex-row gap-4 overflow-hidden">
+            <div class="flex-grow flex flex-col md:flex-row gap-4 min-h-0">
                 <div class="w-full md:w-3/4 flex flex-col h-full relative">
                     <div id="game-output" class="flex-grow p-2 border border-[#00ff41]/30 rounded-md overflow-y-auto mb-2 bg-black/50"></div>
                     <div id="dialogue-options" class="flex flex-wrap gap-2 justify-center p-2"></div>
@@ -422,7 +426,7 @@
                         <div id="tone-display"><span data-lang="tone">Tone</span>: Friendly</div>
                         <div id="turn-display"><span data-lang="turn">Turn</span>: 0</div>
                     </div>
-                    <div id="objectives-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 overflow-y-auto">
+                    <div id="objectives-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 overflow-y-auto h-24 flex-shrink-0">
                         <h3 class="font-bold border-b border-[#00ff41]/30 mb-2" data-lang="objectives_title">OBJECTIVES</h3>
                         <ul id="objectives-list" class="list-none p-0 text-sm"></ul>
                     </div>
@@ -430,7 +434,7 @@
                         <h3 class="font-bold border-b border-[#00ff41]/30 mb-2"><span data-lang="inventory_title">INVENTORY</span> (<span id="inventory-weight">0</span>/5)</h3>
                         <ul id="inventory-list" class="list-none p-0"></ul>
                     </div>
-                    <div id="map-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 flex-grow flex flex-col relative">
+                    <div id="map-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 flex-grow flex flex-col relative min-h-[12rem]">
                          <h3 class="font-bold border-b border-[#00ff41]/30 mb-2 flex justify-between items-center">
                             <span data-lang="map_title">MAP</span>
                             <button id="map-toggle-btn" class="button !p-1 text-xs">
@@ -444,7 +448,7 @@
                         </h3>
                          <canvas id="map-canvas"></canvas>
                      </div>
-                     <div id="journal-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 h-32 overflow-y-auto">
+                     <div id="journal-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 overflow-y-auto h-24 flex-shrink-0">
                          <h3 class="font-bold border-b border-[#00ff41]/30 mb-2" data-lang="journal_title">JOURNAL</h3>
                          <ul id="journal-list" class="list-none p-0 text-sm"></ul>
                      </div>
@@ -1730,107 +1734,115 @@
         if (!UI.mapCanvas) return;
         const canvas = UI.mapCanvas;
         const ctx = canvas.getContext('2d');
-        
-        if (canvas.width !== canvas.offsetWidth || canvas.height !== canvas.offsetHeight) {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
+        const isFullscreen = UI.mapPanel.classList.contains('fullscreen');
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+
+        const newWidth = rect.width * dpr;
+        const newHeight = rect.height * dpr;
+
+        if (canvas.width !== newWidth || canvas.height !== newHeight) {
+            canvas.width = newWidth;
+            canvas.height = newHeight;
         }
-        
-        const scale = mapState.scale;
-        const panX = mapState.offsetX;
-        const panY = mapState.offsetY;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
-        ctx.translate(panX, panY);
-        ctx.scale(scale, scale);
+        ctx.scale(dpr, dpr);
 
-        // Draw grid background
-        const bounds = getMapBounds();
-        const gridSize = 20;
-        ctx.strokeStyle = "rgba(0, 255, 65, 0.08)";
-        ctx.lineWidth = 0.5 / scale;
-        for (let x = bounds.minX; x < bounds.maxX; x += gridSize) {
-            ctx.beginPath();
-            ctx.moveTo(x, bounds.minY);
-            ctx.lineTo(x, bounds.maxY);
-            ctx.stroke();
+        // Apply transformations
+        if (isFullscreen) {
+            ctx.translate(mapState.offsetX / dpr, mapState.offsetY / dpr);
+        } else {
+            const playerLayout = roomLayout[GameState.currentRoom];
+            const centerX = playerLayout.x + playerLayout.w / 2;
+            const centerY = playerLayout.y + playerLayout.h / 2;
+            const translateX = (rect.width / 2) - (centerX * mapState.scale);
+            const translateY = (rect.height / 2) - (centerY * mapState.scale);
+            ctx.translate(translateX, translateY);
         }
-        for (let y = bounds.minY; y < bounds.maxY; y += gridSize) {
-            ctx.beginPath();
-            ctx.moveTo(bounds.minX, y);
-            ctx.lineTo(bounds.maxX, y);
-            ctx.stroke();
-        }
-
-        // Draw connections
-        ctx.strokeStyle = "rgba(0, 255, 65, 0.2)";
-        ctx.lineWidth = 1 / scale;
-        Object.keys(roomLayout).forEach(roomName => {
-            if (rooms[roomName] && rooms[roomName].exits) {
-                const r1Layout = roomLayout[roomName];
-                const r1x = r1Layout.x + r1Layout.w / 2;
-                const r1y = r1Layout.y + r1Layout.h / 2;
-                Object.values(rooms[roomName].exits).forEach(exitName => {
-                    const r2Layout = roomLayout[exitName];
-                    if (r2Layout) {
-                        const r2x = r2Layout.x + r2Layout.w / 2;
-                        const r2y = r2Layout.y + r2Layout.h / 2;
-                        ctx.beginPath();
-                        ctx.moveTo(r1x, r1y);
-                        ctx.lineTo(r2x, r2y);
-                        ctx.stroke();
-                    }
-                });
+        ctx.scale(mapState.scale, mapState.scale);
+        
+        const roomsToDraw = isFullscreen ? Object.keys(roomLayout) : [GameState.currentRoom];
+        
+        if (isFullscreen) {
+            const bounds = getMapBounds();
+            const gridSize = 20;
+            ctx.strokeStyle = "rgba(0, 255, 65, 0.08)";
+            ctx.lineWidth = 0.5 / mapState.scale;
+            for (let x = bounds.minX; x < bounds.maxX; x += gridSize) {
+                ctx.beginPath(); ctx.moveTo(x, bounds.minY); ctx.lineTo(x, bounds.maxY); ctx.stroke();
             }
-        });
+            for (let y = bounds.minY; y < bounds.maxY; y += gridSize) {
+                ctx.beginPath(); ctx.moveTo(bounds.minX, y); ctx.lineTo(bounds.maxX, y); ctx.stroke();
+            }
 
-        // Draw rooms
-        Object.keys(roomLayout).forEach(roomName => {
-            const layout = roomLayout[roomName];
-            const x = layout.x;
-            const y = layout.y;
-            const w = layout.w;
-            const h = layout.h;
-            
-            ctx.shadowBlur = 0; // Reset shadow before each room
-
-            const isLocked = rooms[roomName].requiresKeycard && !hasItem(rooms[roomName].keyName || 'keycard');
-
-            if(GameState.visitedRooms.has(roomName)) {
-                if (roomName === GameState.currentRoom) {
-                    const pulseFactor = (Math.sin(Date.now() * 0.005) + 1) / 2;
-                    ctx.fillStyle = `rgba(0, 255, 65, ${0.5 + pulseFactor * 0.4})`;
-                    ctx.shadowColor = 'rgba(127, 255, 127, 1)';
-                    ctx.shadowBlur = 4 + pulseFactor * 8;
-                } else {
-                    ctx.fillStyle = "rgba(0, 255, 65, 0.3)";
+            ctx.strokeStyle = "rgba(0, 255, 65, 0.2)";
+            ctx.lineWidth = 1 / mapState.scale;
+            Object.keys(roomLayout).forEach(roomName => {
+                if (rooms[roomName] && rooms[roomName].exits && GameState.visitedRooms.has(roomName)) {
+                    const r1Layout = roomLayout[roomName];
+                    const r1x = r1Layout.x + r1Layout.w / 2;
+                    const r1y = r1Layout.y + r1Layout.h / 2;
+                    Object.values(rooms[roomName].exits).forEach(exitName => {
+                         if(GameState.visitedRooms.has(exitName)) {
+                            const r2Layout = roomLayout[exitName];
+                            if (r2Layout) {
+                                const r2x = r2Layout.x + r2Layout.w / 2;
+                                const r2y = r2Layout.y + r2Layout.h / 2;
+                                ctx.beginPath(); ctx.moveTo(r1x, r1y); ctx.lineTo(r2x, r2y); ctx.stroke();
+                            }
+                        }
+                    });
                 }
-                ctx.fillRect(x, y, w, h);
+            });
+        }
+        
+        roomsToDraw.forEach(roomName => {
+            if (!rooms[roomName] || !GameState.visitedRooms.has(roomName)) return;
+            const layout = roomLayout[roomName];
+            const x = layout.x, y = layout.y, w = layout.w, h = layout.h;
+            ctx.shadowBlur = 0;
+            const isLocked = rooms[roomName].requiresKeycard && !hasItem(rooms[roomName].keyName || 'keycard');
+            
+            if (roomName === GameState.currentRoom) {
+                const pulseFactor = (Math.sin(Date.now() * 0.005) + 1) / 2;
+                ctx.fillStyle = `rgba(0, 255, 65, ${0.5 + pulseFactor * 0.4})`;
+                ctx.shadowColor = 'rgba(127, 255, 127, 1)';
+                ctx.shadowBlur = (4 + pulseFactor * 8) / mapState.scale;
+            } else {
+                ctx.fillStyle = "rgba(0, 255, 65, 0.3)";
             }
+            ctx.fillRect(x, y, w, h);
             ctx.shadowBlur = 0;
 
             ctx.strokeStyle = isLocked ? "rgba(255, 71, 76, 0.8)" : "rgba(0, 255, 65, 0.8)";
-            ctx.lineWidth = 1 / scale;
+            ctx.lineWidth = 1 / mapState.scale;
             ctx.strokeRect(x, y, w, h);
             
+            if (isFullscreen && rooms[roomName].objects.length > 0) {
+                ctx.fillStyle = "rgba(255, 219, 88, 1)";
+                ctx.beginPath();
+                ctx.arc(x + w - 5 / mapState.scale, y + 5 / mapState.scale, 2 / mapState.scale, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+
             ctx.fillStyle = "white";
-            ctx.font = `${10 / scale}px VT323`;
+            ctx.font = `${10 / mapState.scale}px VT323`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillText(layout.name, x + w / 2, y + h / 2 + 1);
         });
 
-        // Draw player marker
         const playerLayout = roomLayout[GameState.currentRoom];
         const playerX = playerLayout.x + playerLayout.w / 2;
         const playerY = playerLayout.y + playerLayout.h / 2;
         ctx.fillStyle = "#FF2A7F";
         ctx.beginPath();
-        ctx.arc(playerX, playerY, 3 / scale, 0, 2 * Math.PI);
+        ctx.arc(playerX, playerY, 3 / mapState.scale, 0, 2 * Math.PI);
         ctx.fill();
         ctx.strokeStyle = "white";
-        ctx.lineWidth = 0.5 / scale;
+        ctx.lineWidth = 0.5 / mapState.scale;
         ctx.stroke();
 
         ctx.restore();
@@ -1840,9 +1852,14 @@
         const isFullscreen = UI.mapPanel.classList.toggle('fullscreen');
         UI.mapExpandIcon.classList.toggle('hidden', isFullscreen);
         UI.mapMinimizeIcon.classList.toggle('hidden', !isFullscreen);
-        // We need to wait for the CSS transition to avoid weird canvas resizing artifacts
+        if (!isFullscreen) { // When minimizing, reset view
+            mapState.scale = 1;
+        }
         setTimeout(() => {
-            drawMap();
+            // Recalculate offset when toggling
+            const playerLayout = roomLayout[GameState.currentRoom];
+            mapState.offsetX = (UI.mapCanvas.width / (window.devicePixelRatio||1) / 2) - (playerLayout.x + playerLayout.w / 2) * mapState.scale;
+            mapState.offsetY = (UI.mapCanvas.height / (window.devicePixelRatio||1) / 2) - (playerLayout.y + playerLayout.h / 2) * mapState.scale;
         }, 50);
     }
     
@@ -1857,6 +1874,7 @@
         }
 
         const handleDragStart = (e) => {
+            if (!UI.mapPanel.classList.contains('fullscreen')) return;
             mapState.isDragging = true;
             const coords = getEventCoords(e);
             mapState.lastX = coords.x;
@@ -1865,7 +1883,7 @@
         };
 
         const handleDragMove = (e) => {
-            if (!mapState.isDragging) return;
+            if (!mapState.isDragging || !UI.mapPanel.classList.contains('fullscreen')) return;
             e.preventDefault();
             const coords = getEventCoords(e);
             const dX = coords.x - mapState.lastX;
@@ -1874,7 +1892,6 @@
             mapState.offsetY += dY;
             mapState.lastX = coords.x;
             mapState.lastY = coords.y;
-            // No need to call drawMap here, the animation loop will handle it
         };
 
         const handleDragEnd = () => {
@@ -1897,10 +1914,12 @@
             } else { // Zoom out
                 newScale = oldScale / zoomFactor;
             }
-            newScale = Math.max(0.3, Math.min(newScale, 3)); // Clamp scale
+            newScale = Math.max(0.3, Math.min(newScale, 5)); // Clamp scale
 
-            mapState.offsetX = mouseX - (mouseX - mapState.offsetX) * (newScale / oldScale);
-            mapState.offsetY = mouseY - (mouseY - mapState.offsetY) * (newScale / oldScale);
+            if (UI.mapPanel.classList.contains('fullscreen')) {
+                mapState.offsetX = mouseX - (mouseX - mapState.offsetX) * (newScale / oldScale);
+                mapState.offsetY = mouseY - (mouseY - mapState.offsetY) * (newScale / oldScale);
+            }
             mapState.scale = newScale;
         };
 
@@ -1998,8 +2017,8 @@
         if (!loadStateFromSession()) { 
             resetGameState(); 
             setTimeout(() => {
-                mapState.offsetX = UI.mapCanvas.offsetWidth / 2 - (roomLayout.Lobby.x + roomLayout.Lobby.w / 2) * mapState.scale;
-                mapState.offsetY = UI.mapCanvas.offsetHeight / 2 - (roomLayout.Lobby.y + roomLayout.Lobby.h / 2) * mapState.scale;
+                mapState.offsetX = (UI.mapCanvas.offsetWidth / 2) - (roomLayout.Lobby.x + roomLayout.Lobby.w / 2) * mapState.scale;
+                mapState.offsetY = (UI.mapCanvas.offsetHeight / 2) - (roomLayout.Lobby.y + roomLayout.Lobby.h / 2) * mapState.scale;
             }, 100);
         } else {
              if (animationFrameId) cancelAnimationFrame(animationFrameId);
