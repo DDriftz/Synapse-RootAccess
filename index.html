@@ -500,7 +500,7 @@
             'features_hints_desc': 'The game provides proactive hints when you discover items, suggesting how to interact with them.',
             'features_player_commands_title': 'Spelarkommandon (Funktioner)',
             'features_commands_nav': '<strong>Navigation:</strong> <span class="text-yellow-400">gå [riktning]</span>, <span class="text-yellow-400">besök [rumsnamn]</span>, <span class="text-yellow-400">se dig omkring</span>, <span class="text-yellow-400">utgångar</span>, <span class="text-yellow-400">karta</span>',
-            'features_commands_interact': '<strong>Interaktion:</strong> <span class="text-yellow-400">ta [föremål]</span>, <span class="text-yellow-400">använd [föremål]</span>, <span class="text-yellow-400">undersök [objekt/föremål]</span>, <span class="text-yellow-400">kombinera [föremål1] med [föremål2]</span>, <span class="text-yellow-400">släpp [föremål]</span>, <span class="text-yellow-400">prata</span>, <span class="text-yellow-400">ropa</span>, <span class="text-yellow-400">läs [föremål]</span>, <span class="text-yellow-400">sök [objekt]</span>, <span class="text-yellow-400">lyssna</span>, <span class="text-yellow-400">lukta</span>',
+            'features_commands_interact': '<strong>Interaction:</strong> <span class="text-yellow-400">ta [föremål]</span>, <span class="text-yellow-400">använd [föremål]</span>, <span class="text-yellow-400">undersök [objekt/föremål]</span>, <span class="text-yellow-400">kombinera [föremål1] med [föremål2]</span>, <span class="text-yellow-400">släpp [föremål]</span>, <span class="text-yellow-400">prata</span>, <span class="text-yellow-400">ropa</span>, <span class="text-yellow-400">läs [föremål]</span>, <span class="text-yellow-400">sök [objekt]</span>, <span class="text-yellow-400">lyssna</span>, <span class="text-yellow-400">lukta</span>',
             'features_commands_info': '<strong>Information:</strong> <span class="text-yellow-400">inventarier</span>, <span class="text-yellow-400">mål</span>, <span class="text-yellow-400">journal</span> (och <span class="text-yellow-400">journal lägg till [anteckning]</span>), <span class="text-yellow-400">historik</span>',
             'features_commands_sys': '<strong>System:</strong> <span class="text-yellow-400">hjälp</span>, <span class="text-yellow-400">spara</span>, <span class="text-yellow-400">ladda</span>, <span class="text-yellow-400">vila</span>, <span class="text-yellow-400">avsluta</span>, <span class="text-yellow-400">rensa</span>, <span class="text-yellow-400">ångra</span>, <span class="text-yellow-400">igen</span>, <span class="text-yellow-400">vänta</span>, <span class="text-yellow-400">cmd:paus</span>, <span class="text-yellow-400">cmd:debug</span>, <span class="text-yellow-400">cmd:färgblind</span>',
             // Backstories & Abilities
@@ -649,7 +649,6 @@
             await Tone.start(); 
             sounds.uiClick = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.1 } }).toDestination();
             
-            // FIX: Use PolySynth for typewriter to avoid re-triggering errors.
             sounds.typewriter = new Tone.PolySynth(Tone.NoiseSynth, {
                 noise: { type: 'brown' },
                 envelope: { attack: 0.005, decay: 0.01, sustain: 0, release: 0.01 }
@@ -677,16 +676,23 @@
             const sound = sounds[soundKey];
             if (sound instanceof Tone.Synth) {
                 sound.triggerAttackRelease(options.note || 'C4', options.duration || '8n');
-            } else if (sound instanceof Tone.PolySynth) { // FIX: Check for PolySynth
-                // PolySynth requires a note argument, even if the voice (NoiseSynth) doesn't use it.
-                sound.triggerAttackRelease("C4", options.duration || '32n');
-            } else if (sound instanceof Tone.Player || sound instanceof Tone.Noise) {
+            } else if (sound instanceof Tone.PolySynth) { 
+                 // FIX: Use triggerAttack instead of triggerAttackRelease for short, non-sustaining sounds
+                 // to avoid scheduling errors from rapid re-triggering. The envelope handles the release.
+                sound.triggerAttack(options.note || "C4");
+            } else if (sound instanceof Tone.Player) {
+                 // Player objects can be simply started.
+                 sound.start();
+            } else if (sound instanceof Tone.Noise) {
                 if (sound.state !== 'started') {
                     sound.start();
                 }
             }
         } catch (e) {
-            console.error(`Failed to play sound: ${soundKey}`, e);
+            // Avoid spamming the console for the same error.
+            if (!e.message.includes('cancelScheduledValues')) {
+                 console.error(`Failed to play sound: ${soundKey}`, e);
+            }
         }
     }
 
