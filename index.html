@@ -648,8 +648,14 @@
         try { 
             await Tone.start(); 
             sounds.uiClick = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.1 } }).toDestination();
-            sounds.typewriter = new Tone.NoiseSynth({ noise: { type: 'brown' }, envelope: { attack: 0.005, decay: 0.01, sustain: 0 } }).toDestination();
+            
+            // FIX: Use PolySynth for typewriter to avoid re-triggering errors.
+            sounds.typewriter = new Tone.PolySynth(Tone.NoiseSynth, {
+                noise: { type: 'brown' },
+                envelope: { attack: 0.005, decay: 0.01, sustain: 0, release: 0.01 }
+            }).toDestination();
             sounds.typewriter.volume.value = -20;
+
             sounds.ambience = new Tone.Noise({ type: "pink", playbackRate: 0.1 }).toDestination();
             sounds.ambience.volume.value = -35;
             sounds.glitch = new Tone.FatOscillator("Ab3", "sawtooth", 40).toDestination();
@@ -671,8 +677,9 @@
             const sound = sounds[soundKey];
             if (sound instanceof Tone.Synth) {
                 sound.triggerAttackRelease(options.note || 'C4', options.duration || '8n');
-            } else if (sound instanceof Tone.NoiseSynth) {
-                sound.triggerAttackRelease(options.duration || '32n');
+            } else if (sound instanceof Tone.PolySynth) { // FIX: Check for PolySynth
+                // PolySynth requires a note argument, even if the voice (NoiseSynth) doesn't use it.
+                sound.triggerAttackRelease("C4", options.duration || '32n');
             } else if (sound instanceof Tone.Player || sound instanceof Tone.Noise) {
                 if (sound.state !== 'started') {
                     sound.start();
