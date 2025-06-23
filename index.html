@@ -1904,11 +1904,30 @@
                     ctx.fill();
                 }
 
+                // --- Text Rendering ---
+                // Calculate font size to be larger on zoom-in, but have a minimum size on zoom-out.
+                const baseFontSize = 12; // Increased base size for better visibility.
+                // When zooming out (scale < 1), this keeps the screen font size at a constant `baseFontSize`.
+                // When zooming in (scale > 1), this makes the screen font size grow (`baseFontSize * scale`).
+                const fontSize = Math.max(baseFontSize, baseFontSize / mapState.scale);
+                ctx.font = `${fontSize}px VT323`;
+
+                // Add a shadow for better contrast against the map background.
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+                ctx.shadowBlur = 3 / mapState.scale;
+                ctx.shadowOffsetX = 1 / mapState.scale;
+                ctx.shadowOffsetY = 1 / mapState.scale;
+                
                 ctx.fillStyle = "white";
-                ctx.font = `${10 / mapState.scale}px VT323`;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillText(layout.name, x + w / 2, y + h / 2 + 1);
+                
+                // Reset shadows to avoid affecting other elements (like the player icon).
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+
             } else { // Only for fullscreen mode
                 ctx.strokeStyle = "rgba(0, 255, 65, 0.25)";
                 ctx.lineWidth = 1 / mapState.scale;
