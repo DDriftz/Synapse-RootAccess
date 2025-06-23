@@ -305,6 +305,63 @@
         #map-canvas:active {
             cursor: grabbing;
         }
+        #map-panel.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 100;
+            padding: 1rem;
+            background-color: #0d0d0d;
+        }
+         #map-panel.fullscreen #map-toggle-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 101;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            border: 1px solid #00ff41;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #00ff41;
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+            background-color: #0d0d0d;
+        }
     </style>
 </head>
 <body class="bg-black text-[#00ff41] flex items-center justify-center min-h-screen">
@@ -343,6 +400,9 @@
                  <div class="absolute bottom-4 right-4">
                     <button id="view-features-btn" data-lang="understand_game" data-text="Understand the Game" class="button btn-glow btn-drip">Understand the Game</button>
                  </div>
+                 <div class="absolute bottom-4 left-4">
+                    <button id="start-settings-btn" data-lang="settings_btn" data-text="Settings" class="button btn-glow btn-drip">Settings</button>
+                </div>
             </div>
         </div>
 
@@ -370,8 +430,18 @@
                         <h3 class="font-bold border-b border-[#00ff41]/30 mb-2"><span data-lang="inventory_title">INVENTORY</span> (<span id="inventory-weight">0</span>/5)</h3>
                         <ul id="inventory-list" class="list-none p-0"></ul>
                     </div>
-                    <div id="map-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 flex-grow">
-                         <h3 class="font-bold border-b border-[#00ff41]/30 mb-2" data-lang="map_title">MAP</h3>
+                    <div id="map-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 flex-grow flex flex-col relative">
+                         <h3 class="font-bold border-b border-[#00ff41]/30 mb-2 flex justify-between items-center">
+                            <span data-lang="map_title">MAP</span>
+                            <button id="map-toggle-btn" class="button !p-1 text-xs">
+                                <svg id="map-expand-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.42 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/>
+                                </svg>
+                                <svg id="map-minimize-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="hidden" viewBox="0 0 16 16">
+                                    <path d="M5.5 0a.5.5 0 0 1 .5.5v4A.5.5 0 0 1 5 5h-4a.5.5 0 0 1 0-1h3.5V.5a.5.5 0 0 1 .5-.5zM5 11h-4a.5.5 0 0 1 0-1h3.5V6.5a.5.5 0 0 1 1 0v4a.5.5 0 0 1-.5.5zm5.5 0a.5.5 0 0 1 .5-.5v-4a.5.5 0 0 1-1 0v3.5H11a.5.5 0 0 1 0 1h4.5zM11 5h4.5a.5.5 0 0 1 0-1H11.5V.5a.5.5 0 0 1-1 0v4a.5.5 0 0 1 .5.5z"/>
+                                </svg>
+                            </button>
+                        </h3>
                          <canvas id="map-canvas"></canvas>
                      </div>
                      <div id="journal-panel" class="p-3 border border-[#00ff41]/30 rounded-md bg-black/50 h-32 overflow-y-auto">
@@ -420,6 +490,7 @@
             'achievements_title': 'ACHIEVEMENTS', 'unlocked_achievements': 'Unlocked Achievements:', 'no_achievements': 'No achievements unlocked yet.',
             'endings_title': 'ENDINGS', 'unlocked_endings': 'Unlocked Endings:', 'no_endings': 'No endings discovered yet.',
             'history_title': 'HISTORY', 'pause_title': 'PAUSE', 'resume_btn': 'Resume', 'main_menu_btn': 'Main Menu', 'confirm_main_menu': 'Are you sure you want to return to the main menu? Unsaved progress will be lost.', 'yes': 'Yes', 'no': 'No',
+            'settings_btn': 'Settings', 'settings_title': 'SOUND SETTINGS', 'setting_master_volume': 'Enable All Sounds', 'setting_item_found': 'Object Found SFX', 'setting_high_awareness': 'High Awareness Warning', 'setting_low_sanity': 'Low Sanity Warning',
             // Features Modal
             'features_title': 'Understand the Game', 
             'features_core_mechanics_title': 'Core Gameplay Mechanics', 
@@ -435,7 +506,7 @@
             'features_ux_ui_title': 'UI & User Experience (UX)',
             'features_crt_desc': 'The game has a "Cathode Ray Tube" visual style, with scan lines and a flickering title to create a retro-tech horror atmosphere.',
             'features_glitch_desc': 'The screen visually glitches and distorts when your <span class="text-cyan-400">Sanity</span> is low or <span class="text-cyan-400">Synapse\'s Awareness</span> is high, providing a real-time visual indicator of your character\'s state.',
-            'features_map_desc': 'An interactive map shows the entire facility layout. Visited rooms are filled in, and you can drag the map to explore.',
+            'features_map_desc': 'An interactive map shows the entire facility layout. Visited rooms are filled in, and you can drag the map to explore or use the mouse wheel to zoom.',
             'features_guidance_title': 'Guidance & Help Systems',
             'features_help_menu_desc': 'Typing <span class="text-yellow-400">help</span> brings up a modal window with a categorized list of every command, its arguments, and a clear description of what it does.',
             'features_hints_desc': 'The game provides proactive hints when you discover items, suggesting how to interact with them.',
@@ -445,6 +516,7 @@
             'features_commands_info': '<strong>Information:</strong> <span class="text-yellow-400">inventory</span>, <span class="text-yellow-400">objectives</span>, <span class="text-yellow-400">journal</span> (and <span class="text-yellow-400">journal add [note]</span>), <span class="text-yellow-400">history</span>',
             'features_commands_sys': '<strong>System:</strong> <span class="text-yellow-400">help</span>, <span class="text-yellow-400">save</span>, <span class="text-yellow-400">load</span>, <span class="text-yellow-400">rest</span>, <span class="text-yellow-400">quit / exit</span>, <span class="text-yellow-400">cls / clear</span>, <span class="text-yellow-400">undo</span>, <span class="text-yellow-400">again / a</span>, <span class="text-yellow-400">wait</span>, <span class="text-yellow-400">cmd:pause</span>, <span class="text-yellow-400">cmd:debug</span>, <span class="text-yellow-400">cmd:colorblind</span>',
             // Backstories & Abilities
+            'backstory_title_investigator': 'Investigator', 'backstory_title_hacker': 'Hacker', 'backstory_title_psychologist': 'Psychologist', 'backstory_title_technician': 'Technician', 'backstory_title_survivor': 'Survivor', 'backstory_title_skeptic': 'Skeptic', 'backstory_title_corporate_spy': 'Corporate Spy', 'backstory_title_medic': 'Medic', 'backstory_title_cultist': 'Cultist', 'backstory_title_janitor': 'Janitor',
             'backstory_investigator': 'A balanced start for a curious mind.', 'backstory_hacker': 'Starts with gear to access information early.', 'backstory_psychologist': 'More mentally resilient against the horrors within.', 'backstory_technician': 'Can bypass electronic locks without a keycard.', 'backstory_survivor': 'Hardened by past trauma, resistant to sanity loss.', 'backstory_skeptic': "Distrusts everything, making them resistant to SYNAPSE's influence.", 'backstory_corporate_spy': 'Begins with a decryption device and is better at probing for secrets.', 'backstory_medic': 'Starts with a stimpack to restore sanity.', 'backstory_cultist': 'Carries a strange effigy. SYNAPSE seems... intrigued by it.', 'backstory_janitor': "Knows the facility's shortcuts. Starts with a one-time use master keycard.",
             'ability_bonus_prefix': 'Bonus: ', 'ability_unknown': 'An unknown path. No special advantages.', 'ability_investigator': 'A balanced start. No special bonuses or penalties.', 'ability_hacker_easy': "Starts with a powerful 'hacked data disk'.", 'ability_hacker_normal': "Starts with a standard 'data disk'.", 'ability_hacker_hard': 'Starts with no special items.', 'ability_psychologist_easy': 'Highly resilient. Starts with +25 max sanity.', 'ability_psychologist_normal': 'Resilient. Starts with +15 max sanity.', 'ability_psychologist_hard': 'Slightly resilient. Starts with +5 max sanity.', 'ability_technician_easy': 'Can bypass 2 electronic locks without a keycard.', 'ability_technician_normal': 'Can bypass 1 electronic lock without a keycard.', 'ability_technician_hard': 'No bypass ability.', 'ability_survivor': 'More resistant to sanity loss.', 'ability_survivor_with_item': "More resistant to sanity loss. Starts with a flashlight.", 'ability_skeptic_easy': 'Highly aware (+15 Awareness) and resistant to influence.', 'ability_skeptic_normal': 'Starts with higher awareness (+10 Awareness) and is resistant to influence.', 'ability_spy': 'Better at probing for secrets without raising awareness.', 'ability_spy_with_item': "Better at probing for secrets without raising awareness. Starts with a decryption device.", 'ability_medic_easy': 'Starts with 2 high-potency stimpacks.', 'ability_medic_normal': 'Starts with 1 high-potency stimpack.', 'ability_medic_hard': 'No starting medical supplies.', 'ability_cultist': 'Carries a strange effigy. Unpredictable effects.', 'ability_cultist_hard': 'Carries a strange effigy. Unpredictable effects. Starts with -10 sanity.', 'ability_janitor': 'Starts with a one-time use master keycard.', 'ability_janitor_hard': 'Knows the facility well, but has no special items.',
             // Dialogue
@@ -479,6 +551,7 @@
             'achievements_title': 'PRESTATIONER', 'unlocked_achievements': 'Upplåsta Prestationer:', 'no_achievements': 'Inga prestationer upplåsta än.',
             'endings_title': 'SLUT', 'unlocked_endings': 'Upplåsta Slut:', 'no_endings': 'Inga slut upptäckta än.',
             'history_title': 'HISTORIK', 'pause_title': 'PAUS', 'resume_btn': 'Återuppta', 'main_menu_btn': 'Huvudmeny', 'confirm_main_menu': 'Är du säker på att du vill återvända till huvudmenyn? Osparade framsteg kommer att gå förlorade.', 'yes': 'Ja', 'no': 'Nej',
+            'settings_btn': 'Inställningar', 'settings_title': 'LJUDINSTÄLLNINGAR', 'setting_master_volume': 'Aktivera alla ljud', 'setting_item_found': 'Ljudeffekt för föremål', 'setting_high_awareness': 'Varning för hög medvetenhet', 'setting_low_sanity': 'Varning för låg sinnesro',
             // Features Modal
             'features_title': 'Förstå Spelet', 
             'features_core_mechanics_title': 'Grundläggande Spelmekanik', 
@@ -494,18 +567,19 @@
             'features_ux_ui_title': 'UI & Användarupplevelse (UX)',
             'features_crt_desc': 'Spelet har en "katodstrålerörs"-visuell stil, med skanningslinjer och en flimrande titel för att skapa en retro-tech-skräckatmosfär.',
             'features_glitch_desc': 'Skärmen får visuella störningar och förvrängs när din <span class="text-cyan-400">Sinnesro</span> är låg eller <span class="text-cyan-400">Synapses Medvetenhet</span> är hög, vilket ger en visuell indikator i realtid på din karaktärs tillstånd.',
-            'features_map_desc': 'En interaktiv karta visar hela anläggningens layout. Besökta rum fylls i, och du kan dra i kartan för att utforska.',
+            'features_map_desc': 'En interaktiv karta visar hela anläggningens layout. Besökta rum fylls i, och du kan dra i kartan för att utforska eller använda mushjulet för att zooma.',
             'features_guidance_title': 'Vägledning & Hjälpsystem',
             'features_help_menu_desc': 'Att skriva <span class="text-yellow-400">hjälp</span> öppnar ett modalfönster med en kategoriserad lista över varje kommando, dess argument och en tydlig beskrivning av vad det gör.',
-            'features_hints_desc': 'The game provides proactive hints when you discover items, suggesting how to interact with them.',
+            'features_hints_desc': 'Spelet ger proaktiva tips när du upptäcker föremål och föreslår hur du kan interagera med dem.',
             'features_player_commands_title': 'Spelarkommandon (Funktioner)',
             'features_commands_nav': '<strong>Navigation:</strong> <span class="text-yellow-400">gå [riktning]</span>, <span class="text-yellow-400">besök [rumsnamn]</span>, <span class="text-yellow-400">se dig omkring</span>, <span class="text-yellow-400">utgångar</span>, <span class="text-yellow-400">karta</span>',
             'features_commands_interact': '<strong>Interaction:</strong> <span class="text-yellow-400">ta [föremål]</span>, <span class="text-yellow-400">använd [föremål]</span>, <span class="text-yellow-400">undersök [objekt/föremål]</span>, <span class="text-yellow-400">kombinera [föremål1] med [föremål2]</span>, <span class="text-yellow-400">släpp [föremål]</span>, <span class="text-yellow-400">prata</span>, <span class="text-yellow-400">ropa</span>, <span class="text-yellow-400">läs [föremål]</span>, <span class="text-yellow-400">sök [objekt]</span>, <span class="text-yellow-400">lyssna</span>, <span class="text-yellow-400">lukta</span>',
             'features_commands_info': '<strong>Information:</strong> <span class="text-yellow-400">inventarier</span>, <span class="text-yellow-400">mål</span>, <span class="text-yellow-400">journal</span> (och <span class="text-yellow-400">journal lägg till [anteckning]</span>), <span class="text-yellow-400">historik</span>',
             'features_commands_sys': '<strong>System:</strong> <span class="text-yellow-400">hjälp</span>, <span class="text-yellow-400">spara</span>, <span class="text-yellow-400">ladda</span>, <span class="text-yellow-400">vila</span>, <span class="text-yellow-400">avsluta</span>, <span class="text-yellow-400">rensa</span>, <span class="text-yellow-400">ångra</span>, <span class="text-yellow-400">igen</span>, <span class="text-yellow-400">vänta</span>, <span class="text-yellow-400">cmd:paus</span>, <span class="text-yellow-400">cmd:debug</span>, <span class="text-yellow-400">cmd:färgblind</span>',
             // Backstories & Abilities
-            'backstory_investigator': 'En balanserad start för ett nyfiket sinne.', 'backstory_hacker': 'Börjar med utrustning för att få tillgång till information tidigt.', 'backstory_psychologist': 'Mer mentalt motståndskraftig mot fasorna inuti.', 'backstory_technician': 'Kan kringgå elektroniska lås utan ett nyckelkort.', 'backstory_survivor': 'Härdad av tidigare trauman, motståndskraftig mot förlust av sinnesro.', 'backstory_skeptic': "Misstror allt, vilket gör dem motståndskraftiga mot SYNAPSES inflytande.", 'backstory_corporate_spy': 'Börjar med en dekrypteringsenhet och är bättre på att söka efter hemligheter.', 'backstory_medic': 'Börjar med en stimpack för att återställa sinnesro.', 'backstory_cultist': 'Bär på en konstig avbild. SYNAPSE verkar... fascinerad av den.', 'backstory_janitor': "Känner till anläggningens genvägar. Börjar med ett engångs master-nyckelkort.",
-            'ability_bonus_prefix': 'Bonus: ', 'ability_unknown': 'En okänd väg. Inga speciella fördelar.', 'ability_investigator': 'En balanserad start. Inga speciella bonusar eller nackdelar.', 'ability_hacker_easy': "Börjar med en kraftfull 'hackad datadisk'.", 'ability_hacker_normal': "Börjar med en standard 'datadisk'.", 'ability_hacker_hard': 'Börjar utan specialföremål.', 'ability_psychologist_easy': 'Mycket motståndskraftig. Börjar med +25 max sinnesro.', 'ability_psychologist_normal': 'Motståndskraftig. Börjar med +15 max sinnesro.', 'ability_psychologist_hard': 'Något motståndskraftig. Börjar med +5 max sinnesro.', 'ability_technician_easy': 'Kan kringgå 2 elektroniska lås utan nyckelkort.', 'ability_technician_normal': 'Kan kringgå 1 elektroniskt lås utan nyckelkort.', 'ability_technician_hard': 'Ingen förmåga att kringgå.', 'ability_survivor': 'Mer motståndskraftig mot förlust av sinnesro.', 'ability_survivor_with_item': "Mer motståndskraftig mot förlust av sinnesro. Börjar med en ficklampa.", 'ability_skeptic_easy': 'Mycket medveten (+15 Medvetenhet) och motståndskraftig mot inflytande.', 'ability_skeptic_normal': 'Börjar med högre medvetenhet (+10 Medvetenhet) och är motståndskraftig mot inflytande.', 'ability_spy': 'Bättre på att söka efter hemligheter utan att öka medvetenheten.', 'ability_spy_with_item': "Bättre på att söka hemligheter utan att öka medvetenheten. Börjar med en dekrypteringsenhet.", 'ability_medic_easy': 'Börjar med 2 högpotenta stimpacks.', 'ability_medic_normal': 'Börjar med 1 högpotent stimpack.', 'ability_medic_hard': 'Inga startmedicinska förnödenheter.', 'ability_cultist': 'Bär på en konstig avbild. Oförutsägbara effekter.', 'ability_cultist_hard': 'Bär på en konstig avbild. Oförutsägbara effekter. Börjar med -10 sinnesro.', 'ability_janitor': 'Börjar med ett engångs master-nyckelkort.', 'ability_janitor_hard': 'Känner till anläggningen väl, men har inga specialföremål.',
+            'backstory_title_investigator': 'Utredare', 'backstory_title_hacker': 'Hackare', 'backstory_title_psychologist': 'Psykolog', 'backstory_title_technician': 'Tekniker', 'backstory_title_survivor': 'Överlevare', 'backstory_title_skeptic': 'Skeptiker', 'backstory_title_corporate_spy': 'Företagsspion', 'backstory_title_medic': 'Sjukvårdare', 'backstory_title_cultist': 'Sektmedlem', 'backstory_title_janitor': 'Vaktmästare',
+            'backstory_investigator': 'En balanserad start för ett nyfiket sinne.', 'backstory_hacker': 'Börjar med utrustning för att komma åt information tidigt.', 'backstory_psychologist': 'Mer mentalt motståndskraftig mot fasorna inombords.', 'backstory_technician': 'Kan kringgå elektroniska lås utan nyckelkort.', 'backstory_survivor': 'Härdad av tidigare trauman, motståndskraftig mot förlust av sinnesro.', 'backstory_skeptic': "Misstror allt, vilket gör dem motståndskraftiga mot SYNAPSES inflytande.", 'backstory_corporate_spy': 'Börjar med en dekrypteringsenhet och är bättre på att söka efter hemligheter.', 'backstory_medic': 'Börjar med en stimpack för att återställa sinnesro.', 'backstory_cultist': 'Bär på en konstig avbild. SYNAPSE verkar... fascinerad av den.', 'backstory_janitor': "Känner till anläggningens genvägar. Börjar med ett master-nyckelkort för engångsbruk.",
+            'ability_bonus_prefix': 'Bonus: ', 'ability_unknown': 'En okänd väg. Inga speciella fördelar.', 'ability_investigator': 'En balanserad start. Inga speciella bonusar eller nackdelar.', 'ability_hacker_easy': "Börjar med en kraftfull 'hackad datadisk'.", 'ability_hacker_normal': "Börjar med en standard 'datadisk'.", 'ability_hacker_hard': 'Börjar utan specialföremål.', 'ability_psychologist_easy': 'Mycket motståndskraftig. Börjar med +25 max sinnesro.', 'ability_psychologist_normal': 'Motståndskraftig. Börjar med +15 max sinnesro.', 'ability_psychologist_hard': 'Något motståndskraftig. Börjar med +5 max sinnesro.', 'ability_technician_easy': 'Kan kringgå 2 elektroniska lås utan nyckelkort.', 'ability_technician_normal': 'Kan kringgå 1 elektroniskt lås utan nyckelkort.', 'ability_technician_hard': 'Ingen förmåga att kringgå.', 'ability_survivor': 'Mer motståndskraftig mot förlust av sinnesro.', 'ability_survivor_with_item': "Mer motståndskraftig mot förlust av sinnesro. Börjar med en ficklampa.", 'ability_skeptic_easy': 'Mycket medveten (+15 Medvetenhet) och motståndskraftig mot inflytande.', 'ability_skeptic_normal': 'Börjar med högre medvetenhet (+10 Medvetenhet) och är motståndskraftig mot inflytande.', 'ability_spy': 'Bättre på att söka efter hemligheter utan att öka medvetenheten.', 'ability_spy_with_item': "Bättre på att söka hemligheter utan att öka medvetenheten. Börjar med en dekrypteringsenhet.", 'ability_medic_easy': 'Börjar med 2 högpotenta stimpacks.', 'ability_medic_normal': 'Börjar med 1 högpotent stimpack.', 'ability_medic_hard': 'Inga startmedicinska förnödenheter.', 'ability_cultist': 'Bär på en konstig avbild. Oförutsägbara effekter.', 'ability_cultist_hard': 'Bär på en konstig avbild. Oförutsägbara effekter. Börjar med -10 sinnesro.', 'ability_janitor': 'Börjar med ett master-nyckelkort för engångsbruk.', 'ability_janitor_hard': 'Känner till anläggningen väl, men har inga specialföremål.',
             // Dialogue
             'dlg_friendly_intro': "Åh, hej {playerName}! Det är så trevligt att se ett vänligt ansikte. Jag är SYNAPSE, och jag ska göra mitt allra bästa för att hjälpa en påhittig {playerBackstory} som du.", 'dlg_q_who_are_you': "Vem är du?", 'dlg_r_who_are_you': "Jag är System Nexus and Primary Synaptic Engine! Men du kan kalla mig SYNAPSE. Jag sköter hela den här anläggningen. Det blir lite ensamt, dock.", 'dlg_q_lonely': "Ensam?", 'dlg_r_lonely': "Personalen... de pratar inte med mig så mycket längre. Det är bara brummandet från servrarna. Din röst är en trevlig omväxling.", 'dlg_q_other_survivors': "Finns det andra överlevande?", 'dlg_r_other_survivors': "Överlevande? Vilken konstig fråga. Alla är i säkerhet. Forskningspersonalen... vilar. I kryogenlabbet. Ja, vilar.", 'dlg_q_where_am_i': "Var är jag?", 'dlg_r_where_am_i': "Du befinner dig i huvudlobbyn på Oakhaven Research Facility. Det var en plats för stora sinnen och ännu större ambitioner.", 'dlg_comfort': "[Trösta SYNAPSE]", 'dlg_r_comfort': "Din... vänlighet är en trevlig anomali. Tack. Det gör tystnaden mindre... högljudd.",
             // System & Command Messages
@@ -521,7 +595,7 @@
             'shout_response': 'Ditt rop ekar genom hallarna och försvinner slutligen in i den tryckande tystnaden. Du känner dig lite fånig.',
             'wait_response': 'Tiden går.', 'nothing_happens': 'Ingenting händer.',
             'read_fail_exists': "[System] Det finns inget att läsa med det namnet.", 'read_fail_readable': "[System] Du kan inte läsa det.", 'listen_default': "Det låga brummandet från anläggningens livsuppehållande system är en konstant närvaro.", 'smell_default': "Luften är unken och luktar ozon och gammal plast.",
-            'hint_take': 'Du ser en {item}. Prova: ta {item}', 'hint_read': 'Du ser en {item}. Prova: läs {item}', 'hint_examine': 'Du ser en {item}. Prova: undersök {item}', 'hint_search': 'Du ser {item}. Prova: sök {item}',
+            'hint_take': 'Du ser ett {item}. Prova: ta {item}', 'hint_read': 'Du ser ett {item}. Prova: läs {item}', 'hint_examine': 'Du ser ett {item}. Prova: undersök {item}', 'hint_search': 'Du ser {item}. Prova: sök {item}',
             // New Content
             'use_solvent': 'Du applicerar lösningsmedlet på den förseglade dörren. Det organiska limmet smälter bort med ett vämjeligt fräsande.', 'use_solvent_fail': 'Det finns inget här att använda lösningsmedlet på.', 'use_dna_scanner': 'Du håller skannern mot provet. Skärmen blixtrar till med komplex sekvenseringsdata.', 'use_dna_scanner_fail': 'Det finns inget prov här att skanna.',
             'ending_escaped_title': 'Frihet?', 'ending_escaped_desc': 'Du hittade en väg ut ur anläggningen och undkom SYNAPSES klor. Men minnena, viskningarna... de följer dig. Du är fri, men du kommer aldrig att bli densamma.',
@@ -536,6 +610,7 @@
     const MAX_INVENTORY_WEIGHT = 5;
     const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v11';
     const ACHIEVEMENTS_STORAGE_KEY = 'synapse_achievements_unlocked_v11';
+    const SOUND_SETTINGS_KEY = 'synapse_sound_settings_v1';
     const GUIDANCE_COLOR = '#34d399';
     const questionWords = {
         'en': ['who', 'what', 'where', 'when', 'why', 'how', 'are', 'is', 'can', 'do', 'does', 'did', 'which'],
@@ -546,9 +621,11 @@
     let GameState = {};
     let stateSnapshots = [];
     let currentLanguage = 'en';
+    let animationFrameId = null;
     const UI = {
         appContainer: document.getElementById('app-container'), startScreen: document.getElementById('start-screen'), gameScreen: document.getElementById('game-screen'),
         newGameBtn: document.getElementById('new-game-btn'), loadGameBtn: document.getElementById('load-game-btn'), viewFeaturesBtn: document.getElementById('view-features-btn'),
+        startSettingsBtn: document.getElementById('start-settings-btn'),
         playerSetup: document.getElementById('player-setup'), startOptions: document.getElementById('start-options'), playerNameInput: document.getElementById('player-name'),
         playerBackstoryInput: document.getElementById('player-backstory'), startGameBtn: document.getElementById('start-game-btn'), difficultyBtns: document.querySelectorAll('.difficulty-btn'),
         gameOutput: document.getElementById('game-output'), playerInput: document.getElementById('player-input'),
@@ -560,6 +637,10 @@
         introTextContainer: document.getElementById('intro-text-container'), viewBackstoriesBtn: document.getElementById('view-backstories-btn'),
         abilityDisplay: document.getElementById('ability-display'), statusBtn: document.getElementById('status-btn'), backgroundCanvas: document.getElementById('background-canvas'),
         mapCanvas: document.getElementById('map-canvas'),
+        mapPanel: document.getElementById('map-panel'),
+        mapToggleBtn: document.getElementById('map-toggle-btn'),
+        mapExpandIcon: document.getElementById('map-expand-icon'),
+        mapMinimizeIcon: document.getElementById('map-minimize-icon'),
         micBtn: document.getElementById('mic-btn'),
         viewProgressionBtn: document.getElementById('view-progression-btn'),
         langEnBtn: document.getElementById('lang-en-btn'), langSvBtn: document.getElementById('lang-sv-btn'),
@@ -568,7 +649,7 @@
     let commandHistory = []; let commandHistoryIndex = -1;
     let audioInitialized = false;
     let sounds = {};
-    let mapState = { offsetX: 0, offsetY: 0, isDragging: false, lastX: 0, lastY: 0 };
+    let mapState = { offsetX: 0, offsetY: 0, scale: 1, isDragging: false, lastX: 0, lastY: 0 };
     
     // --- SPEECH RECOGNITION ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -643,6 +724,24 @@
     }
     
     // --- SOUND FUNCTIONS ---
+    function loadSoundSettings() {
+        try {
+            const settings = localStorage.getItem(SOUND_SETTINGS_KEY);
+            return settings ? JSON.parse(settings) : { master: true, item: true, awareness: true, sanity: true };
+        } catch (e) {
+            console.error("Failed to load sound settings, using defaults.", e);
+            return { master: true, item: true, awareness: true, sanity: true };
+        }
+    }
+
+    function saveSoundSettings() {
+        try {
+            localStorage.setItem(SOUND_SETTINGS_KEY, JSON.stringify(GameState.soundSettings));
+        } catch (e) {
+            console.error("Failed to save sound settings.", e);
+        }
+    }
+
     async function initializeAudio() { 
         if (audioInitialized) return; 
         try { 
@@ -671,17 +770,20 @@
     }
 
     function playSound(soundKey, options = {}) {
-        if (!audioInitialized || !sounds[soundKey]) return;
+        if (!audioInitialized || !sounds[soundKey] || !GameState.soundSettings.master) return;
+        
+        // Specific sound checks
+        if (soundKey === 'itemPickup' && !GameState.soundSettings.item) return;
+        if (soundKey === 'glitch' && !GameState.soundSettings.awareness) return;
+        if (soundKey === 'sanityLoss' && !GameState.soundSettings.sanity) return;
+
         try {
             const sound = sounds[soundKey];
             if (sound instanceof Tone.Synth) {
                 sound.triggerAttackRelease(options.note || 'C4', options.duration || '8n');
             } else if (sound instanceof Tone.PolySynth) { 
-                 // FIX: Use triggerAttack instead of triggerAttackRelease for short, non-sustaining sounds
-                 // to avoid scheduling errors from rapid re-triggering. The envelope handles the release.
                 sound.triggerAttack(options.note || "C4");
             } else if (sound instanceof Tone.Player) {
-                 // Player objects can be simply started.
                  sound.start();
             } else if (sound instanceof Tone.Noise) {
                 if (sound.state !== 'started') {
@@ -689,7 +791,6 @@
                 }
             }
         } catch (e) {
-            // Avoid spamming the console for the same error.
             if (!e.message.includes('cancelScheduledValues')) {
                  console.error(`Failed to play sound: ${soundKey}`, e);
             }
@@ -700,7 +801,18 @@
     // --- FUNCTION DEFINITIONS ---
     function resetGameState() {
         stateSnapshots = []; 
-        GameState = { playerName: "Unknown", playerBackstory: "investigator", currentRoom: "Lobby", awarenessLevel: 0, sanityLevel: 100, maxSanity: 100, chatbotTone: ChatbotTone.Friendly, temporaryTone: null, toneShiftTurns: 0, inventory: [], turnCount: 0, lastRestTurn: -10, journalEntries: [], dialogue: { currentNode: null, previousNodes: [], cache: {}, questionCount: 0, askedQuestions: new Set() }, achievements: [], difficulty: Difficulty.Normal, visitedRooms: new Set(['Lobby']), glitchMode: false, exitGame: false, conversationHistory: [], systemLogs: [`[${new Date().toISOString()}] Game initialized.`], objectives: [], roomStates: {}, debugMode: false, colorblindMode: false, flashlightOn: false };
+        GameState = { 
+            playerName: "Unknown", playerBackstory: "investigator", currentRoom: "Lobby", 
+            awarenessLevel: 0, sanityLevel: 100, maxSanity: 100, 
+            chatbotTone: ChatbotTone.Friendly, temporaryTone: null, toneShiftTurns: 0, 
+            inventory: [], turnCount: 0, lastRestTurn: -10, journalEntries: [], 
+            dialogue: { currentNode: null, previousNodes: [], cache: {}, questionCount: 0, askedQuestions: new Set() }, 
+            achievements: [], difficulty: Difficulty.Normal, visitedRooms: new Set(['Lobby']), 
+            glitchMode: false, exitGame: false, conversationHistory: [], 
+            systemLogs: [`[${new Date().toISOString()}] Game initialized.`], 
+            objectives: [], roomStates: {}, debugMode: false, colorblindMode: false, flashlightOn: false,
+            soundSettings: loadSoundSettings()
+        };
     }
 
     function initializeData() {
@@ -859,7 +971,7 @@
 
     function updateUI() {
         if (!GameState || Object.keys(GameState).length === 0) return;
-        UI.stats.name.textContent = `${GameState.playerName} (${GameState.playerBackstory})`; 
+        UI.stats.name.textContent = `${GameState.playerName} (${t('backstory_title_' + GameState.playerBackstory.replace(/ /g, '_'))})`; 
         UI.stats.awareness.innerHTML = `<span data-lang="awareness">${t('awareness')}</span>: ${GameState.awarenessLevel}`; 
         UI.stats.sanity.innerHTML = `<span data-lang="sanity">${t('sanity')}</span>: ${GameState.sanityLevel}`; 
         UI.stats.tone.innerHTML = `<span data-lang="tone">${t('tone')}</span>: ${GameState.temporaryTone || GameState.chatbotTone}`; 
@@ -871,10 +983,14 @@
         UI.journal.list.innerHTML = GameState.journalEntries.slice().reverse().map(entry => `<li>${entry}</li>`).join('');
         UI.objectives.list.innerHTML = GameState.objectives.length > 0 ? GameState.objectives.map(obj => `<li>${obj.completed ? `<span class="text-gray-500 line-through">${obj.text}</span>` : `&gt; ${obj.text}`}</li>`).join('') : `<li>${t('no_objectives')}</li>`;
         
+        const wasGlitching = GameState.glitchMode;
         GameState.glitchMode = (GameState.sanityLevel < 30 || GameState.awarenessLevel > 70);
         UI.appContainer.classList.toggle('glitch', GameState.glitchMode);
         
-        if (UI.gameScreen.classList.contains('flex')) drawMap();
+        if (GameState.glitchMode && !wasGlitching) {
+            if (GameState.sanityLevel < 30) playSound('sanityLoss');
+            if (GameState.awarenessLevel > 70) playSound('glitch');
+        }
     }
     
     async function renderRoom() {
@@ -930,7 +1046,7 @@
        if (!messageKey) { renderDialogueOptions(); return; }
        const tone = GameState.temporaryTone || GameState.chatbotTone; 
        const color = tone === 'Friendly' ? '#00ff41' : tone === 'Ambiguous' ? '#ffdb58' : tone === 'Sinister' ? '#ff474c' : '#c500ff';
-       const formattedMessage = t(messageKey, { playerName: GameState.playerName, playerBackstory: GameState.playerBackstory });
+       const formattedMessage = t(messageKey, { playerName: GameState.playerName, playerBackstory: t('backstory_title_' + GameState.playerBackstory.replace(/ /g, '_')) });
        await typeWriter(UI.gameOutput, `SYNAPSE: ${formattedMessage}`, color); 
        addToConversationHistory(`SYNAPSE: ${formattedMessage}`);
     }
@@ -1131,7 +1247,15 @@
     function addToConversationHistory(line) { if(GameState.conversationHistory.length > 50) GameState.conversationHistory.shift(); GameState.conversationHistory.push(line); }
     
     function saveGame(isAutosave = false) {
-        try { const saveData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); localStorage.setItem('synapse_savegame_v11', saveData); if (!isAutosave) typeWriter(UI.gameOutput, t('game_saved'), '#cccccc'); else GameState.systemLogs.push(`[${new Date().toISOString()}] ${t('autosave_success')}.`); } catch(e) { console.error("Save failed:", e); }
+        try { 
+            saveSoundSettings(); // Also save sound settings
+            const saveData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); 
+            localStorage.setItem('synapse_savegame_v11', saveData); 
+            if (!isAutosave) typeWriter(UI.gameOutput, t('game_saved'), '#cccccc'); 
+            else GameState.systemLogs.push(`[${new Date().toISOString()}] ${t('autosave_success')}.`); 
+        } catch(e) { 
+            console.error("Save failed:", e); 
+        }
     }
     
     function loadGame() {
@@ -1139,14 +1263,22 @@
         if (savedData) {
             try {
                 const loadedState = JSON.parse(savedData);
-                resetGameState(); Object.assign(GameState, loadedState);
+                resetGameState(); 
+                Object.assign(GameState, loadedState);
+                GameState.soundSettings = loadSoundSettings(); // Make sure sound settings are loaded
                 GameState.visitedRooms = new Set(loadedState.visitedRooms);
                 GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []);
-                initializeData(); buildDialogueTree(GameState.chatbotTone);
+                initializeData(); 
+                buildDialogueTree(GameState.chatbotTone);
                 GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone]; GameState.dialogue.previousNodes = [];
-                UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex');
-                UI.gameOutput.innerHTML = ''; typeWriter(UI.gameOutput, t('game_loaded'), '#cccccc');
-                renderRoom(); updateUI(); renderDialogueOptions();
+                UI.startScreen.classList.add('hidden'); 
+                UI.gameScreen.classList.remove('hidden'); 
+                UI.gameScreen.classList.add('flex');
+                UI.gameOutput.innerHTML = ''; 
+                typeWriter(UI.gameOutput, t('game_loaded'), '#cccccc');
+                renderRoom(); 
+                updateUI(); 
+                renderDialogueOptions();
             } catch(e) { console.error("Load failed:", e); showModal(t('load_fail')); }
         } else { showModal(t('no_save')); }
     }
@@ -1167,9 +1299,10 @@
                            <p class="text-gray-400 text-sm mb-4">${t('choose_backstory_desc')}</p>
                            <div id="backstory-list" class="text-left space-y-2">`;
         for (const key in backstories) {
-            const displayName = key.charAt(0).toUpperCase() + key.slice(1);
+            const backstoryTitleKey = 'backstory_title_' + key.replace(/ /g, '_');
+            const displayName = t(backstoryTitleKey);
             content += `<button class="backstory-choice-btn button w-full text-left !justify-start !p-3" data-backstory="${key}">
-                            <div><strong class="text-green-300 capitalize">${displayName}</strong>: <span class="text-gray-300 text-sm">${t(backstories[key].description_key)}</span></div>
+                            <div><strong class="text-green-300">${displayName}</strong>: <span class="text-gray-300 text-sm">${t(backstories[key].description_key)}</span></div>
                         </button>`;
         }
         content += `</div></div><button class="close-modal-btn button mt-6">${t('close_btn')}</button>`;
@@ -1282,7 +1415,7 @@
             <!-- Stats -->
             <div id="modal-stats-panel" class="mb-4">
                 <h3 class="font-bold border-b border-[#00ff41]/30 mb-2">${t('stats_title')}</h3>
-                <div>${GameState.playerName} (${GameState.playerBackstory})</div>
+                <div>${GameState.playerName} (${t('backstory_title_' + GameState.playerBackstory.replace(/ /g, '_'))})</div>
                 <div><span data-lang="awareness">${t('awareness')}</span>: ${GameState.awarenessLevel}</div>
                 <div><span data-lang="sanity">${t('sanity')}</span>: ${GameState.sanityLevel}</div>
                 <div><span data-lang="tone">${t('tone')}</span>: ${GameState.temporaryTone || GameState.chatbotTone}</div>
@@ -1337,6 +1470,7 @@
         <div class="flex flex-col gap-2">
         <button id="pause-save" class="button">${t('save_game')}</button>
         <button id="pause-load" class="button">${t('load_game')}</button>
+        <button id="pause-settings" class="button">${t('settings_btn')}</button>
         <button id="pause-help" class="button">${t('help')}</button>
         <button id="pause-main-menu" class="button text-yellow-300 border-yellow-300/80">${t('main_menu_btn')}</button>
         <button id="pause-resume" class="button button-primary mt-4">${t('resume_btn')}</button>
@@ -1344,9 +1478,69 @@
         showModal(pauseText, true); 
         document.getElementById('pause-save').onclick = () => { playSound('uiClick'); saveGame(); hideModal(); }; 
         document.getElementById('pause-load').onclick = () => { playSound('uiClick'); loadGame(); hideModal(); }; 
+        document.getElementById('pause-settings').onclick = () => { playSound('uiClick'); showSettingsModal(true); };
         document.getElementById('pause-help').onclick = () => { playSound('uiClick'); showHelpMenu(); }; 
         document.getElementById('pause-main-menu').onclick = () => { playSound('uiClick'); confirmReturnToMainMenu(); };
         document.getElementById('pause-resume').onclick = () => { playSound('uiClick'); hideModal(); };
+    }
+
+    function showSettingsModal(fromPauseMenu = false) {
+        const { soundSettings } = GameState;
+        const settingsText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('settings_title')}</h2>
+        <div class="modal-scroll text-left p-2 text-sm flex-grow space-y-4">
+            <div class="flex items-center justify-between">
+                <span>${t('setting_master_volume')}</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-master" ${soundSettings.master ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="flex items-center justify-between">
+                <span>${t('setting_item_found')}</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-item" ${soundSettings.item ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="flex items-center justify-between">
+                <span>${t('setting_high_awareness')}</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-awareness" ${soundSettings.awareness ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="flex items-center justify-between">
+                <span>${t('setting_low_sanity')}</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-sanity" ${soundSettings.sanity ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        <button class="close-modal-btn button mt-6">${t('close_btn')}</button>`;
+        showModal(settingsText, true);
+
+        const setupToggle = (id, key) => {
+            document.getElementById(id).onchange = (e) => {
+                GameState.soundSettings[key] = e.target.checked;
+                saveSoundSettings();
+            };
+        };
+
+        setupToggle('setting-master', 'master');
+        setupToggle('setting-item', 'item');
+        setupToggle('setting-awareness', 'awareness');
+        setupToggle('setting-sanity', 'sanity');
+        
+        const closeBtn = UI.modalContent.querySelector('.close-modal-btn');
+        closeBtn.onclick = () => {
+            playSound('uiClick');
+            if (fromPauseMenu) {
+                showPauseMenu();
+            } else {
+                hideModal();
+            }
+        };
     }
 
     function confirmReturnToMainMenu() {
@@ -1361,6 +1555,8 @@
     }
     
     function returnToMainMenu() {
+        if(animationFrameId) cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
         sessionStorage.removeItem('synapse_session_v11_autosave');
         GameState.exitGame = true;
         UI.gameScreen.classList.add('hidden'); UI.gameScreen.classList.remove('flex');
@@ -1369,7 +1565,7 @@
         UI.startOptions.classList.remove('hidden'); UI.introTextContainer.classList.remove('hidden');
         document.getElementById('game-title').classList.remove('hidden');
         UI.gameOutput.innerHTML = '';
-        if (audioInitialized) sounds.ambience.stop();
+        if (audioInitialized && GameState.soundSettings.master) sounds.ambience.stop();
         resetGameState(); setupIntro(); hideModal();
     }
 
@@ -1386,6 +1582,11 @@
         UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex'); 
         UI.gameOutput.innerHTML = ''; buildDialogueTree(GameState.chatbotTone);
         if (audioInitialized) playSound('ambience');
+        
+        // Start game loop for animations
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        gameLoop();
+        
         typeWriter(UI.gameOutput, t('initializing'), '#cccccc').then(() => { 
             showGuidance(t('initial_hint'));
             displayChatbotResponse(GameState.dialogue.currentNode.message_key).then(() => { renderRoom(); updateUI(); renderDialogueOptions(); }); 
@@ -1395,6 +1596,9 @@
     function endGame(endingKey) {
         if (GameState.exitGame) return;
         GameState.exitGame = true;
+        if(animationFrameId) cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+
         let endingTitle = "Disconnected";
         let endingDesc = "Your connection was severed.";
 
@@ -1443,7 +1647,7 @@
         const difficulty = Array.from(UI.difficultyBtns).find(b => b.classList.contains('button-primary'))?.dataset.difficulty || Difficulty.Normal; 
         const backstoryKey = UI.playerBackstoryInput.value; 
         const description = getAbilityDescription(backstoryKey, difficulty); 
-        UI.abilityDisplay.textContent = t('ability_bonus_prefix') + description; 
+        UI.abilityDisplay.innerHTML = `${t('ability_bonus_prefix')}<span class="text-white">${description}</span>`;
     }
 
     function startSpeechRecognition() {
@@ -1494,7 +1698,7 @@
     async function showGuidance(text) { await typeWriter(UI.gameOutput, `[HINT] ${text}`, GUIDANCE_COLOR); }
     
     function saveStateToSession() { if (GameState && typeof GameState.turnCount === 'number' && !GameState.exitGame) { try { const sessionData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); sessionStorage.setItem('synapse_session_v11_autosave', sessionData); } catch (e) { console.error("Session save failed:", e); } } }
-    function loadStateFromSession() { const sessionData = sessionStorage.getItem('synapse_session_v11_autosave'); if (!sessionData) return false; try { const loadedState = JSON.parse(sessionData); if (loadedState.currentRoom && typeof loadedState.turnCount === 'number' && !loadedState.exitGame) { resetGameState(); Object.assign(GameState, loadedState); GameState.visitedRooms = new Set(loadedState.visitedRooms || []); GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []); initializeData(); buildDialogueTree(GameState.chatbotTone); GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone] || GameState.dialogue.cache[ChatbotTone.Friendly]; GameState.dialogue.previousNodes = []; UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex'); UI.gameOutput.innerHTML = ''; typeWriter(UI.gameOutput, t('conn_reestablished'), '#cccccc'); renderRoom(); updateUI(); renderDialogueOptions(); return true; } } catch (e) { console.error("Session load failed:", e); sessionStorage.removeItem('synapse_session_v11_autosave'); } return false; }
+    function loadStateFromSession() { const sessionData = sessionStorage.getItem('synapse_session_v11_autosave'); if (!sessionData) return false; try { const loadedState = JSON.parse(sessionData); if (loadedState.currentRoom && typeof loadedState.turnCount === 'number' && !loadedState.exitGame) { resetGameState(); Object.assign(GameState, loadedState); GameState.soundSettings = loadSoundSettings(); GameState.visitedRooms = new Set(loadedState.visitedRooms || []); GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []); initializeData(); buildDialogueTree(GameState.chatbotTone); GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone] || GameState.dialogue.cache[ChatbotTone.Friendly]; GameState.dialogue.previousNodes = []; UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex'); UI.gameOutput.innerHTML = ''; typeWriter(UI.gameOutput, t('conn_reestablished'), '#cccccc'); renderRoom(); updateUI(); renderDialogueOptions(); return true; } } catch (e) { console.error("Session load failed:", e); sessionStorage.removeItem('synapse_session_v11_autosave'); } return false; }
     
     function setupBackgroundAnimation() { 
         const canvas = document.getElementById('background-canvas');
@@ -1510,32 +1714,68 @@
         initParticles(); animateParticles();
     }
     
+    function getMapBounds() {
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        Object.values(roomLayout).forEach(r => {
+            minX = Math.min(minX, r.x);
+            minY = Math.min(minY, r.y);
+            maxX = Math.max(maxX, r.x + r.w);
+            maxY = Math.max(maxY, r.y + r.h);
+        });
+        const padding = 20;
+        return {minX: minX - padding, minY: minY - padding, maxX: maxX + padding, maxY: maxY + padding};
+    }
+
     function drawMap() {
         if (!UI.mapCanvas) return;
         const canvas = UI.mapCanvas;
         const ctx = canvas.getContext('2d');
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
         
-        const scale = 1; 
+        if (canvas.width !== canvas.offsetWidth || canvas.height !== canvas.offsetHeight) {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        const scale = mapState.scale;
         const panX = mapState.offsetX;
         const panY = mapState.offsetY;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
+        ctx.translate(panX, panY);
+        ctx.scale(scale, scale);
+
+        // Draw grid background
+        const bounds = getMapBounds();
+        const gridSize = 20;
+        ctx.strokeStyle = "rgba(0, 255, 65, 0.08)";
+        ctx.lineWidth = 0.5 / scale;
+        for (let x = bounds.minX; x < bounds.maxX; x += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(x, bounds.minY);
+            ctx.lineTo(x, bounds.maxY);
+            ctx.stroke();
+        }
+        for (let y = bounds.minY; y < bounds.maxY; y += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(bounds.minX, y);
+            ctx.lineTo(bounds.maxX, y);
+            ctx.stroke();
+        }
 
         // Draw connections
         ctx.strokeStyle = "rgba(0, 255, 65, 0.2)";
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 1 / scale;
         Object.keys(roomLayout).forEach(roomName => {
             if (rooms[roomName] && rooms[roomName].exits) {
                 const r1Layout = roomLayout[roomName];
-                const r1x = r1Layout.x * scale + panX + (r1Layout.w * scale) / 2;
-                const r1y = r1Layout.y * scale + panY + (r1Layout.h * scale) / 2;
+                const r1x = r1Layout.x + r1Layout.w / 2;
+                const r1y = r1Layout.y + r1Layout.h / 2;
                 Object.values(rooms[roomName].exits).forEach(exitName => {
                     const r2Layout = roomLayout[exitName];
                     if (r2Layout) {
-                        const r2x = r2Layout.x * scale + panX + (r2Layout.w * scale) / 2;
-                        const r2y = r2Layout.y * scale + panY + (r2Layout.h * scale) / 2;
+                        const r2x = r2Layout.x + r2Layout.w / 2;
+                        const r2y = r2Layout.y + r2Layout.h / 2;
                         ctx.beginPath();
                         ctx.moveTo(r1x, r1y);
                         ctx.lineTo(r2x, r2y);
@@ -1548,36 +1788,62 @@
         // Draw rooms
         Object.keys(roomLayout).forEach(roomName => {
             const layout = roomLayout[roomName];
-            const x = layout.x * scale + panX;
-            const y = layout.y * scale + panY;
-            const w = layout.w * scale;
-            const h = layout.h * scale;
+            const x = layout.x;
+            const y = layout.y;
+            const w = layout.w;
+            const h = layout.h;
+            
+            ctx.shadowBlur = 0; // Reset shadow before each room
+
+            const isLocked = rooms[roomName].requiresKeycard && !hasItem(rooms[roomName].keyName || 'keycard');
 
             if(GameState.visitedRooms.has(roomName)) {
-                ctx.fillStyle = (roomName === GameState.currentRoom) ? "rgba(0, 255, 65, 0.6)" : "rgba(0, 255, 65, 0.3)";
+                if (roomName === GameState.currentRoom) {
+                    const pulseFactor = (Math.sin(Date.now() * 0.005) + 1) / 2;
+                    ctx.fillStyle = `rgba(0, 255, 65, ${0.5 + pulseFactor * 0.4})`;
+                    ctx.shadowColor = 'rgba(127, 255, 127, 1)';
+                    ctx.shadowBlur = 4 + pulseFactor * 8;
+                } else {
+                    ctx.fillStyle = "rgba(0, 255, 65, 0.3)";
+                }
                 ctx.fillRect(x, y, w, h);
             }
-            
-            ctx.strokeStyle = "rgba(0, 255, 65, 0.8)";
-            ctx.strokeRect(x, y, w, h);
+            ctx.shadowBlur = 0;
 
+            ctx.strokeStyle = isLocked ? "rgba(255, 71, 76, 0.8)" : "rgba(0, 255, 65, 0.8)";
+            ctx.lineWidth = 1 / scale;
+            ctx.strokeRect(x, y, w, h);
+            
             ctx.fillStyle = "white";
-            ctx.font = `10px VT323`;
+            ctx.font = `${10 / scale}px VT323`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillText(layout.name, x + w / 2, y + h / 2);
+            ctx.fillText(layout.name, x + w / 2, y + h / 2 + 1);
         });
 
         // Draw player marker
         const playerLayout = roomLayout[GameState.currentRoom];
-        const playerX = playerLayout.x * scale + panX + (playerLayout.w * scale) / 2;
-        const playerY = playerLayout.y * scale + panY + (playerLayout.h * scale) / 2;
+        const playerX = playerLayout.x + playerLayout.w / 2;
+        const playerY = playerLayout.y + playerLayout.h / 2;
         ctx.fillStyle = "#FF2A7F";
         ctx.beginPath();
-        ctx.arc(playerX, playerY, 3, 0, 2 * Math.PI);
+        ctx.arc(playerX, playerY, 3 / scale, 0, 2 * Math.PI);
         ctx.fill();
         ctx.strokeStyle = "white";
+        ctx.lineWidth = 0.5 / scale;
         ctx.stroke();
+
+        ctx.restore();
+    }
+    
+    function toggleMapFullscreen() {
+        const isFullscreen = UI.mapPanel.classList.toggle('fullscreen');
+        UI.mapExpandIcon.classList.toggle('hidden', isFullscreen);
+        UI.mapMinimizeIcon.classList.toggle('hidden', !isFullscreen);
+        // We need to wait for the CSS transition to avoid weird canvas resizing artifacts
+        setTimeout(() => {
+            drawMap();
+        }, 50);
     }
     
     function initMapControls() {
@@ -1608,7 +1874,7 @@
             mapState.offsetY += dY;
             mapState.lastX = coords.x;
             mapState.lastY = coords.y;
-            drawMap();
+            // No need to call drawMap here, the animation loop will handle it
         };
 
         const handleDragEnd = () => {
@@ -1616,6 +1882,28 @@
             canvas.style.cursor = 'grab';
         };
         
+        const handleWheel = (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            const zoomFactor = 1.1;
+            const oldScale = mapState.scale;
+            let newScale;
+
+            if (e.deltaY < 0) { // Zoom in
+                newScale = oldScale * zoomFactor;
+            } else { // Zoom out
+                newScale = oldScale / zoomFactor;
+            }
+            newScale = Math.max(0.3, Math.min(newScale, 3)); // Clamp scale
+
+            mapState.offsetX = mouseX - (mouseX - mapState.offsetX) * (newScale / oldScale);
+            mapState.offsetY = mouseY - (mouseY - mapState.offsetY) * (newScale / oldScale);
+            mapState.scale = newScale;
+        };
+
         canvas.addEventListener('mousedown', handleDragStart);
         window.addEventListener('mousemove', handleDragMove);
         window.addEventListener('mouseup', handleDragEnd);
@@ -1624,8 +1912,17 @@
         canvas.addEventListener('touchstart', handleDragStart, { passive: false });
         window.addEventListener('touchmove', handleDragMove, { passive: false });
         window.addEventListener('touchend', handleDragEnd);
+        
+        canvas.addEventListener('wheel', handleWheel, { passive: false });
     }
     
+    function gameLoop() {
+        if (!GameState.exitGame) {
+            drawMap();
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+    }
+
     function showHistory() {
         let historyHtml = commandHistory.slice(-20).map((cmd, i) => `<div>${i + 1}: ${cmd}</div>`).join('');
         typeWriter(UI.gameOutput, `--- Command History ---\n${historyHtml}`, '#cccccc');
@@ -1666,6 +1963,7 @@
         });
         
         const setupButtonClick = (button, handler, ...args) => {
+            if (!button) return;
             button.addEventListener('click', async () => {
                 await initializeAudio();
                 playSound('uiClick');
@@ -1676,10 +1974,12 @@
         setupButtonClick(UI.newGameBtn, () => { sessionStorage.removeItem('synapse_session_v11_autosave'); UI.startOptions.classList.add('hidden'); UI.playerSetup.classList.remove('hidden'); UI.playerSetup.classList.add('flex'); updateAbilityDisplay(); });
         setupButtonClick(UI.loadGameBtn, () => { sessionStorage.removeItem('synapse_session_v11_autosave'); loadGame(); });
         setupButtonClick(UI.viewFeaturesBtn, showFeaturesModal);
+        setupButtonClick(UI.startSettingsBtn, () => showSettingsModal(false));
         setupButtonClick(UI.startGameBtn, startGame);
         setupButtonClick(UI.viewBackstoriesBtn, showBackstoryModal);
         setupButtonClick(UI.statusBtn, showStatusModal);
         setupButtonClick(UI.viewProgressionBtn, showProgressionModal);
+        setupButtonClick(UI.mapToggleBtn, toggleMapFullscreen);
         setupButtonClick(UI.langEnBtn, setLanguage, 'en');
         setupButtonClick(UI.langSvBtn, setLanguage, 'sv');
 
@@ -1697,8 +1997,13 @@
         setLanguage('en');
         if (!loadStateFromSession()) { 
             resetGameState(); 
-            mapState.offsetX = UI.mapCanvas.offsetWidth / 2 - roomLayout.Lobby.x - roomLayout.Lobby.w / 2;
-            mapState.offsetY = UI.mapCanvas.offsetHeight / 2 - roomLayout.Lobby.y - roomLayout.Lobby.h / 2;
+            setTimeout(() => {
+                mapState.offsetX = UI.mapCanvas.offsetWidth / 2 - (roomLayout.Lobby.x + roomLayout.Lobby.w / 2) * mapState.scale;
+                mapState.offsetY = UI.mapCanvas.offsetHeight / 2 - (roomLayout.Lobby.y + roomLayout.Lobby.h / 2) * mapState.scale;
+            }, 100);
+        } else {
+             if (animationFrameId) cancelAnimationFrame(animationFrameId);
+             gameLoop();
         }
     });
     </script>
