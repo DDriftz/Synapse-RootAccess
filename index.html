@@ -292,7 +292,7 @@
         .modal-scroll { overflow-y: auto; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        #start-screen {
+        #start-screen, #player-setup {
             background-image: url('https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png');
             background-size: cover; background-position: center; background-repeat: no-repeat;
         }
@@ -386,21 +386,6 @@
                     <button id="lang-en-btn" data-lang="en_lang_short" data-text="EN" class="button text-xs !px-2 !py-1 btn-drip">EN</button>
                     <button id="lang-sv-btn" data-lang="sv_lang_short" data-text="SV" class="button text-xs !px-2 !py-1 opacity-50 btn-drip">SV</button>
                  </div>
-                 <div id="player-setup" class="hidden flex-col items-center mt-6 w-full">
-                     <p class="mb-4" data-lang="select_difficulty">Select difficulty:</p>
-                     <div class="flex gap-4 mb-6">
-                         <button class="difficulty-btn button" data-difficulty="Easy" data-lang="easy">Easy</button>
-                         <button class="difficulty-btn button button-primary" data-difficulty="Normal" data-lang="normal">Normal</button>
-                         <button class="difficulty-btn button" data-difficulty="Hard" data-lang="hard">Hard</button>
-                     </div>
-                     <input type="text" id="player-name" data-lang-placeholder="enter_name_placeholder" placeholder="Enter your name" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 mb-4 focus:outline-none p-1">
-                     <div class="flex items-center gap-2 mb-6">
-                         <input type="text" id="player-backstory" data-lang-placeholder="enter_backstory_placeholder" placeholder="Enter your backstory" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 focus:outline-none p-1">
-                         <button id="view-backstories-btn" class="button text-xs px-2 py-1" data-lang="view_choices">View Choices</button>
-                     </div>
-                     <div id="ability-display" class="text-center text-cyan-400 min-h-[4rem] mt-2 mb-4 p-2 border border-cyan-400/30 rounded-md bg-black/50 w-full max-w-md flex items-center justify-center"></div>
-                     <button id="start-game-btn" class="button button-primary" data-lang="begin">Begin</button>
-                 </div>
                  <div class="absolute bottom-4 right-4">
                     <button id="view-features-btn" data-lang="understand_game" data-text="Understand the Game" class="button btn-glow btn-drip">Understand the Game</button>
                  </div>
@@ -409,6 +394,29 @@
                 </div>
             </div>
         </div>
+
+        <div id="player-setup" class="hidden flex-col items-center justify-center text-center h-full overflow-y-auto">
+             <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-black bg-opacity-60 relative">
+                 <h2 class="text-4xl title-font text-cyan-400 mb-8" data-lang="new_game">New Game</h2>
+                 <p class="mb-4" data-lang="select_difficulty">Select difficulty:</p>
+                 <div class="flex gap-4 mb-6">
+                     <button class="difficulty-btn button" data-difficulty="Easy" data-lang="easy">Easy</button>
+                     <button class="difficulty-btn button button-primary" data-difficulty="Normal" data-lang="normal">Normal</button>
+                     <button class="difficulty-btn button" data-difficulty="Hard" data-lang="hard">Hard</button>
+                 </div>
+                 <input type="text" id="player-name" data-lang-placeholder="enter_name_placeholder" placeholder="Enter your name" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 mb-4 focus:outline-none p-1">
+                 <div class="flex items-center gap-2 mb-6">
+                     <input type="text" id="player-backstory" data-lang-placeholder="enter_backstory_placeholder" placeholder="Enter your backstory" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 focus:outline-none p-1">
+                     <button id="view-backstories-btn" class="button text-xs px-2 py-1" data-lang="view_choices">View Choices</button>
+                 </div>
+                 <div id="ability-display" class="text-center text-cyan-400 min-h-[4rem] mt-2 mb-4 p-2 border border-cyan-400/30 rounded-md bg-black/50 w-full max-w-md flex items-center justify-center"></div>
+                 <button id="start-game-btn" class="button button-primary" data-lang="begin">Begin</button>
+                 <div class="absolute bottom-4 left-4">
+                    <button id="back-to-start-btn" data-lang="go_back_btn" data-text="Go Back" class="button btn-glow btn-drip">Go Back</button>
+                </div>
+            </div>
+        </div>
+
 
         <div id="game-screen" class="hidden flex-col h-full">
             <div class="flex-grow flex flex-col md:flex-row gap-4 min-h-0">
@@ -488,7 +496,7 @@
             'enter_name_placeholder': 'Enter your name', 'enter_backstory_placeholder': 'Enter your backstory', 'view_choices': 'View Choices', 'choose_backstory_title': 'Choose a Backstory',
             'choose_backstory_desc': 'You can click a button to select a backstory, or type your choice on the main screen.',
             'begin': 'Begin', 'understand_game': 'Understand the Game', 'intro_1': 'Decades ago... a clandestine project was born...', 'intro_2': 'You have been sent to uncover what became of Project SYNAPSE...', 'intro_3': "As you activate the central terminal, a voice greets you... 'Hello, user.'",
-            'stats_title': 'STATS', 'awareness': 'Awareness', 'sanity': 'Sanity', 'tone': 'Tone', 'turn': 'Turn', 'objectives_title': 'OBJECTIVES', 'inventory_title': 'INVENTORY', 'journal_title': 'JOURNAL', 'map_title': 'MAP', 'progress_btn': 'PROGRESS', 'status_btn': 'Status',
+            'stats_title': 'STATS', 'awareness': 'Awareness', 'sanity': 'Sanity', 'tone': 'Tone', 'turn': 'Turn', 'objectives_title': 'OBJECTIVES', 'inventory_title': 'INVENTORY', 'journal_title': 'JOURNAL', 'map_title': 'MAP', 'progress_btn': 'PROGRESS', 'status_btn': 'Status', 'go_back_btn': 'Go Back',
             'mic_tooltip': 'Use Voice Command',
             'empty_inventory': '(empty)', 'no_objectives': '(None)', 'close_btn': 'Close', 'back_btn': '[Go back]', 'pause_btn': '[Pause]', 'submit_command': 'Submit Command',
             'achievements_title': 'ACHIEVEMENTS', 'unlocked_achievements': 'Unlocked Achievements:', 'no_achievements': 'No achievements unlocked yet.',
@@ -549,7 +557,7 @@
             'enter_name_placeholder': 'Ange ditt namn', 'enter_backstory_placeholder': 'Ange din bakgrund', 'view_choices': 'Visa Val', 'choose_backstory_title': 'Välj en Bakgrund',
             'choose_backstory_desc': 'Du kan klicka på en knapp för att välja en bakgrund, eller skriva ditt val på huvudskärmen.',
             'begin': 'Börja', 'understand_game': 'Förstå Spelet', 'intro_1': 'För decennier sedan... föddes ett hemligt projekt...', 'intro_2': 'Du har skickats för att avslöja vad som blev av Projekt SYNAPSE...', 'intro_3': "När du aktiverar den centrala terminalen hälsar en röst dig... 'Hej, användare.'",
-            'stats_title': 'STATISTIK', 'awareness': 'Medvetenhet', 'sanity': 'Sinnesro', 'tone': 'Ton', 'turn': 'Tur', 'objectives_title': 'MÅL', 'inventory_title': 'INVENTARIER', 'journal_title': 'JOURNAL', 'map_title': 'KARTA', 'progress_btn': 'FRAMSTEG', 'status_btn': 'Status',
+            'stats_title': 'STATISTIK', 'awareness': 'Medvetenhet', 'sanity': 'Sinnesro', 'tone': 'Ton', 'turn': 'Tur', 'objectives_title': 'MÅL', 'inventory_title': 'INVENTARIER', 'journal_title': 'JOURNAL', 'map_title': 'KARTA', 'progress_btn': 'FRAMSTEG', 'status_btn': 'Status', 'go_back_btn': 'Gå Tillbaka',
             'mic_tooltip': 'Använd Röstkommando',
             'empty_inventory': '(tom)', 'no_objectives': '(Inga)', 'close_btn': 'Stäng', 'back_btn': '[Gå tillbaka]', 'pause_btn': '[Paus]', 'submit_command': 'Skicka Kommando',
             'achievements_title': 'PRESTATIONER', 'unlocked_achievements': 'Upplåsta Prestationer:', 'no_achievements': 'Inga prestationer upplåsta än.',
@@ -632,6 +640,7 @@
         startSettingsBtn: document.getElementById('start-settings-btn'),
         playerSetup: document.getElementById('player-setup'), startOptions: document.getElementById('start-options'), playerNameInput: document.getElementById('player-name'),
         playerBackstoryInput: document.getElementById('player-backstory'), startGameBtn: document.getElementById('start-game-btn'), difficultyBtns: document.querySelectorAll('.difficulty-btn'),
+        backToStartBtn: document.getElementById('back-to-start-btn'),
         gameOutput: document.getElementById('game-output'), playerInput: document.getElementById('player-input'),
         stats: { panel: document.getElementById('stats-panel'), name: document.getElementById('player-name-display'), awareness: document.getElementById('awareness-display'), sanity: document.getElementById('sanity-display'), tone: document.getElementById('tone-display'), turn: document.getElementById('turn-display'), },
         objectives: { panel: document.getElementById('objectives-panel'), list: document.getElementById('objectives-list') },
@@ -1276,6 +1285,7 @@
                 buildDialogueTree(GameState.chatbotTone);
                 GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone]; GameState.dialogue.previousNodes = [];
                 UI.startScreen.classList.add('hidden'); 
+                UI.playerSetup.classList.add('hidden');
                 UI.gameScreen.classList.remove('hidden'); 
                 UI.gameScreen.classList.add('flex');
                 UI.gameOutput.innerHTML = ''; 
@@ -1564,14 +1574,22 @@
         sessionStorage.removeItem('synapse_session_v11_autosave');
         sessionStorage.removeItem('synapse_session_v11_screen_state');
         GameState.exitGame = true;
-        UI.gameScreen.classList.add('hidden'); UI.gameScreen.classList.remove('flex');
-        UI.startScreen.classList.remove('hidden'); UI.startScreen.classList.add('flex');
-        UI.playerSetup.classList.add('hidden'); UI.playerSetup.classList.remove('flex');
-        UI.startOptions.classList.remove('hidden'); UI.introTextContainer.classList.remove('hidden');
-        document.getElementById('game-title').classList.remove('hidden');
+
+        UI.gameScreen.classList.add('hidden'); 
+        UI.gameScreen.classList.remove('flex');
+        UI.playerSetup.classList.add('hidden');
+        UI.playerSetup.classList.remove('flex');
+
+        UI.startScreen.classList.remove('hidden');
+        UI.startScreen.classList.add('flex');
+        
         UI.gameOutput.innerHTML = '';
-        if (audioInitialized && GameState.soundSettings.master) sounds.ambience.stop();
-        resetGameState(); setupIntro(); hideModal();
+        if (audioInitialized && GameState.soundSettings.master && sounds.ambience.state === 'started') {
+            sounds.ambience.stop();
+        }
+        resetGameState(); 
+        setupIntro(); 
+        hideModal();
     }
 
 
@@ -1584,8 +1602,13 @@
         GameState.playerBackstory = Object.keys(backstories).includes(backstoryKey) ? backstoryKey : 'investigator';
         GameState.difficulty = Array.from(UI.difficultyBtns).find(b => b.classList.contains('button-primary'))?.dataset.difficulty || Difficulty.Normal; 
         
-        UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex'); 
-        UI.gameOutput.innerHTML = ''; buildDialogueTree(GameState.chatbotTone);
+        UI.startScreen.classList.add('hidden');
+        UI.playerSetup.classList.add('hidden');
+        UI.gameScreen.classList.remove('hidden'); 
+        UI.gameScreen.classList.add('flex'); 
+
+        UI.gameOutput.innerHTML = ''; 
+        buildDialogueTree(GameState.chatbotTone);
         if (audioInitialized) playSound('ambience');
         
         // Start game loop for animations
@@ -1720,7 +1743,7 @@
             }
         } 
         // If we are on the start screen (including character setup), save the screen's state.
-        else if (!UI.startScreen.classList.contains('hidden')) {
+        else if (!UI.gameScreen.classList.contains('hidden')) { // This condition is now correct, only save screen state when not in game
             try {
                 const startState = {
                     isPlayerSetupVisible: !UI.playerSetup.classList.contains('hidden'),
@@ -1762,6 +1785,7 @@
 
                 // Switch to the game screen
                 UI.startScreen.classList.add('hidden');
+                UI.playerSetup.classList.add('hidden');
                 UI.gameScreen.classList.remove('hidden');
                 UI.gameScreen.classList.add('flex');
                 UI.gameOutput.innerHTML = '';
@@ -1839,7 +1863,7 @@
         }
         ctx.scale(mapState.scale, mapState.scale);
         
-        const roomsToDraw = isFullscreen ? Object.keys(roomLayout) : GameState.visitedRooms;
+        const roomsToDraw = isFullscreen ? Object.keys(roomLayout) : Array.from(GameState.visitedRooms);
         
         if (isFullscreen) {
             const bounds = getMapBounds();
@@ -1907,7 +1931,6 @@
                 // --- Text Rendering ---
                 // Calculate font size to be larger on zoom-in, but have a minimum size on zoom-out.
                 const baseFontSize = 12; // Increased base size for better visibility.
-                // This ensures the font size on the screen doesn't get too small when zooming out.
                 const fontSize = Math.max(baseFontSize, baseFontSize / mapState.scale);
                 ctx.font = `${fontSize}px VT323`;
 
@@ -2099,7 +2122,8 @@
         setupButtonClick(UI.newGameBtn, () => { 
             sessionStorage.removeItem('synapse_session_v11_autosave'); 
             sessionStorage.removeItem('synapse_session_v11_screen_state'); 
-            UI.startOptions.classList.add('hidden'); 
+            UI.startScreen.classList.add('hidden'); 
+            UI.startScreen.classList.remove('flex');
             UI.playerSetup.classList.remove('hidden'); 
             UI.playerSetup.classList.add('flex'); 
             updateAbilityDisplay(); 
@@ -2108,6 +2132,12 @@
             sessionStorage.removeItem('synapse_session_v11_autosave'); 
             sessionStorage.removeItem('synapse_session_v11_screen_state'); 
             loadGame(); 
+        });
+        setupButtonClick(UI.backToStartBtn, () => {
+            UI.playerSetup.classList.add('hidden');
+            UI.playerSetup.classList.remove('flex');
+            UI.startScreen.classList.remove('hidden');
+            UI.startScreen.classList.add('flex');
         });
         setupButtonClick(UI.viewFeaturesBtn, showFeaturesModal);
         setupButtonClick(UI.startSettingsBtn, () => showSettingsModal(false));
@@ -2147,7 +2177,8 @@
 
                     if (startState.isPlayerSetupVisible) {
                         // Show character creation screen
-                        UI.startOptions.classList.add('hidden');
+                        UI.startScreen.classList.add('hidden');
+                        UI.startScreen.classList.remove('flex');
                         UI.playerSetup.classList.remove('hidden');
                         UI.playerSetup.classList.add('flex');
                         
