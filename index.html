@@ -1562,6 +1562,7 @@
         if(animationFrameId) cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
         sessionStorage.removeItem('synapse_session_v11_autosave');
+        sessionStorage.removeItem('synapse_session_v11_screen_state');
         GameState.exitGame = true;
         UI.gameScreen.classList.add('hidden'); UI.gameScreen.classList.remove('flex');
         UI.startScreen.classList.remove('hidden'); UI.startScreen.classList.add('flex');
@@ -1701,8 +1702,83 @@
 
     async function showGuidance(text) { await typeWriter(UI.gameOutput, `[HINT] ${text}`, GUIDANCE_COLOR); }
     
-    function saveStateToSession() { if (GameState && typeof GameState.turnCount === 'number' && !GameState.exitGame) { try { const sessionData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); sessionStorage.setItem('synapse_session_v11_autosave', sessionData); } catch (e) { console.error("Session save failed:", e); } } }
-    function loadStateFromSession() { const sessionData = sessionStorage.getItem('synapse_session_v11_autosave'); if (!sessionData) return false; try { const loadedState = JSON.parse(sessionData); if (loadedState.currentRoom && typeof loadedState.turnCount === 'number' && !loadedState.exitGame) { resetGameState(); Object.assign(GameState, loadedState); GameState.soundSettings = loadSoundSettings(); GameState.visitedRooms = new Set(loadedState.visitedRooms || []); GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []); initializeData(); buildDialogueTree(GameState.chatbotTone); GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone] || GameState.dialogue.cache[ChatbotTone.Friendly]; GameState.dialogue.previousNodes = []; UI.startScreen.classList.add('hidden'); UI.gameScreen.classList.remove('hidden'); UI.gameScreen.classList.add('flex'); UI.gameOutput.innerHTML = ''; typeWriter(UI.gameOutput, t('conn_reestablished'), '#cccccc'); renderRoom(); updateUI(); renderDialogueOptions(); return true; } } catch (e) { console.error("Session load failed:", e); sessionStorage.removeItem('synapse_session_v11_autosave'); } return false; }
+    // START: AUTOSAVE/SESSION RESTORE LOGIC
+    /**
+     * @description Saves the current state (either in-game or on the start screen) to session storage.
+     * This is intended to be called by the 'beforeunload' event to prevent data loss on refresh.
+     */
+    function saveStateToSession() {
+        // If we are on the game screen and the game hasn't ended, save the full game state.
+        if (!UI.gameScreen.classList.contains('hidden') && GameState && typeof GameState.turnCount === 'number' && !GameState.exitGame) {
+            try {
+                const sessionData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value);
+                sessionStorage.setItem('synapse_session_v11_autosave', sessionData);
+                // Clear screen state to avoid conflicts if the player goes back to menu and then into a game.
+                sessionStorage.removeItem('synapse_session_v11_screen_state');
+            } catch (e) {
+                console.error("Session game state save failed:", e);
+            }
+        } 
+        // If we are on the start screen (including character setup), save the screen's state.
+        else if (!UI.startScreen.classList.contains('hidden')) {
+            try {
+                const startState = {
+                    isPlayerSetupVisible: !UI.playerSetup.classList.contains('hidden'),
+                    playerName: UI.playerNameInput.value,
+                    playerBackstory: UI.playerBackstoryInput.value,
+                    difficulty: Array.from(UI.difficultyBtns).find(b => b.classList.contains('button-primary'))?.dataset.difficulty || Difficulty.Normal,
+                    language: currentLanguage
+                };
+                sessionStorage.setItem('synapse_session_v11_screen_state', JSON.stringify(startState));
+                // Clear game state to avoid conflicts.
+                sessionStorage.removeItem('synapse_session_v11_autosave');
+            } catch (e) {
+                console.error("Session screen state save failed:", e);
+            }
+        }
+    }
+
+    /**
+     * @description Loads the game state from session storage. Used for restoring a game after a refresh.
+     * @returns {boolean} - True if a session was successfully loaded, false otherwise.
+     */
+    function loadStateFromSession() {
+        const sessionData = sessionStorage.getItem('synapse_session_v11_autosave');
+        if (!sessionData) return false;
+        try {
+            const loadedState = JSON.parse(sessionData);
+            // Check if the loaded data looks like a valid game state.
+            if (loadedState.currentRoom && typeof loadedState.turnCount === 'number' && !loadedState.exitGame) {
+                resetGameState();
+                Object.assign(GameState, loadedState);
+                GameState.soundSettings = loadSoundSettings(); // Reload sound settings separately
+                GameState.visitedRooms = new Set(loadedState.visitedRooms || []);
+                GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []);
+                
+                initializeData(); 
+                buildDialogueTree(GameState.chatbotTone);
+                GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone] || GameState.dialogue.cache[ChatbotTone.Friendly];
+                GameState.dialogue.previousNodes = [];
+
+                // Switch to the game screen
+                UI.startScreen.classList.add('hidden');
+                UI.gameScreen.classList.remove('hidden');
+                UI.gameScreen.classList.add('flex');
+                UI.gameOutput.innerHTML = '';
+                
+                typeWriter(UI.gameOutput, t('conn_reestablished'), '#cccccc');
+                renderRoom();
+                updateUI();
+                renderDialogueOptions();
+                return true;
+            }
+        } catch (e) {
+            console.error("Session load failed:", e);
+            sessionStorage.removeItem('synapse_session_v11_autosave'); // Clear corrupted data
+        }
+        return false;
+    }
+    // END: AUTOSAVE/SESSION RESTORE LOGIC
     
     function setupBackgroundAnimation() { 
         const canvas = document.getElementById('background-canvas');
@@ -1754,6 +1830,7 @@
             ctx.translate(mapState.offsetX / dpr, mapState.offsetY / dpr);
         } else {
             const playerLayout = roomLayout[GameState.currentRoom];
+            if (!playerLayout) { ctx.restore(); return; } // Exit if player room isn't in layout
             const centerX = playerLayout.x + playerLayout.w / 2;
             const centerY = playerLayout.y + playerLayout.h / 2;
             const translateX = (rect.width / 2) - (centerX * mapState.scale);
@@ -1762,7 +1839,7 @@
         }
         ctx.scale(mapState.scale, mapState.scale);
         
-        const roomsToDraw = isFullscreen ? Object.keys(roomLayout) : [GameState.currentRoom];
+        const roomsToDraw = isFullscreen ? Object.keys(roomLayout) : GameState.visitedRooms;
         
         if (isFullscreen) {
             const bounds = getMapBounds();
@@ -1796,7 +1873,7 @@
         }
         
         roomsToDraw.forEach(roomName => {
-            if (!rooms[roomName]) return;
+            if (!rooms[roomName] || !roomLayout[roomName]) return;
             const layout = roomLayout[roomName];
             const x = layout.x, y = layout.y, w = layout.w, h = layout.h;
             const isDiscovered = GameState.visitedRooms.has(roomName);
@@ -1840,17 +1917,19 @@
                 ctx.setLineDash([]);
             }
         });
-
+        
         const playerLayout = roomLayout[GameState.currentRoom];
-        const playerX = playerLayout.x + playerLayout.w / 2;
-        const playerY = playerLayout.y + playerLayout.h / 2;
-        ctx.fillStyle = "#FF2A7F";
-        ctx.beginPath();
-        ctx.arc(playerX, playerY, 3 / mapState.scale, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 0.5 / mapState.scale;
-        ctx.stroke();
+        if (playerLayout) {
+             const playerX = playerLayout.x + playerLayout.w / 2;
+             const playerY = playerLayout.y + playerLayout.h / 2;
+             ctx.fillStyle = "#FF2A7F";
+             ctx.beginPath();
+             ctx.arc(playerX, playerY, 3 / mapState.scale, 0, 2 * Math.PI);
+             ctx.fill();
+             ctx.strokeStyle = "white";
+             ctx.lineWidth = 0.5 / mapState.scale;
+             ctx.stroke();
+        }
 
         ctx.restore();
     }
@@ -1865,6 +1944,7 @@
         setTimeout(() => {
             // Recalculate offset when toggling
             const playerLayout = roomLayout[GameState.currentRoom];
+            if (!playerLayout) return;
             mapState.offsetX = (UI.mapCanvas.width / (window.devicePixelRatio||1) / 2) - (playerLayout.x + playerLayout.w / 2) * mapState.scale;
             mapState.offsetY = (UI.mapCanvas.height / (window.devicePixelRatio||1) / 2) - (playerLayout.y + playerLayout.h / 2) * mapState.scale;
         }, 50);
@@ -1997,8 +2077,20 @@
             });
         };
 
-        setupButtonClick(UI.newGameBtn, () => { sessionStorage.removeItem('synapse_session_v11_autosave'); UI.startOptions.classList.add('hidden'); UI.playerSetup.classList.remove('hidden'); UI.playerSetup.classList.add('flex'); updateAbilityDisplay(); });
-        setupButtonClick(UI.loadGameBtn, () => { sessionStorage.removeItem('synapse_session_v11_autosave'); loadGame(); });
+        // Clear session data on explicit new/load game to ensure a clean start
+        setupButtonClick(UI.newGameBtn, () => { 
+            sessionStorage.removeItem('synapse_session_v11_autosave'); 
+            sessionStorage.removeItem('synapse_session_v11_screen_state'); 
+            UI.startOptions.classList.add('hidden'); 
+            UI.playerSetup.classList.remove('hidden'); 
+            UI.playerSetup.classList.add('flex'); 
+            updateAbilityDisplay(); 
+        });
+        setupButtonClick(UI.loadGameBtn, () => { 
+            sessionStorage.removeItem('synapse_session_v11_autosave'); 
+            sessionStorage.removeItem('synapse_session_v11_screen_state'); 
+            loadGame(); 
+        });
         setupButtonClick(UI.viewFeaturesBtn, showFeaturesModal);
         setupButtonClick(UI.startSettingsBtn, () => showSettingsModal(false));
         setupButtonClick(UI.startGameBtn, startGame);
@@ -2018,19 +2110,63 @@
             UI.micBtn.style.display = 'none';
         }
 
+        // --- Session Restoration Logic on Page Load ---
+        let sessionLoaded = false;
+        const screenStateData = sessionStorage.getItem('synapse_session_v11_screen_state');
+
+        // First, try to restore to the start/setup screen
+        if (screenStateData) {
+            try {
+                const startState = JSON.parse(screenStateData);
+                setLanguage(startState.language || 'en'); // Restore language first
+
+                if (startState.isPlayerSetupVisible) {
+                    UI.startOptions.classList.add('hidden');
+                    UI.playerSetup.classList.remove('hidden');
+                    UI.playerSetup.classList.add('flex');
+                    
+                    UI.playerNameInput.value = startState.playerName || '';
+                    UI.playerBackstoryInput.value = startState.playerBackstory || '';
+                    UI.difficultyBtns.forEach(btn => btn.classList.remove('button-primary'));
+                    const difficultyBtn = Array.from(UI.difficultyBtns).find(b => b.dataset.difficulty === startState.difficulty);
+                    if (difficultyBtn) {
+                        difficultyBtn.classList.add('button-primary');
+                    } else {
+                        UI.difficultyBtns[1].classList.add('button-primary'); // Default to normal
+                    }
+                    updateAbilityDisplay();
+                }
+                sessionLoaded = true;
+            } catch(e) {
+                console.error("Failed to restore screen state:", e);
+                sessionStorage.removeItem('synapse_session_v11_screen_state');
+            }
+        }
+        
+        // If not restored to start screen, try restoring an in-progress game
+        if (!sessionLoaded) {
+            if (loadStateFromSession()) {
+                 if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                 gameLoop();
+                 sessionLoaded = true;
+            }
+        }
+
+        // If nothing was loaded, perform a fresh start
+        if (!sessionLoaded) {
+            setLanguage('en');
+            resetGameState();
+            setTimeout(() => {
+                const playerLayout = roomLayout[GameState.currentRoom];
+                if(playerLayout && UI.mapCanvas.offsetWidth > 0 && UI.mapCanvas.offsetHeight > 0) {
+                     mapState.offsetX = (UI.mapCanvas.offsetWidth / 2) - (playerLayout.x + playerLayout.w / 2) * mapState.scale;
+                     mapState.offsetY = (UI.mapCanvas.offsetHeight / 2) - (playerLayout.y + playerLayout.h / 2) * mapState.scale;
+                }
+            }, 100);
+        }
+
         initMapControls();
         setupBackgroundAnimation();
-        setLanguage('en');
-        if (!loadStateFromSession()) { 
-            resetGameState(); 
-            setTimeout(() => {
-                mapState.offsetX = (UI.mapCanvas.offsetWidth / 2) - (roomLayout.Lobby.x + roomLayout.Lobby.w / 2) * mapState.scale;
-                mapState.offsetY = (UI.mapCanvas.offsetHeight / 2) - (roomLayout.Lobby.y + roomLayout.Lobby.h / 2) * mapState.scale;
-            }, 100);
-        } else {
-             if (animationFrameId) cancelAnimationFrame(animationFrameId);
-             gameLoop();
-        }
     });
     </script>
 </body>
