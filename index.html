@@ -381,7 +381,7 @@
             'stats_title': 'STATS', 'awareness': 'Awareness', 'sanity': 'Sanity', 'tone': 'Tone', 'turn': 'Turn', 'objectives_title': 'OBJECTIVES', 'inventory_title': 'INVENTORY', 'journal_title': 'JOURNAL', 'map_title': 'MAP', 'progress_btn': 'PROGRESS', 'status_btn': 'Status', 'go_back_btn': 'Go Back',
             'mic_tooltip': 'Use Voice Command',
             'empty_inventory': '(empty)', 'no_objectives': '(None)', 'close_btn': 'Close', 'back_btn': '[Go back]', 'pause_btn': '[Pause]', 'submit_command': 'Submit Command',
-            'achievements_title': 'ACHIEVEMENTS', 'unlocked_achievements': 'Unlocked Achievements:', 'no_achievements': 'No achievements unlocked yet.',
+            'achievements_btn': 'Achievements', 'endings_btn': 'Endings', 'achievements_title': 'ACHIEVEMENTS', 'unlocked_achievements': 'Unlocked Achievements:', 'no_achievements': 'No achievements unlocked yet.', 'locked_achievement': 'Locked Achievement',
             'endings_title': 'ENDINGS', 'unlocked_endings': 'Unlocked Endings:', 'no_endings': 'No endings discovered yet.',
             'history_title': 'HISTORY', 'pause_title': 'PAUSE', 'resume_btn': 'Resume', 'main_menu_btn': 'Main Menu', 'confirm_main_menu': 'Are you sure you want to return to the main menu? Unsaved progress will be lost.', 'yes': 'Yes', 'no': 'No',
             'settings_btn': 'Settings', 'settings_title': 'SETTINGS', 'setting_master_volume': 'Enable All Sounds', 'setting_item_found': 'Object Found SFX', 'setting_high_awareness': 'High Awareness Warning', 'setting_low_sanity': 'Low Sanity Warning', 'setting_text_speed': 'Text Speed', 'setting_colorblind_mode': 'Colorblind Mode', 'setting_glitch_effect': 'Glitch Effect', 'setting_font_family': 'Font', 'setting_ui_theme': 'UI Theme', 'setting_reset_defaults': 'Reset to Defaults',
@@ -432,7 +432,13 @@
             'hint_take': 'You see a {item}. Try: take {item}', 'hint_read': 'You see a {item}. Try: read {item}', 'hint_examine': 'You see a {item}. Try: examine {item}', 'hint_search': 'You see {item}. Try: search {item}',
             // New Content
             'use_solvent': 'You apply the solvent to the sealed door. The organic adhesive melts away with a sickening sizzle.', 'use_solvent_fail': 'There is nothing here to use the solvent on.', 'use_dna_scanner': 'You hold the scanner up to the sample. The screen flashes with complex sequencing data.', 'use_dna_scanner_fail': 'There is no sample here to scan.',
-            'ending_escaped_title': 'Freedom?', 'ending_escaped_desc': 'You found a way out of the facility, escaping the clutches of SYNAPSE. But the memories, the whispers... they follow you. You are free, but you will never be the same.',
+             // Achievements
+            'achievement_unlocked': 'Achievement Unlocked!',
+            'ach_collector_title': 'Collector', 'ach_collector_req': 'Hold 5 items at once.',
+            'ach_hoarder_title': 'Hoarder', 'ach_hoarder_req': 'Drop an item in 5 different rooms.',
+            'ach_insomniac_title': 'Insomniac', 'ach_insomniac_req': 'Try to rest in an unsafe room.',
+            'ach_what_was_that_title': 'What Was That?', 'ach_what_was_that_req': 'Shout into the darkness.',
+            'ach_biologist_title': 'Biologist', 'ach_biologist_req': 'Dissolve the seal and enter the Specimen Storage.',
         },
         'sv': {
             // Start & UI
@@ -443,7 +449,7 @@
             'stats_title': 'STATISTIK', 'awareness': 'Medvetenhet', 'sanity': 'Sinnesro', 'tone': 'Ton', 'turn': 'Tur', 'objectives_title': 'MÅL', 'inventory_title': 'INVENTARIER', 'journal_title': 'JOURNAL', 'map_title': 'KARTA', 'progress_btn': 'FRAMSTEG', 'status_btn': 'Status', 'go_back_btn': 'Gå Tillbaka',
             'mic_tooltip': 'Använd Röstkommando',
             'empty_inventory': '(tom)', 'no_objectives': '(Inga)', 'close_btn': 'Stäng', 'back_btn': '[Gå tillbaka]', 'pause_btn': '[Paus]', 'submit_command': 'Skicka Kommando',
-            'achievements_title': 'PRESTATIONER', 'unlocked_achievements': 'Upplåsta Prestationer:', 'no_achievements': 'Inga prestationer upplåsta än.',
+            'achievements_btn': 'Prestationer', 'endings_btn': 'Slut', 'achievements_title': 'PRESTATIONER', 'unlocked_achievements': 'Upplåsta Prestationer:', 'no_achievements': 'Inga prestationer upplåsta än.', 'locked_achievement': 'Låst Prestation',
             'endings_title': 'SLUT', 'unlocked_endings': 'Upplåsta Slut:', 'no_endings': 'Inga slut upptäckta än.',
             'history_title': 'HISTORIK', 'pause_title': 'PAUS', 'resume_btn': 'Återuppta', 'main_menu_btn': 'Huvudmeny', 'confirm_main_menu': 'Är du säker på att du vill återvända till huvudmenyn? Osparade framsteg kommer att gå förlorade.', 'yes': 'Ja', 'no': 'Nej',
             'settings_btn': 'Inställningar', 'settings_title': 'INSTÄLLNINGAR', 'setting_master_volume': 'Aktivera alla ljud', 'setting_item_found': 'Ljudeffekt för föremål', 'setting_high_awareness': 'Varning för hög medvetenhet', 'setting_low_sanity': 'Varning för låg sinnesro', 'setting_text_speed': 'Texthastighet', 'setting_colorblind_mode': 'Färgblindsläge', 'setting_glitch_effect': 'Glitcheffekt', 'setting_font_family': 'Typsnitt', 'setting_ui_theme': 'UI-tema', 'setting_reset_defaults': 'Återställ Standard',
@@ -494,7 +500,13 @@
             'hint_take': 'Du ser ett {item}. Prova: ta {item}', 'hint_read': 'Du ser ett {item}. Prova: läs {item}', 'hint_examine': 'Du ser ett {item}. Prova: undersök {item}', 'hint_search': 'Du ser {item}. Prova: sök {item}',
             // New Content
             'use_solvent': 'Du applicerar lösningsmedlet på den förseglade dörren. Det organiska limmet smälter bort med ett vämjeligt fräsande.', 'use_solvent_fail': 'Det finns inget här att använda lösningsmedlet på.', 'use_dna_scanner': 'Du håller skannern mot provet. Skärmen blixtrar till med komplex sekvenseringsdata.', 'use_dna_scanner_fail': 'Det finns inget prov här att skanna.',
-            'ending_escaped_title': 'Frihet?', 'ending_escaped_desc': 'Du hittade en väg ut ur anläggningen och undkom SYNAPSES klor. Men minnena, viskningarna... de följer dig. Du är fri, men du kommer aldrig att bli densamma.',
+             // Achievements
+            'achievement_unlocked': 'Prestation upplåst!',
+            'ach_collector_title': 'Samlare', 'ach_collector_req': 'Håll 5 föremål samtidigt.',
+            'ach_hoarder_title': 'Hamstrare', 'ach_hoarder_req': 'Släpp ett föremål i 5 olika rum.',
+            'ach_insomniac_title': 'Sömnlös', 'ach_insomniac_req': 'Försök vila i ett osäkert rum.',
+            'ach_what_was_that_title': 'Vad var det?', 'ach_what_was_that_req': 'Ropa ut i mörkret.',
+            'ach_biologist_title': 'Biolog', 'ach_biologist_req': 'Lös upp förseglingen och gå in i provförvaringen.',
         }
     };
     
@@ -504,8 +516,8 @@
     const Difficulty = { Easy: 'Easy', Normal: 'Normal', Hard: 'Hard' };
     const TextSpeed = { Fast: 5, Normal: 15, Slow: 30 };
     const MAX_INVENTORY_WEIGHT = 5;
-    const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v11';
-    const ACHIEVEMENTS_STORAGE_KEY = 'synapse_achievements_unlocked_v11';
+    const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v12';
+    const ACHIEVEMENTS_STORAGE_KEY = 'synapse_achievements_unlocked_v12';
     const SETTINGS_KEY = 'synapse_settings_v12'; // Updated settings key
     const GUIDANCE_COLOR = '#34d399';
     const questionWords = {
@@ -596,6 +608,20 @@
     const directionMap = {
         'en': { 'north': 'north', 'south': 'south', 'east': 'east', 'west': 'west' },
         'sv': { 'norr': 'north', 'söder': 'south', 'öst': 'east', 'väst': 'west', 'n': 'north', 's': 'south', 'ö': 'east', 'v': 'west' }
+    };
+
+    const endings = {
+        'escaped': { title_key: 'ending_escaped_title', desc_key: 'ending_escaped_desc' },
+        'mind_shattered': { title_key: 'ending_mind_shattered_title', desc_key: 'ending_mind_shattered_desc' },
+        'assimilated': { title_key: 'ending_assimilated_title', desc_key: 'ending_assimilated_desc' }
+    };
+    
+    const achievements = {
+        'collector': { title_key: 'ach_collector_title', req_key: 'ach_collector_req', check: () => GameState.inventory.length >= 5 },
+        'hoarder': { title_key: 'ach_hoarder_title', req_key: 'ach_hoarder_req', check: () => GameState.roomsWithDroppedItems && GameState.roomsWithDroppedItems.size >= 5 },
+        'insomniac': { title_key: 'ach_insomniac_title', req_key: 'ach_insomniac_req', check: () => GameState.events.triedUnsafeRest },
+        'what_was_that': { title_key: 'ach_what_was_that_title', req_key: 'ach_what_was_that_req', check: () => GameState.events.shouted },
+        'biologist': { title_key: 'ach_biologist_title', req_key: 'ach_biologist_req', check: () => GameState.visitedRooms.has("Specimen Storage") }
     };
     
     // --- LANGUAGE FUNCTIONS ---
@@ -729,6 +755,7 @@
             sounds.doorOpen = new Tone.Player({ url: "https://storage.googleapis.com/immersive-dev-public-include/synapse/door.mp3" }).toDestination();
             sounds.sanityLoss = new Tone.Player({ url: "https://storage.googleapis.com/immersive-dev-public-include/synapse/sanity_loss.mp3" }).toDestination();
             sounds.itemPickup = new Tone.Player({ url: "https://storage.googleapis.com/immersive-dev-public-include/synapse/pickup.mp3" }).toDestination();
+            sounds.achievement = new Tone.Player({ url: "https://storage.googleapis.com/immersive-dev-public-include/synapse/achievement.mp3" }).toDestination();
             audioInitialized = true; 
             console.log("Audio Initialized");
         } catch(e) { 
@@ -778,6 +805,8 @@
             exitGame: false, conversationHistory: [], 
             systemLogs: [`[${new Date().toISOString()}] Game initialized.`], 
             objectives: [], roomStates: {}, debugMode: false, flashlightOn: false,
+            events: { shouted: false, triedUnsafeRest: false }, // Event tracking
+            roomsWithDroppedItems: new Set(),
             settings: loadSettings()
         };
         applySettings();
@@ -884,7 +913,7 @@
             'objectives': displayObjectives, 'map': displayMap,
             'cls': () => { UI.gameOutput.innerHTML = ''; }, 'history': showHistory, 'undo': undoLastAction, 'again': () => processPlayerInput(commandHistory[commandHistory.length - 2] || ''),
             'drop': handleDrop, 'talk': handleTalk, 'open': () => typeWriter(UI.gameOutput, t('nothing_happens')), 'close': () => typeWriter(UI.gameOutput, t('nothing_happens')), 'push': () => typeWriter(UI.gameOutput, t('nothing_happens')), 'pull': () => typeWriter(UI.gameOutput, t('nothing_happens')),
-            'wait': () => typeWriter(UI.gameOutput, t('wait_response')), 'shout': () => { playSound('sanityLoss'); typeWriter(UI.gameOutput, t('shout_response'))},
+            'wait': () => typeWriter(UI.gameOutput, t('wait_response')), 'shout': handleShout,
             'read': handleRead, 'search': handleSearch, 'listen': handleListen, 'smell': handleSmell,
             'turn on': (arg) => handleToggle(true, arg), 'turn off': (arg) => handleToggle(false, arg),
             'cmd:pause': showPauseMenu, 'cmd:debug': toggleDebug, 'cmd:colorblind': toggleColorblind,
@@ -905,6 +934,7 @@
         const isAction = !['help', 'inventory', 'journal', 'look around', 'exits', 'map', 'save', 'load', 'cls', 'history', 'undo', 'cmd:debug', 'cmd:colorblind'].includes(command);
         if((isAction || handled) && !GameState.exitGame) {
             if(isAction) GameState.turnCount++;
+            checkAchievements();
             updateUI(); 
         }
         if (GameState.debugMode) {
@@ -1146,7 +1176,11 @@
                 GameState.sanityLevel = Math.min(GameState.maxSanity, GameState.sanityLevel + 15);
                 typeWriter(UI.gameOutput, t('rest_safe'), '#34d399');
             } else { typeWriter(UI.gameOutput, t('rest_too_soon'), '#ffdb58'); }
-        } else { typeWriter(UI.gameOutput, t('rest_unsafe'), '#ff474c'); playSound('sanityLoss'); }
+        } else { 
+            typeWriter(UI.gameOutput, t('rest_unsafe'), '#ff474c');
+            GameState.events.triedUnsafeRest = true;
+            playSound('sanityLoss'); 
+        }
     }
 
     function handleDrop(itemName) {
@@ -1154,7 +1188,14 @@
         const item = GameState.inventory.find(i => i.name.toLowerCase() === itemName.toLowerCase());
         removeItemFromInventory(itemName);
         rooms[GameState.currentRoom].objects.push(item.name);
+        GameState.roomsWithDroppedItems.add(GameState.currentRoom);
         typeWriter(UI.gameOutput, t('drop_success', {item: itemName}), '#cccccc');
+    }
+
+    function handleShout() {
+        GameState.events.shouted = true;
+        playSound('sanityLoss'); 
+        typeWriter(UI.gameOutput, t('shout_response'))
     }
     
     function handleTalk() { buildDialogueTree(GameState.chatbotTone); displayChatbotResponse(GameState.dialogue.currentNode.message_key).then(() => { renderDialogueOptions(); }); }
@@ -1219,7 +1260,7 @@
         try { 
             saveSettings(); // Also save sound settings
             const saveData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); 
-            localStorage.setItem('synapse_savegame_v11', saveData); 
+            localStorage.setItem('synapse_savegame_v12', saveData); 
             if (!isAutosave) typeWriter(UI.gameOutput, t('game_saved'), '#cccccc'); 
             else GameState.systemLogs.push(`[${new Date().toISOString()}] ${t('autosave_success')}.`); 
         } catch(e) { 
@@ -1228,7 +1269,7 @@
     }
     
     function loadGame() {
-        const savedData = localStorage.getItem('synapse_savegame_v11');
+        const savedData = localStorage.getItem('synapse_savegame_v12');
         if (savedData) {
             try {
                 const loadedState = JSON.parse(savedData);
@@ -1238,6 +1279,8 @@
                 applySettings();
                 GameState.visitedRooms = new Set(loadedState.visitedRooms);
                 GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []);
+                GameState.roomsWithDroppedItems = new Set(loadedState.roomsWithDroppedItems || []);
+                GameState.achievements = loadedState.achievements || [];
                 initializeData(); 
                 buildDialogueTree(GameState.chatbotTone);
                 GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone]; GameState.dialogue.previousNodes = [];
@@ -1439,12 +1482,15 @@
     function showPauseMenu() {
         const pauseText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('pause_title')}</h2>
         <div class="flex flex-col gap-2">
-        <button id="pause-save" class="button">${t('save_game')}</button>
-        <button id="pause-load" class="button">${t('load_game')}</button>
-        <button id="pause-settings" class="button">${t('settings_btn')}</button>
-        <button id="pause-help" class="button">${t('help')}</button>
-        <button id="pause-main-menu" class="button text-yellow-300 border-yellow-300/80">${t('main_menu_btn')}</button>
-        <button id="pause-resume" class="button button-primary mt-4">${t('resume_btn')}</button>
+            <button id="pause-achievements" class="button">${t('achievements_btn')}</button>
+            <button id="pause-endings" class="button">${t('endings_btn')}</button>
+            <hr class="border-gray-700 my-2">
+            <button id="pause-save" class="button">${t('save_game')}</button>
+            <button id="pause-load" class="button">${t('load_game')}</button>
+            <button id="pause-settings" class="button">${t('settings_btn')}</button>
+            <button id="pause-help" class="button">${t('help')}</button>
+            <button id="pause-main-menu" class="button text-yellow-300 border-yellow-300/80">${t('main_menu_btn')}</button>
+            <button id="pause-resume" class="button button-primary mt-4">${t('resume_btn')}</button>
         </div>`; 
         showModal(pauseText, true); 
         document.getElementById('pause-save').onclick = () => { playSound('uiClick'); saveGame(); hideModal(); }; 
@@ -1453,7 +1499,100 @@
         document.getElementById('pause-help').onclick = () => { playSound('uiClick'); showHelpMenu(); }; 
         document.getElementById('pause-main-menu').onclick = () => { playSound('uiClick'); confirmReturnToMainMenu(); };
         document.getElementById('pause-resume').onclick = () => { playSound('uiClick'); hideModal(); };
+        document.getElementById('pause-achievements').onclick = () => { playSound('uiClick'); showAchievementsModal(); };
+        document.getElementById('pause-endings').onclick = () => { playSound('uiClick'); showEndingsModal(); };
     }
+
+    function showAchievementsModal() {
+        let content = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('achievements_title')}</h2>
+                       <div class="modal-scroll flex-grow p-2 text-left">`;
+        
+        const unlockedAchievements = GameState.achievements || [];
+
+        content += `<h3 class="text-lg font-bold mb-2 text-white">${t('unlocked_achievements')}</h3>`;
+        if (unlockedAchievements.length > 0) {
+            content += `<ul class="list-disc pl-5 space-y-2">`;
+            unlockedAchievements.forEach(id => {
+                const ach = achievements[id];
+                content += `<li class="text-green-300"><strong>${t(ach.title_key)}:</strong> <span class="text-gray-300">${t(ach.req_key)}</span></li>`;
+            });
+            content += `</ul>`;
+        } else {
+            content += `<p class="text-gray-400">${t('no_achievements')}</p>`;
+        }
+
+        content += `<h3 class="text-lg font-bold mt-4 mb-2 text-white">${t('locked_achievement')}</h3>`;
+        content += `<ul class="list-disc pl-5 space-y-2">`;
+        let lockedCount = 0;
+        for (const id in achievements) {
+            if (!unlockedAchievements.includes(id)) {
+                lockedCount++;
+                const ach = achievements[id];
+                const requirementMet = ach.check();
+                if (requirementMet) {
+                     content += `<li class="text-yellow-400"><strong>${t(ach.title_key)}:</strong> <span class="text-gray-400">${t(ach.req_key)}</span></li>`;
+                } else {
+                     content += `<li class="text-gray-500"><strong>????:</strong> <span class="text-gray-600 italic">Undiscovered</span></li>`;
+                }
+            }
+        }
+         if (lockedCount === 0) {
+            content += `<p class="text-green-400">All achievements unlocked!</p>`;
+        }
+        content += `</ul>`;
+
+        content += `</div><button class="close-modal-btn button mt-6">${t('back_btn')}</button>`;
+        showModal(content, true);
+        const closeBtn = UI.modalContent.querySelector('.close-modal-btn');
+        if(closeBtn) {
+            closeBtn.onclick = () => {
+                playSound('uiClick');
+                showPauseMenu();
+            };
+        }
+    }
+
+    function showEndingsModal() {
+        let content = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('endings_title')}</h2>
+                       <div class="modal-scroll flex-grow p-2 text-left">`;
+        
+        const unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_STORAGE_KEY) || '{}');
+        const unlockedKeys = Object.keys(unlockedEndings);
+
+        content += `<h3 class="text-lg font-bold mb-2 text-white">${t('unlocked_endings')}</h3>`;
+
+        if (unlockedKeys.length > 0) {
+            content += `<ul class="list-disc pl-5 space-y-3">`;
+            unlockedKeys.forEach(key => {
+                const ending = endings[key];
+                content += `<li class="text-green-300">
+                    <strong>${t(ending.title_key)}:</strong>
+                    <p class="text-gray-300 text-sm">${t(ending.desc_key)}</p>
+                </li>`;
+            });
+            content += `</ul>`;
+        } else {
+             content += `<p class="text-gray-400">${t('no_endings')}</p>`;
+        }
+
+        const lockedCount = Object.keys(endings).length - unlockedKeys.length;
+        if (lockedCount > 0) {
+            content += `<h3 class="text-lg font-bold mt-4 mb-2 text-white">Locked Endings</h3>`;
+            content += `<p class="text-gray-500">${lockedCount} ending(s) remain undiscovered.</p>`;
+        }
+
+
+        content += `</div><button class="close-modal-btn button mt-6">${t('back_btn')}</button>`;
+        showModal(content, true);
+        const closeBtn = UI.modalContent.querySelector('.close-modal-btn');
+        if(closeBtn) {
+            closeBtn.onclick = () => {
+                playSound('uiClick');
+                showPauseMenu();
+            };
+        }
+    }
+
 
     function showSettingsModal(fromPauseMenu = false) {
         const { settings } = GameState;
@@ -1613,8 +1752,8 @@
     function returnToMainMenu() {
         if(animationFrameId) cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
-        sessionStorage.removeItem('synapse_session_v11_autosave');
-        sessionStorage.removeItem('synapse_session_v11_screen_state');
+        sessionStorage.removeItem('synapse_session_v12_autosave');
+        sessionStorage.removeItem('synapse_session_v12_screen_state');
         GameState.exitGame = true;
 
         UI.gameScreen.classList.add('hidden'); 
@@ -1669,15 +1808,15 @@
         if(animationFrameId) cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
 
-        let endingTitle = "Disconnected";
-        let endingDesc = "Your connection was severed.";
-
-        switch(endingKey) {
-            case 'escaped':
-                endingTitle = t('ending_escaped_title');
-                endingDesc = t('ending_escaped_desc');
-                break;
+        const endingData = endings[endingKey];
+        if (!endingData) {
+            console.error(`Ending with key '${endingKey}' not found.`);
+            returnToMainMenu();
+            return;
         }
+
+        const endingTitle = t(endingData.title_key);
+        const endingDesc = t(endingData.desc_key);
 
         const unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_STORAGE_KEY) || '{}');
         unlockedEndings[endingKey] = { title: endingTitle, desc: endingDesc };
@@ -1691,6 +1830,33 @@
         showModal(endingHtml, true);
         document.getElementById('ending-main-menu').onclick = () => { playSound('uiClick'); returnToMainMenu(); };
     }
+
+    function checkAchievements() {
+        for (const id in achievements) {
+            if (!GameState.achievements.includes(id)) {
+                if (achievements[id].check()) {
+                    unlockAchievement(id);
+                }
+            }
+        }
+    }
+
+    function unlockAchievement(id) {
+        if (GameState.achievements.includes(id)) return;
+
+        GameState.achievements.push(id);
+        const ach = achievements[id];
+        playSound('achievement');
+        typeWriter(UI.gameOutput, `[${t('achievement_unlocked')}] ${t(ach.title_key)}`, '#FFD700');
+
+        // Save to local storage to persist across all games
+        const unlockedAchievements = JSON.parse(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY) || '[]');
+        if (!unlockedAchievements.includes(id)) {
+            unlockedAchievements.push(id);
+            localStorage.setItem(ACHIEVEMENTS_STORAGE_KEY, JSON.stringify(unlockedAchievements));
+        }
+    }
+
 
     function hasItem(itemName) { return GameState.inventory.some(i => i.name.toLowerCase() === itemName.toLowerCase()); }
     function removeItemFromInventory(itemName) { const index = GameState.inventory.findIndex(i => i.name.toLowerCase() === itemName.toLowerCase()); if (index > -1) { GameState.inventory.splice(index, 1); } }
@@ -1772,8 +1938,8 @@
         if (!UI.gameScreen.classList.contains('hidden') && GameState && typeof GameState.turnCount === 'number' && !GameState.exitGame) {
             try {
                 const sessionData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value);
-                sessionStorage.setItem('synapse_session_v11_autosave', sessionData);
-                sessionStorage.removeItem('synapse_session_v11_screen_state');
+                sessionStorage.setItem('synapse_session_v12_autosave', sessionData);
+                sessionStorage.removeItem('synapse_session_v12_screen_state');
             } catch (e) {
                 console.error("Session game state save failed:", e);
             }
@@ -1787,19 +1953,19 @@
                     difficulty: Array.from(UI.difficultyBtns).find(b => b.classList.contains('button-primary'))?.dataset.difficulty || Difficulty.Normal,
                     language: currentLanguage
                 };
-                sessionStorage.setItem('synapse_session_v11_screen_state', JSON.stringify(startState));
-                sessionStorage.removeItem('synapse_session_v11_autosave');
+                sessionStorage.setItem('synapse_session_v12_screen_state', JSON.stringify(startState));
+                sessionStorage.removeItem('synapse_session_v12_autosave');
             } catch (e) {
                 console.error("Session screen state save failed:", e);
             }
         } else {
-             sessionStorage.removeItem('synapse_session_v11_autosave');
-             sessionStorage.removeItem('synapse_session_v11_screen_state');
+             sessionStorage.removeItem('synapse_session_v12_autosave');
+             sessionStorage.removeItem('synapse_session_v12_screen_state');
         }
     }
 
     function loadStateFromSession() {
-        const sessionData = sessionStorage.getItem('synapse_session_v11_autosave');
+        const sessionData = sessionStorage.getItem('synapse_session_v12_autosave');
         if (!sessionData) return false;
         try {
             const loadedState = JSON.parse(savedData);
@@ -1810,6 +1976,8 @@
                 applySettings();
                 GameState.visitedRooms = new Set(loadedState.visitedRooms || []);
                 GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []);
+                GameState.roomsWithDroppedItems = new Set(loadedState.roomsWithDroppedItems || []);
+                GameState.achievements = loadedState.achievements || [];
                 initializeData(); 
                 buildDialogueTree(GameState.chatbotTone);
                 GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone] || GameState.dialogue.cache[ChatbotTone.Friendly];
@@ -1827,7 +1995,7 @@
             }
         } catch (e) {
             console.error("Session load failed:", e);
-            sessionStorage.removeItem('synapse_session_v11_autosave');
+            sessionStorage.removeItem('synapse_session_v12_autosave');
         }
         return false;
     }
@@ -2111,6 +2279,8 @@
             GameState = JSON.parse(JSON.stringify(prevState));
             GameState.visitedRooms = new Set(prevState.visitedRooms);
             GameState.dialogue.askedQuestions = new Set(prevState.dialogue.askedQuestions || []);
+             GameState.roomsWithDroppedItems = new Set(prevState.roomsWithDroppedItems || []);
+            GameState.achievements = prevState.achievements || [];
             updateUI();
             typeWriter(UI.gameOutput, "[System] Last action undone.", "#ffdb58");
         } else {
@@ -2150,8 +2320,8 @@
 
         // Clear session data on explicit new/load game to ensure a clean start
         setupButtonClick(UI.newGameBtn, () => { 
-            sessionStorage.removeItem('synapse_session_v11_autosave'); 
-            sessionStorage.removeItem('synapse_session_v11_screen_state'); 
+            sessionStorage.removeItem('synapse_session_v12_autosave'); 
+            sessionStorage.removeItem('synapse_session_v12_screen_state'); 
             UI.startScreen.classList.add('hidden'); 
             UI.startScreen.classList.remove('flex');
             UI.playerSetup.classList.remove('hidden'); 
@@ -2159,8 +2329,8 @@
             updateAbilityDisplay(); 
         });
         setupButtonClick(UI.loadGameBtn, () => { 
-            sessionStorage.removeItem('synapse_session_v11_autosave'); 
-            sessionStorage.removeItem('synapse_session_v11_screen_state'); 
+            sessionStorage.removeItem('synapse_session_v12_autosave'); 
+            sessionStorage.removeItem('synapse_session_v12_screen_state'); 
             loadGame(); 
         });
         setupButtonClick(UI.backToStartBtn, () => {
@@ -2209,7 +2379,7 @@
         } 
         // 2. If no game was restored, check for a start screen session.
         else {
-            const screenStateData = sessionStorage.getItem('synapse_session_v11_screen_state');
+            const screenStateData = sessionStorage.getItem('synapse_session_v12_screen_state');
             if (screenStateData) {
                 try {
                     const startState = JSON.parse(screenStateData);
@@ -2234,7 +2404,7 @@
                     restored = true;
                 } catch (e) {
                     console.error("Failed to restore screen state:", e);
-                    sessionStorage.removeItem('synapse_session_v11_screen_state');
+                    sessionStorage.removeItem('synapse_session_v12_screen_state');
                 }
             }
         }
