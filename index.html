@@ -521,7 +521,7 @@
             'enter_name_placeholder': 'Enter your name', 'enter_backstory_placeholder': 'Enter your backstory', 'view_choices': 'View Choices', 'choose_backstory_title': 'Choose a Backstory',
             'choose_backstory_desc': 'You can click a button to select a backstory, or type your choice on the main screen.',
             'begin': 'Begin', 'understand_game': 'Understand the Game', 'intro_1': 'Decades ago... a clandestine project was born...', 'intro_2': 'You have been sent to uncover what became of Project SYNAPSE...', 'intro_3': "As you activate the central terminal, a voice greets you... 'Hello, user.'",
-            'stats_title': 'STATS', 'awareness': 'Awareness', 'sanity': 'Sanity', 'tone': 'Tone', 'turn': 'Turn', 'objectives_title': 'OBJECTIVES', 'inventory_title': 'INVENTORY', 'journal_title': 'JOURNAL', 'map_title': 'MAP', 'progress_btn': 'PROGRESS', 'status_btn': 'Status', 'go_back_btn': 'Go Back',
+            'stats_title': 'STATS', 'awareness': 'Awareness', 'sanity': 'Sanity', 'tone': 'Tone', 'turn': 'Turn', 'objectives_title': 'OBJECTIVES', 'inventory_title': 'INVENTORY', 'journal_title': 'JOURNAL', 'map_title': 'KARTA', 'progress_btn': 'PROGRESS', 'status_btn': 'Status', 'go_back_btn': 'Gå Tillbaka',
             'mic_tooltip': 'Use Voice Command',
             'empty_inventory': '(empty)', 'no_objectives': '(None)', 'close_btn': 'Close', 'back_btn': 'Back', 'pause_btn': 'Pause', 'submit_command': 'Submit Command',
             'achievements_btn': 'Achievements', 'endings_btn': 'Endings', 'achievements_title': 'ACHIEVEMENTS', 'unlocked_achievements': 'Unlocked Achievements:', 'no_achievements': 'No achievements unlocked yet.', 'locked_achievement': 'Locked Achievement',
@@ -1987,7 +1987,7 @@
             ${endingsHtml}
             ${achievementsHtml}
         </div>
-        <button class="close-modal-btn button mt-6">${t('close_btn')}</button>`;
+        <button class="close-modal-btn button mt-6">${t('close_btn')}</button>`; 
         showModal(progressionText, true);
     }
 
@@ -2028,29 +2028,33 @@
 
     function showAchievementsModal() {
         let content = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('achievements_title')}</h2>
-                       <div class="modal-scroll flex-grow p-2 text-left">`;
-        
-        const unlockedAchievements = GameState.achievements || [];
+                   <div class="modal-scroll flex-grow p-2 text-left">`;
+
+        // Use persistent storage for achievements
+        const unlockedAchievementsObj = JSON.parse(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY) || '{}');
+        const unlockedAchievements = Object.keys(unlockedAchievementsObj);
 
         content += `<h3 class="text-lg font-bold mb-2 text-white">${t('unlocked_achievements')}</h3>`;
         if (unlockedAchievements.length > 0) {
             content += `<ul class="list-disc pl-5 space-y-2">`;
             unlockedAchievements.forEach(id => {
                 const ach = achievements[id];
-                content += `<li class="text-green-300"><strong>${t(ach.title_key)}:</strong> <span class="text-gray-300">${t(ach.req_key)}</span></li>`;
+                if (ach) {
+                    content += `<li class="text-green-300"><strong>${t(ach.title_key)}:</strong> <span class="text-gray-300">${t(ach.req_key)}</span></li>`;
+                }
             });
             content += `</ul>`;
         } else {
             content += `<p class="text-gray-400">${t('no_achievements')}</p>`;
         }
 
+        // Locked achievements
         content += `<h3 class="text-lg font-bold mt-4 mb-2 text-white">${t('locked_achievement')}</h3>`;
         content += `<ul class="list-disc pl-5 space-y-2">`;
         let lockedCount = 0;
         for (const id in achievements) {
             if (!unlockedAchievements.includes(id)) {
                 lockedCount++;
-                const ach = achievements[id];
                 content += `<li class="text-gray-500"><strong>????:</strong> <span class="text-gray-600 italic">Undiscovered</span></li>`;
             }
         }
@@ -2061,8 +2065,10 @@
 
         content += `</div><button class="close-modal-btn button mt-6">${t('back_btn')}</button>`;
         showModal(content, true);
+
+        // Always re-bind the close button to return to the pause menu
         const closeBtn = UI.modalContent.querySelector('.close-modal-btn');
-        if(closeBtn) {
+        if (closeBtn) {
             closeBtn.onclick = () => {
                 playSound('uiClick');
                 showPauseMenu();
