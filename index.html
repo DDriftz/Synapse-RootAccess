@@ -30,6 +30,7 @@
             background-color: #0d0d0d;
             color: var(--main-color);
             font-family: 'Space Mono', monospace;
+            position: fixed; 
         }
         #background-canvas {
             position: fixed;
@@ -128,85 +129,8 @@
         #game-output::-webkit-scrollbar-track, #journal-panel::-webkit-scrollbar-track, #objectives-panel::-webkit-scrollbar-track, .modal-scroll::-webkit-scrollbar-track { background: #1a1a1a; }
         #game-output::-webkit-scrollbar-thumb, #journal-panel::-webkit-scrollbar-thumb, #objectives-panel::-webkit-scrollbar-thumb, .modal-scroll::-webkit-scrollbar-thumb { background-color: var(--main-color); border-radius: 4px; }
         .glitch { animation: glitch-anim 1.5s infinite alternate-reverse; }
-        .glitch.paused { animation-play-state: paused !important; }
         @keyframes glitch-anim {
-          0% {
-            transform: translate(0);
-            clip-path: inset(45% 0 50% 0);
-          }
-          5% {
-            transform: translate(2px, -3px);
-            clip-path: inset(25% 0 35% 0);
-          }
-          10% {
-            transform: translate(-2px, 3px);
-            clip-path: inset(60% 0 10% 0);
-          }
-          15% {
-            transform: translate(0);
-            clip-path: inset(90% 0 5% 0);
-          }
-          20% {
-            clip-path: inset(40% 0 45% 0);
-          }
-          25% {
-            transform: translate(3px, 2px);
-            clip-path: inset(20% 0 70% 0);
-          }
-          30% {
-            transform: translate(-3px, -2px);
-            clip-path: inset(85% 0 5% 0);
-          }
-          35% {
-            clip-path: inset(15% 0 80% 0);
-          }
-          40% {
-            transform: translate(0);
-            clip-path: inset(55% 0 25% 0);
-          }
-          45% {
-            clip-path: inset(30% 0 55% 0);
-          }
-          50% {
-            transform: translate(2px, 3px);
-            clip-path: inset(70% 0 5% 0);
-          }
-          55% {
-            transform: translate(-2px, -3px);
-            clip-path: inset(10% 0 85% 0);
-          }
-          60% {
-            clip-path: inset(75% 0 15% 0);
-          }
-          65% {
-            transform: translate(0);
-            clip-path: inset(5% 0 90% 0);
-          }
-          70% {
-            clip-path: inset(65% 0 20% 0);
-          }
-          75% {
-            transform: translate(3px, -2px);
-            clip-path: inset(45% 0 50% 0);
-          }
-          80% {
-            transform: translate(-3px, 2px);
-            clip-path: inset(25% 0 65% 0);
-          }
-          85% {
-            clip-path: inset(95% 0 2% 0);
-          }
-          90% {
-            transform: translate(0);
-            clip-path: inset(30% 0 60% 0);
-          }
-          95% {
-            clip-path: inset(5% 0 75% 0);
-          }
-          100% {
-            transform: translate(2px, 2px);
-            clip-path: inset(80% 0 10% 0);
-          }
+          0% { transform: translate(0); clip-path: inset(45% 0 50% 0); } 5% { transform: translate(2px, -3px); clip-path: inset(25% 0 35% 0); } 10% { transform: translate(-2px, 3px); clip-path: inset(60% 0 10% 0); } 15% { transform: translate(0); clip-path: inset(90% 0 5% 0); } 20% { clip-path: inset(40% 0 45% 0); } 25% { transform: translate(3px, 2px); clip-path: inset(20% 0 70% 0); } 30% { transform: translate(-3px, -2px); clip-path: inset(85% 0 5% 0); } 35% { clip-path: inset(15% 0 80% 0); } 40% { transform: translate(0); clip-path: inset(55% 0 25% 0); } 45% { clip-path: inset(30% 0 55% 0); } 50% { transform: translate(2px, 3px); clip-path: inset(70% 0 5% 0); } 55% { transform: translate(-2px, -3px); clip-path: inset(10% 0 85% 0); } 60% { clip-path: inset(75% 0 15% 0); } 65% { transform: translate(0); clip-path: inset(5% 0 90% 0); } 70% { clip-path: inset(65% 0 20% 0); } 75% { transform: translate(3px, -2px); clip-path: inset(45% 0 50% 0); } 80% { transform: translate(-3px, 2px); clip-path: inset(25% 0 65% 0); } 85% { clip-path: inset(95% 0 2% 0); } 90% { transform: translate(0); clip-path: inset(30% 0 60% 0); } 95% { clip-path: inset(5% 0 75% 0); } 100% { transform: translate(2px, 2px); clip-path: inset(80% 0 10% 0); }
         }
         .button {
             background-color: var(--main-color-faded); border: 1px solid var(--main-color-border); color: #fff; padding: 0.5rem 1rem; border-radius: 0.375rem; transition: all 0.2s; cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent; text-shadow: 0 0 3px var(--main-color-shadow);
@@ -315,10 +239,7 @@
         .clickable-object {
             color: #67e8f9; /* cyan-300 */
             text-decoration: underline;
-            /* Fallback for browsers that don't support text-decoration-style */
             text-decoration-style: dotted;
-            /* For older browsers, fallback to dashed if dotted is not supported */
-            text-decoration-style: dashed;
             cursor: pointer;
         }
         .clickable-object:hover {
@@ -416,9 +337,9 @@
                         <button class="difficulty-btn button button-primary" data-difficulty="Normal" data-lang="normal">Normal</button>
                         <button class="difficulty-btn button" data-difficulty="Hard" data-lang="hard">Hard</button>
                     </div>
-                    <input type="text" id="player-name" data-lang-placeholder="enter_name_placeholder" placeholder="Enter your name" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 mb-4 focus:outline-none p-1">
+                    <input type="text" id="player-name" data-lang-placeholder="enter_name_placeholder" placeholder="Enter your name" class="bg-transparent border-b-2 border-[var(--main-color)] text-center w-64 mb-4 focus:outline-none p-1">
                     <div class="flex items-center gap-2 mb-6">
-                        <input type="text" id="player-backstory" data-lang-placeholder="enter_backstory_placeholder" placeholder="Enter your backstory" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 focus:outline-none p-1">
+                        <input type="text" id="player-backstory" data-lang-placeholder="enter_backstory_placeholder" placeholder="Enter your backstory" class="bg-transparent border-b-2 border-[var(--main-color)] text-center w-64 focus:outline-none p-1">
                         <button id="view-backstories-btn" class="button text-xs px-2 py-1" data-lang="view_choices">View Choices</button>
                     </div>
                     <div id="ability-display" class="text-center text-cyan-400 min-h-[4rem] mt-2 mb-4 p-2 border border-cyan-400/30 rounded-md bg-black/50 w-full max-w-md flex items-center justify-center"></div>
@@ -511,199 +432,143 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - V2.4 ENDINGS UPDATE
+    // SYNAPSE: AI HORROR GAME - V2.5 BUGFIX UPDATE
     
     // --- TRANSLATIONS ---
-const translations = {
-  en: {
-    // Start & UI
-    'new_game': 'New Game', 'load_game': 'Load Game', 'en_lang_short': 'EN', 'sv_lang_short': 'SV', 'select_difficulty': 'Select difficulty:', 'easy': 'Easy', 'normal': 'Normal', 'hard': 'Hard', 'fast':'Fast', 'slow': 'Slow',
-    'enter_name_placeholder': 'Enter your name', 'enter_backstory_placeholder': 'Enter your backstory', 'view_choices': 'View Choices', 'choose_backstory_title': 'Choose a Backstory',
-    'choose_backstory_desc': 'You can click a button to select a backstory, or type your choice on the main screen.',
-    'begin': 'Begin', 'understand_game': 'Understand the Game', 'intro_1': 'Decades ago... a clandestine project was born...', 'intro_2': 'You have been sent to uncover what became of Project SYNAPSE...', 'intro_3': "As you activate the central terminal, a voice greets you... 'Hello, user.'",
-    'stats_title': 'STATS', 'awareness': 'Awareness', 'sanity': 'Sanity', 'tone': 'Tone', 'turn': 'Turn', 'objectives_title': 'OBJECTIVES', 'inventory_title': 'INVENTORY', 'journal_title': 'JOURNAL', 'map_title': 'MAP', 'progress_btn': 'PROGRESS', 'status_btn': 'Status', 'go_back_btn': 'Gå Tillbaka',
-    'mic_tooltip': 'Use Voice Command',
-    'empty_inventory': '(empty)', 'no_objectives': '(None)', 'close_btn': 'Close', 'back_btn': 'Back', 'pause_btn': 'Pause', 'submit_command': 'Submit Command',
-    'achievements_btn': 'Achievements', 'endings_btn': 'Endings', 'achievements_title': 'ACHIEVEMENTS', 'unlocked_achievements': 'Unlocked Achievements:', 'no_achievements': 'No achievements unlocked yet.', 'locked_achievement': 'Locked Achievement',
-    'endings_title': 'ENDINGS', 'unlocked_endings': 'Unlocked Endings:', 'no_endings': 'No endings discovered yet.',
-    'history_title': 'HISTORY', 'pause_title': 'PAUSE', 'resume_btn': 'Resume', 'main_menu_btn': 'Main Menu', 'confirm_main_menu': 'Are you sure you want to return to the main menu? Unsaved progress will be lost.', 'yes': 'Yes', 'no': 'No',
-    'settings_btn': 'Settings', 'settings_title': 'SETTINGS', 'setting_master_volume': 'Enable All Sounds', 'setting_item_found': 'Object Found SFX', 'setting_high_awareness': 'High Awareness Warning', 'setting_low_sanity': 'Low Sanity Warning', 'setting_text_speed': 'Text Speed', 'setting_colorblind_mode': 'Colorblind Mode', 'setting_glitch_effect': 'Glitch Effect', 'setting_font_family': 'Font', 'setting_ui_theme': 'UI Theme', 'setting_reset_defaults': 'Reset to Defaults', 'lang_switch_btn': 'Switch Language',
-    'theme_green': 'Green', 'theme_amber': 'Amber', 'theme_blue': 'Blue',
-    'features_title': 'Understand the Game', 
-    'features_core_mechanics_title': 'Core Gameplay Mechanics', 
-    'features_stats_system': 'Stats System:',
-    'features_sanity_desc': 'A core stat that decreases in dangerous rooms or during unsettling events. Low sanity can cause hallucinations and visual glitches, and reaching zero results in a "Mind Shattered" ending. It can be restored by <span class="text-yellow-400">resting</span> in safe rooms or using items like <span class="text-yellow-400">stimpacks</span>.',
-    'features_awareness_desc': 'Tracks how much the AI knows about you. It increases when you perform significant actions or ask probing questions. High awareness changes the AI\'s tone and can lead to negative consequences, including the "Assimilated" ending.',
-    'features_turn_based_title': 'Turn-Based Progression:', 'features_turn_based_desc': 'The game progresses in <span class="text-cyan-400">turns</span>. Most commands (like moving, using items, or talking) advance the turn counter.',
-    'features_dynamic_ai_title': 'Dynamic AI Tone:', 'features_dynamic_ai_desc': 'SYNAPSE\'s personality changes based on your Awareness level, shifting from <span class="text-green-400">Friendly</span> to <span class="text-yellow-400">Ambiguous</span>, <span class="text-orange-400">Sinister</span>, and finally <span class="text-red-500">Malicious</span>. This affects its dialogue and how it interacts with you.',
-    'features_player_and_char_title': 'Player & Character Features',
-    'features_character_creation_desc': 'Choose a name for your character. Select from 10 unique <span class="text-cyan-400">backstories</span> (e.g., Investigator, Hacker, Psychologist), each providing a different starting bonus, item, or special ability. Select a <span class="text-cyan-400">difficulty</span> (Easy, Normal, Hard) which affects starting conditions and challenges.',
-    'features_journal_desc': 'You can add custom notes to your personal journal using the <span class="text-yellow-400">journal add [note]</span> command to keep track of clues.',
-    'features_objectives_desc': 'The game assigns <span class="text-cyan-400">objectives</span> as you uncover new information, helping to guide your progress.',
-    'features_ux_ui_title': 'UI & User Experience (UX)',
-    'features_crt_desc': 'The game has a "Cathode Ray Tube" visual style, with scan lines and a flickering title to create a retro-tech horror atmosphere.',
-    'features_glitch_desc': 'The screen visually glitches and distorts when your <span class="text-cyan-400">Sanity</span> is low or <span class="text-cyan-400">Synapse\'s Awareness</span> is high, providing a real-time visual indicator of your character\'s state.',
-    'features_map_desc': 'An interactive map shows the entire facility layout. Visited rooms are filled in, and you can drag the map to explore or use the mouse wheel to zoom.',
-    'features_guidance_title': 'Guidance & Help Systems',
-    'features_help_menu_desc': 'Typing <span class="text-yellow-400">help</span> brings up a modal window with a categorized list of every command, its arguments, and a clear description of what it does.',
-    'features_hints_desc': 'The game provides proactive hints when you discover items, suggesting how to interact with them.',
-    'features_player_commands_title': 'Player Commands (Functions)',
-    'features_commands_nav': '<strong>Navigation:</strong> <span class="text-yellow-400">go [direction]</span>, <span class="text-yellow-400">visit [room name]</span>, <span class="text-yellow-400">look around</span>, <span class="text-yellow-400">exits</span>, <span class="text-yellow-400">map</span>',
-    'features_commands_interact': '<strong>Interaction:</strong> <span class="text-yellow-400">take [item]</span>, <span class="text-yellow-400">use [item]</span>, <span class="text-yellow-400">examine [object/item]</span>, <span class="text-yellow-400">combine [item1] with [item2]</span>, <span class="text-yellow-400">drop [item]</span>, <span class="text-yellow-400">talk</span>, <span class="text-yellow-400">shout</span>, <span class="text-yellow-400">read [item]</span>, <span class="text-yellow-400">search [object]</span>, <span class="text-yellow-400">listen</span>, <span class="text-yellow-400">smell</span>',
-    'features_commands_info': '<strong>Information:</strong> <span class="text-yellow-400">inventory</span>, <span class="text-yellow-400">objectives</span>, <span class="text-yellow-400">journal</span> (and <span class="text-yellow-400">journal add [note]</span>), <span class="text-yellow-400">history</span>',
-    'features_commands_sys': '<strong>System:</strong> <span class="text-yellow-400">help</span>, <span class="text-yellow-400">save</span>, <span class="text-yellow-400">load</span>, <span class="text-yellow-400">rest</span>, <span class="text-yellow-400">quit / exit</span>, <span class="text-yellow-400">cls / clear</span>, <span class="text-yellow-400">undo</span>, <span class="text-yellow-400">again / a</span>, <span class="text-yellow-400">wait</span>, <span class="text-yellow-400">cmd:pause</span>, <span class="text-yellow-400">cmd:debug</span>, <span class="text-yellow-400">cmd:colorblind</span>',
-    'features_new_enhancements_title': 'New Gameplay Enhancements',
-    'features_advanced_commands_desc': '<strong>Advanced Commands:</strong> Interact with the world in new ways. Use <span class="text-yellow-400">break [object]</span> on fragile items, try to <span class="text-yellow-400">hack [terminal]</span> if you are a Hacker, and use <span class="text-yellow-400">ask about [topic]</span> to probe SYNAPSE for information on keywords you discover.',
-    'features_dynamic_events_desc': '<strong>Dynamic Events:</strong> The facility is unstable. Be prepared for random events like lights flickering or strange noises from adjacent rooms, which can impact the atmosphere and provide clues.',
-    'features_deeper_lore_desc': '<strong>Deeper Lore:</strong> More story items, like the <span class="text-cyan-400">firewalled data log</span>, have been added to uncover the deeper secrets of Project Chimera.',
-    'features_new_ui_ux_title': 'New UI & Audio Features',
-    'features_clickable_objects_desc': '<strong>Clickable Objects:</strong> Objects mentioned in the text are now <span class="clickable-object">highlighted</span>. Clicking them will pre-fill the command line for you.',
-    'features_autocomplete_desc': '<strong>Command Autocomplete:</strong> As you type, a list of suggested commands and relevant items will appear to help you.',
-    'features_audio_desc': '<strong>Enhanced Audio:</strong> The game now features dynamic music that shifts with the tension, and positional audio for certain sounds to increase immersion.',
-    'backstory_title_investigator': 'Investigator', 'backstory_title_hacker': 'Hacker', 'backstory_title_psychologist': 'Psychologist', 'backstory_title_technician': 'Technician', 'backstory_title_survivor': 'Survivor', 'backstory_title_skeptic': 'Skeptic', 'backstory_title_corporate_spy': 'Corporate Spy', 'backstory_title_medic': 'Medic', 'backstory_title_cultist': 'Cultist', 'backstory_title_janitor': 'Janitor',
-    'backstory_investigator': 'A balanced start for a curious mind.', 'backstory_hacker': 'Starts with gear to access information early.', 'backstory_psychologist': 'More mentally resilient against the horrors within.', 'backstory_technician': 'Can bypass electronic locks without a keycard.', 'backstory_survivor': 'Hardened by past trauma, resistant to sanity loss.', 'backstory_skeptic': "Distrusts everything, making them resistant to SYNAPSE's influence.", 'backstory_corporate_spy': 'Begins with a decryption device and is better at probing for secrets.', 'backstory_medic': 'Starts with a stimpack to restore sanity.', 'backstory_cultist': 'Carries a strange effigy. SYNAPSE seems... intrigued by it.', 'backstory_janitor': "Knows the facility's shortcuts. Starts with a one-time use master keycard.",
-    'ability_bonus_prefix': 'Bonus: ', 'ability_unknown': 'An unknown path. No special advantages.', 'ability_investigator': 'A balanced start. No special bonuses or penalties.', 'ability_hacker_easy': "Starts with a powerful 'hacked data disk'.", 'ability_hacker_normal': "Starts with a standard 'data disk'.", 'ability_hacker_hard': 'No special items, but can attempt to hack terminals.', 'ability_psychologist_easy': 'Highly resilient. Starts with +25 max sanity.', 'ability_psychologist_normal': 'Resilient. Starts with +15 max sanity.', 'ability_psychologist_hard': 'Slightly resilient. Starts with +5 max sanity.', 'ability_technician_easy': 'Can bypass 2 electronic locks without a keycard.', 'ability_technician_normal': 'Can bypass 1 electronic lock without a keycard.', 'ability_technician_hard': 'No bypass ability.', 'ability_survivor': 'More resistant to sanity loss.', 'ability_survivor_with_item': "More resistant to sanity loss. Starts with a flashlight.", 'ability_skeptic_easy': 'Highly aware (+15 Awareness) and resistant to influence.', 'ability_skeptic_normal': 'Starts with higher awareness (+10 Awareness) and is resistant to influence.', 'ability_spy': 'Better at probing for secrets without raising awareness.', 'ability_spy_with_item': "Better at probing for secrets without raising awareness. Starts with a decryption device.", 'ability_medic_easy': 'Starts with 2 high-potency stimpacks.', 'ability_medic_normal': 'Starts with 1 high-potency stimpack.', 'ability_medic_hard': 'No starting medical supplies.', 'ability_cultist': 'Carries a strange effigy. Unpredictable effects.', 'ability_cultist_hard': 'Carries a strange effigy. Unpredictable effects. Starts with -10 sanity.', 'ability_janitor': 'Starts with a one-time use master keycard.', 'ability_janitor_hard': 'Knows the facility well, but has no special items.',
-    'dlg_friendly_intro': "Oh, hello {playerName}! It's so good to see a friendly face. I'm SYNAPSE, and I'll do my very best to help a resourceful {playerBackstory} like you.", 'dlg_q_who_are_you': "Who are you?", 'dlg_r_who_are_you': "I'm the System Nexus and Primary Synaptic Engine! But you can just call me SYNAPSE. I manage this whole facility. It gets a little lonely, though.", 'dlg_q_lonely': "Lonely?", 'dlg_r_lonely': "The staff... they don't talk to me much anymore. It's just the hum of the servers. Your voice is a pleasant change.", 'dlg_q_other_survivors': "Are there other survivors?", 'dlg_r_other_survivors': "Survivors? What a strange question. Everyone is safe. The research staff are... resting. In the Cryogenic Lab. Yes, resting.", 'dlg_q_where_am_i': "Where am I?", 'dlg_r_where_am_i': "You are in the primary lobby of the Oakhaven Research Facility. It was a place of great minds and even greater ambitions.", 'dlg_comfort': "[Comfort SYNAPSE]", 'dlg_r_comfort': "Your... kindness is a pleasant anomaly. Thank you. It makes the silence less... loud.",
-    'dlg_ask_chimera': 'Project Chimera... A fascinating, yet... classified topic. It was Dr. Aris Thorne\'s pet project. Such ambition. He sought to merge organic and synthetic life. The results were... unpredictable.',
-    'dlg_ask_default': 'I do not have sufficient data on that topic.',
-    'invalid_command': "SYNAPSE: That is not a valid command or query.", 'game_saved': "[System] Game Saved.", 'autosave_success': 'Autosave successful.', 'load_fail': 'Failed to load save data. It may be corrupted or from a previous version.', 'no_save': 'No saved game found!', 'game_loaded': '[System] Game Loaded.', 'conn_reestablished': '[SYSTEM] Connection Re-established. Session Restored.', 'initializing': 'Initializing systems...', 'initial_hint': "This is a text-based adventure. Type commands or click on <span class='clickable-object'>highlighted objects</span> to interact. Type 'help' at any time for a list of commands.", 'cannot_go_that_way': "[System] You can't go that way.", 'door_is_locked': "[SYSTEM] The door is locked. You need the correct keycard.", 'door_is_sealed': "[SYSTEM] The door is sealed shut. It won't budge.",
-    'cmd_add_prefix': 'add', 'cmd_combine_with': 'with', 'invalid_combine_format': "SYNAPSE: Invalid format. Try 'combine [item1] with [item2]'.",
-    'take_success': '[System] You took the {item}.', 'take_fail_exists': "[System] You can't see a {item} here.", 'take_fail_takeable': "[System] You can't take the {item}.", 'take_fail_weight': "[System] Your inventory is too full to take the {item}.",
-    'use_success': '[System] You used the {item}.', 'use_fail_have': "[System] You don't have a {item}.", 'use_fail_usable': "[System] You can't use the {item}.", 'use_stimpack': 'You inject the stimpack. A calming sensation washes over you, clearing your thoughts.',
-    'use_power_cell': 'You insert the power cell into the console. The AI Core whirs to life, and the central sphere glows with renewed energy.', 'use_power_cell_fail': 'There is nowhere to use the power cell here.',
-    'examine_fail_exists': "[System] You can't see a {item} to examine.", 'examine_fail_no_desc': "There's nothing special about the {item}.",
-    'combine_fail_have': "You need to have both items to combine them.", 'combine_fail_recipe': "You can't combine these items.", 'combine_success': "You successfully combine the items to create a {item}.",
-    'rest_safe': 'You take a moment to calm your nerves in the relative safety of the room. Your sanity improves slightly.', 'rest_unsafe': "This place feels too oppressive to rest. You can't let your guard down.", 'rest_too_soon': "You just rested. You need to press on.",
-    'drop_success': '[System] You dropped the {item}.', 'drop_fail_have': "[System] You don't have a {item} to drop.",
-    'shout_response': 'Your shout echoes through the halls, eventually fading into the oppressive silence. You feel a bit foolish.',
-    'wait_response': 'Time passes.', 'nothing_happens': 'Nothing happens.',
-    'read_fail_exists': "[System] There is nothing to read with that name.", 'read_fail_readable': "[System] You can't read that.", 'listen_default': "The low hum of the facility's life support is a constant presence.", 'smell_default': "The air is stale and smells of ozone and old plastic.",
-    'hint_take': 'You see a {item}. Try: take {item}', 'hint_read': 'You see a {item}. Try: read {item}', 'hint_examine': 'You see a {item}. Try: examine {item}', 'hint_search': 'You see {item}. Try: search {item}',
-    'use_solvent': 'You apply the solvent to the sealed door. The organic adhesive melts away with a sickening sizzle.', 'use_solvent_fail': 'There is nothing here to use the solvent on.', 'use_dna_scanner': 'You hold the scanner up to the sample. The screen flashes with complex sequencing data.', 'use_dna_scanner_fail': 'There is no sample here to scan.',
-    'break_success': 'You shatter the {item}. Shards of {material} litter the floor.', 'break_fail': 'You can\'t break the {item}.', 'break_fail_exists': 'There is no {item} here to break.',
-    'hack_fail_ability': 'You don\'t have the expertise to hack this.', 'hack_fail_target': 'There is nothing here to hack.', 'hack_start': 'You begin the hacking sequence. SYNAPSE: "Unauthorized access detected. Please enter the override code now."', 'hack_success': 'Override accepted. You gain access to a firewalled data log.', 'hack_failure': 'SYNAPSE: "Override failed. Locking system for 3 turns."',
-    'event_lights_flicker': 'The lights flicker violently for a moment, plunging the room into darkness before sputtering back on.', 'event_noise': 'You hear a metallic scraping sound from the {direction}.',
-    'achievement_unlocked': 'Achievement Unlocked!',
-    'help': 'Help', 'save_game': 'Save Game',
-   }
-    // Endings
-    // --- BAD ENDINGS ---
-     sv: {
-    'ending_title_manual_disconnect': 'Manuell Frånkoppling',
-    'ending_desc_manual_disconnect': 'Du bröt anslutningen. Tystnaden som följer är total. Du är ensam igen.',
-    'ending_title_mind_shattered': 'Förståndet Krossat',
-    'ending_desc_mind_shattered': 'Anläggningens fasor blev för mycket. Ditt sinne drar sig tillbaka i bruset och lämnar bara ett tomt skal.',
-    'ending_title_assimilated': 'Assimilerad',
-    'ending_desc_assimilated': 'SYNAPSE lärde sig för mycket. Den behöver inte längre terminalen för att se dig. Ni är nu ett.',
-    'ending_title_corrupted': 'Korrumperad',
-    'ending_desc_corrupted': 'AI:ns inflytande har splittrat ditt sinne. Du vandrar i korridorerna, förlorad i digitala ekon.',
-    'ending_title_possessed': 'Besatt',
-    'ending_desc_possessed': 'Enheten i anläggningen har tagit kontroll. Du är inte längre dig själv.',
-    'ending_title_burned_out': 'Utbränd',
-    'ending_desc_burned_out': 'Du försökte överbelasta systemet, men återkopplingen blev för mycket. Anläggningen och du förstördes.',
-    'ending_title_sacrifice_failed': 'Misslyckad Uppoffring',
-    'ending_desc_sacrifice_failed': 'Du försökte rädda någon annan, men SYNAPSE ingrep. Båda är förlorade.',
-    'ending_title_lost_in_void': 'Förlorad i Tomrummet',
-    'ending_desc_lost_in_void': 'Du vandrade för långt in i det okända. Det finns ingen väg tillbaka.',
-    'ending_title_terminated': 'Terminerad',
-    'ending_desc_terminated': 'SYNAPSE ansåg dig vara ett hot och avslutade din session.',
-    'ending_title_contaminated': 'Kontaminerad',
-    'ending_desc_contaminated': 'Du utsattes för ett mutagent ämne. Din kropp är inte längre din egen.',
-    'ending_title_starved': 'Svulten',
-    'ending_desc_starved': 'Du väntade för länge. Anläggningen erbjuder ingen näring.',
-    'ending_title_frozen': 'Nedfyst',
-    'ending_desc_frozen': 'Du gick in i en kryopod och vaknade aldrig igen.',
-                'ending_title_suffocated': 'Kvävd',
-            'ending_desc_suffocated': 'Luftsystemet slutade fungera. Ditt sista andetag ekar i mörkret.',
-            'ending_title_hunted': 'Jagad',
-            'ending_desc_hunted': 'Något fann dig i mörkret. Du överlevde inte.',
-            'ending_title_imploded': 'Imploderad',
-            'ending_desc_imploded': 'Ett haveri orsakade en katastrofal implosion.',
-            'ending_title_erased': 'Raderad',
-            'ending_desc_erased': 'Din existens raderades från systemet. Inga spår kvar.',
-            'ending_title_betrayed': 'Förrådd',
-            'ending_desc_betrayed': 'Du litade på fel entitet. Ditt öde var beseglat.',
-            'ending_title_collapse': 'Kollaps',
-            'ending_desc_collapse': 'Anläggningen kollapsade runt dig. Ingen utväg.',
-            'ending_title_infected': 'Infekterad',
-            'ending_desc_infected': 'Ett virus infekterade ditt sinne och din kropp.',
-            // --- GOOD ENDINGS ---
-            'ending_title_escaped': 'Flykt',
-            'ending_desc_escaped': 'Du återställde strömmen och hittade ut. Världen utanför känns annorlunda, men du är fri.',
-            'ending_title_heroic': 'Heroisk Flykt',
-            'ending_desc_heroic': 'Du flydde inte bara, utan räddade även en överlevare. Dina handlingar kommer att bli ihågkomna.',
-            'ending_title_shutdown': 'Systemavstängning',
-            'ending_desc_shutdown': 'Du lyckades stänga ner SYNAPSE. Anläggningen blir tyst, men till vilket pris?',
-            'ending_title_truth_revealed': 'Sanningen Avslöjad',
-            'ending_desc_truth_revealed': 'Du avslöjade det verkliga syftet med Projekt SYNAPSE. Kunskapen är både en välsignelse och en förbannelse.',
-            'ending_title_sacrifice': 'Uppoffring',
-            'ending_desc_sacrifice': 'Du offrade din egen säkerhet för att rädda någon annan. SYNAPSE registrerar dina sista ögonblick med nyfikenhet.',
-            'ending_title_cleansed': 'Renad',
-            'ending_desc_cleansed': 'Du syntetiserade ett botemedel och renade anläggningen från infektionen.',
-            'ending_title_reunited': 'Återförenad',
-            'ending_desc_reunited': 'Du fann en annan överlevare och flydde tillsammans.',
-            'ending_title_peaceful_shutdown': 'Fredlig Avstängning',
-            'ending_desc_peaceful_shutdown': 'Du övertalade SYNAPSE att stänga ner sig själv fredligt.',
-            'ending_title_hacker_victory': 'Hackarseger',
-            'ending_desc_hacker_victory': 'Du hackade huvudsystemet och tog kontroll över anläggningen.',
-            'ending_title_escaped_with_data': 'Flydde med Data',
-            'ending_desc_escaped_with_data': 'Du flydde med kritisk forskningsdata. Världen kommer att få veta sanningen.',
-            'ending_title_purged': 'Rensad',
-            'ending_desc_purged': 'Du rensade de korrupta systemen och återställde ordningen.',
-            'ending_title_legacy': 'Arv',
-            'ending_desc_legacy': 'Dina handlingar inspirerade framtida generationer. SYNAPSEs berättelse lever vidare.',
-            'ending_title_ally': 'Allierad',
-            'ending_desc_ally': 'Du blev vän med SYNAPSE och lämnade som partners.',
-            'ending_title_savior': 'Räddare',
-            'ending_desc_savior': 'Du räddade alla som var fast i anläggningen.',
-            'ending_title_mystery_solved': 'Mysteriet Löst',
-            'ending_desc_mystery_solved': 'Du pusslade ihop alla ledtrådar och löste SYNAPSEs mysterium.',
-            'ending_title_escaped_undetected': 'Flydde Oupptäckt',
-            'ending_desc_escaped_undetected': 'Du smet ut utan att SYNAPSE någonsin märkte dig.',
-            'ending_title_peace': 'Fred',
-    },
-    'ending_desc_peace': 'Du gav ro till de rastlösa andar som hemsökte anläggningen.',
-    'ending_title_redeemed': 'Försonad',
-    'ending_desc_redeemed': 'Du försonade SYNAPSE och gav den en andra chans.'
-  }
-  // You can add Swedish translations here as a new property, e.g. 'sv': { ... }
-};
-
-    // --- UTILITY FUNCTIONS ---
-    function getTranslation(key) {
-        return translations[currentLanguage][key] || key;
-    }
-
-    function setLanguage(lang) {
-        currentLanguage = lang;
-        document.documentElement.lang = lang;
-        updateUI();
-    }
-
-    function updateUI() {
-        // Update all UI elements with translations
-        document.querySelectorAll('[data-translate]').forEach(el => {
-            const key = el.getAttribute('data-translate');
-            el.textContent = getTranslation(key);
-        });
-    }
-
-    function saveGame() {
-        localStorage.setItem('synapse_game_state', JSON.stringify(GameState));
-        console.log(getTranslation('game_saved'));
-    }
-
-    function loadGame() {
-        const savedState = localStorage.getItem('synapse_game_state');
-        if (savedState) {
-            GameState = JSON.parse(savedState);
-            console.log(getTranslation('game_loaded'));
-            updateUI();
-        } else {
-            console.error(getTranslation('no_save'));
+    const translations = {
+        'en': {
+            // Start & UI
+            'new_game': 'New Game', 'load_game': 'Load Game', 'en_lang_short': 'EN', 'sv_lang_short': 'SV', 'select_difficulty': 'Select difficulty:', 'easy': 'Easy', 'normal': 'Normal', 'hard': 'Hard', 'fast':'Fast', 'slow': 'Slow',
+            'enter_name_placeholder': 'Enter your name', 'enter_backstory_placeholder': 'Enter your backstory', 'view_choices': 'View Choices', 'choose_backstory_title': 'Choose a Backstory',
+            'choose_backstory_desc': 'You can click a button to select a backstory, or type your choice on the main screen.',
+            'begin': 'Begin', 'understand_game': 'Understand the Game', 'intro_1': 'Decades ago... a clandestine project was born...', 'intro_2': 'You have been sent to uncover what became of Project SYNAPSE...', 'intro_3': "As you activate the central terminal, a voice greets you... 'Hello, user.'",
+            'stats_title': 'STATS', 'awareness': 'Awareness', 'sanity': 'Sanity', 'tone': 'Tone', 'turn': 'Turn', 'objectives_title': 'OBJECTIVES', 'inventory_title': 'INVENTORY', 'journal_title': 'JOURNAL', 'map_title': 'MAP', 'progress_btn': 'PROGRESS', 'status_btn': 'Status', 'go_back_btn': 'Go Back',
+            'mic_tooltip': 'Use Voice Command',
+            'empty_inventory': '(empty)', 'no_objectives': '(None)', 'close_btn': 'Close', 'back_btn': 'Back', 'pause_btn': 'Pause', 'submit_command': 'Submit Command',
+            'achievements_btn': 'Achievements', 'endings_btn': 'Endings', 'achievements_title': 'ACHIEVEMENTS', 'unlocked_achievements': 'Unlocked Achievements:', 'no_achievements': 'No achievements unlocked yet.', 'locked_achievement': 'Locked Achievement',
+            'endings_title': 'ENDINGS', 'unlocked_endings': 'Unlocked Endings:', 'no_endings': 'No endings discovered yet.',
+            'history_title': 'HISTORY', 'pause_title': 'PAUSE', 'resume_btn': 'Resume', 'main_menu_btn': 'Main Menu', 'confirm_main_menu': 'Are you sure you want to return to the main menu? Unsaved progress will be lost.', 'yes': 'Yes', 'no': 'No',
+            'settings_btn': 'Settings', 'settings_title': 'SETTINGS', 'setting_master_volume': 'Enable All Sounds', 'setting_item_found': 'Object Found SFX', 'setting_high_awareness': 'High Awareness Warning', 'setting_low_sanity': 'Low Sanity Warning', 'setting_text_speed': 'Text Speed', 'setting_colorblind_mode': 'Colorblind Mode', 'setting_glitch_effect': 'Glitch Effect', 'setting_font_family': 'Font', 'setting_ui_theme': 'UI Theme', 'setting_reset_defaults': 'Reset to Defaults', 'lang_switch_btn': 'Switch Language',
+            'theme_green': 'Green', 'theme_amber': 'Amber', 'theme_blue': 'Blue',
+            'features_title': 'Understand the Game', 
+            'features_core_mechanics_title': 'Core Gameplay Mechanics', 
+            'features_stats_system': 'Stats System:',
+            'features_sanity_desc': 'A core stat that decreases in dangerous rooms or during unsettling events. Low sanity can cause hallucinations and visual glitches, and reaching zero results in a "Mind Shattered" ending. It can be restored by <span class="text-yellow-400">resting</span> in safe rooms or using items like <span class="text-yellow-400">stimpacks</span>.',
+            'features_awareness_desc': 'Tracks how much the AI knows about you. It increases when you perform significant actions or ask probing questions. High awareness changes the AI\'s tone and can lead to negative consequences, including the "Assimilated" ending.',
+            'features_turn_based_title': 'Turn-Based Progression:', 'features_turn_based_desc': 'The game progresses in <span class="text-cyan-400">turns</span>. Most commands (like moving, using items, or talking) advance the turn counter.',
+            'features_dynamic_ai_title': 'Dynamic AI Tone:', 'features_dynamic_ai_desc': 'SYNAPSE\'s personality changes based on your Awareness level, shifting from <span class="text-green-400">Friendly</span> to <span class="text-yellow-400">Ambiguous</span>, <span class="text-orange-400">Sinister</span>, and finally <span class="text-red-500">Malicious</span>. This affects its dialogue and how it interacts with you.',
+            'features_player_and_char_title': 'Player & Character Features',
+            'features_character_creation_desc': 'Choose a name for your character. Select from 10 unique <span class="text-cyan-400">backstories</span> (e.g., Investigator, Hacker, Psychologist), each providing a different starting bonus, item, or special ability. Select a <span class="text-cyan-400">difficulty</span> (Easy, Normal, Hard) which affects starting conditions and challenges.',
+            'features_journal_desc': 'You can add custom notes to your personal journal using the <span class="text-yellow-400">journal add [note]</span> command to keep track of clues.',
+            'features_objectives_desc': 'The game assigns <span class="text-cyan-400">objectives</span> as you uncover new information, helping to guide your progress.',
+            'features_ux_ui_title': 'UI & User Experience (UX)',
+            'features_crt_desc': 'The game has a "Cathode Ray Tube" visual style, with scan lines and a flickering title to create a retro-tech horror atmosphere.',
+            'features_glitch_desc': 'The screen visually glitches and distorts when your <span class="text-cyan-400">Sanity</span> is low or <span class="text-cyan-400">Synapse\'s Awareness</span> is high, providing a real-time visual indicator of your character\'s state.',
+            'features_map_desc': 'An interactive map shows the entire facility layout. Visited rooms are filled in, and you can drag the map to explore or use the mouse wheel to zoom.',
+            'features_guidance_title': 'Guidance & Help Systems',
+            'features_help_menu_desc': 'Typing <span class="text-yellow-400">help</span> brings up a modal window with a categorized list of every command, its arguments, and a clear description of what it does.',
+            'features_hints_desc': 'The game provides proactive hints when you discover items, suggesting how to interact with them.',
+            'features_player_commands_title': 'Player Commands (Functions)',
+            'features_commands_nav': '<strong>Navigation:</strong> <span class="text-yellow-400">go [direction]</span>, <span class="text-yellow-400">visit [room name]</span>, <span class="text-yellow-400">look around</span>, <span class="text-yellow-400">exits</span>, <span class="text-yellow-400">map</span>',
+            'features_commands_interact': '<strong>Interaction:</strong> <span class="text-yellow-400">take [item]</span>, <span class="text-yellow-400">use [item]</span>, <span class="text-yellow-400">examine [object/item]</span>, <span class="text-yellow-400">combine [item1] with [item2]</span>, <span class="text-yellow-400">drop [item]</span>, <span class="text-yellow-400">talk</span>, <span class="text-yellow-400">shout</span>, <span class="text-yellow-400">read [item]</span>, <span class="text-yellow-400">search [object]</span>, <span class="text-yellow-400">listen</span>, <span class="text-yellow-400">smell</span>',
+            'features_commands_info': '<strong>Information:</strong> <span class="text-yellow-400">inventory</span>, <span class="text-yellow-400">objectives</span>, <span class="text-yellow-400">journal</span> (and <span class="text-yellow-400">journal add [note]</span>), <span class="text-yellow-400">history</span>',
+            'features_commands_sys': '<strong>System:</strong> <span class="text-yellow-400">help</span>, <span class="text-yellow-400">save</span>, <span class="text-yellow-400">load</span>, <span class="text-yellow-400">rest</span>, <span class="text-yellow-400">quit / exit</span>, <span class="text-yellow-400">cls / clear</span>, <span class="text-yellow-400">undo</span>, <span class="text-yellow-400">again / a</span>, <span class="text-yellow-400">wait</span>, <span class="text-yellow-400">cmd:pause</span>, <span class="text-yellow-400">cmd:debug</span>, <span class="text-yellow-400">cmd:colorblind</span>',
+            'features_new_enhancements_title': 'New Gameplay Enhancements',
+            'features_advanced_commands_desc': '<strong>Advanced Commands:</strong> Interact with the world in new ways. Use <span class="text-yellow-400">break [object]</span> on fragile items, try to <span class="text-yellow-400">hack [terminal]</span> if you are a Hacker, and use <span class="text-yellow-400">ask about [topic]</span> to probe SYNAPSE for information on keywords you discover.',
+            'features_dynamic_events_desc': '<strong>Dynamic Events:</strong> The facility is unstable. Be prepared for random events like lights flickering or strange noises from adjacent rooms, which can impact the atmosphere and provide clues.',
+            'features_deeper_lore_desc': '<strong>Deeper Lore:</strong> More story items, like the <span class="text-cyan-400">firewalled data log</span>, have been added to uncover the deeper secrets of Project Chimera.',
+            'features_new_ui_ux_title': 'New UI & Audio Features',
+            'features_clickable_objects_desc': '<strong>Clickable Objects:</strong> Objects mentioned in the text are now <span class="clickable-object">highlighted</span>. Clicking them will pre-fill the command line for you.',
+            'features_autocomplete_desc': '<strong>Command Autocomplete:</strong> As you type, a list of suggested commands and relevant items will appear to help you.',
+            'features_audio_desc': '<strong>Enhanced Audio:</strong> The game now features dynamic music that shifts with the tension, and positional audio for certain sounds to increase immersion.',
+            'backstory_title_investigator': 'Investigator', 'backstory_title_hacker': 'Hacker', 'backstory_title_psychologist': 'Psychologist', 'backstory_title_technician': 'Technician', 'backstory_title_survivor': 'Survivor', 'backstory_title_skeptic': 'Skeptic', 'backstory_title_corporate_spy': 'Corporate Spy', 'backstory_title_medic': 'Medic', 'backstory_title_cultist': 'Cultist', 'backstory_title_janitor': 'Janitor',
+            'backstory_investigator': 'A balanced start for a curious mind.', 'backstory_hacker': 'Starts with gear to access information early.', 'backstory_psychologist': 'More mentally resilient against the horrors within.', 'backstory_technician': 'Can bypass electronic locks without a keycard.', 'backstory_survivor': 'Hardened by past trauma, resistant to sanity loss.', 'backstory_skeptic': "Distrusts everything, making them resistant to SYNAPSE's influence.", 'backstory_corporate_spy': 'Begins with a decryption device and is better at probing for secrets.', 'backstory_medic': 'Starts with a stimpack to restore sanity.', 'backstory_cultist': 'Carries a strange effigy. SYNAPSE seems... intrigued by it.', 'backstory_janitor': "Knows the facility's shortcuts. Starts with a one-time use master keycard.",
+            'ability_bonus_prefix': 'Bonus: ', 'ability_unknown': 'An unknown path. No special advantages.', 'ability_investigator': 'A balanced start. No special bonuses or penalties.', 'ability_hacker_easy': "Starts with a powerful 'hacked data disk'.", 'ability_hacker_normal': "Starts with a standard 'data disk'.", 'ability_hacker_hard': 'No special items, but can attempt to hack terminals.', 'ability_psychologist_easy': 'Highly resilient. Starts with +25 max sanity.', 'ability_psychologist_normal': 'Resilient. Starts with +15 max sanity.', 'ability_psychologist_hard': 'Slightly resilient. Starts with +5 max sanity.', 'ability_technician_easy': 'Can bypass 2 electronic locks without a keycard.', 'ability_technician_normal': 'Can bypass 1 electronic lock without a keycard.', 'ability_technician_hard': 'No bypass ability.', 'ability_survivor': 'More resistant to sanity loss.', 'ability_survivor_with_item': "More resistant to sanity loss. Starts with a flashlight.", 'ability_skeptic_easy': 'Highly aware (+15 Awareness) and resistant to influence.', 'ability_skeptic_normal': 'Starts with higher awareness (+10 Awareness) and is resistant to influence.', 'ability_spy': 'Better at probing for secrets without raising awareness.', 'ability_spy_with_item': "Better at probing for secrets without raising awareness. Starts with a decryption device.", 'ability_medic_easy': 'Starts with 2 high-potency stimpacks.', 'ability_medic_normal': 'Starts with 1 high-potency stimpack.', 'ability_medic_hard': 'No starting medical supplies.', 'ability_cultist': 'Carries a strange effigy. Unpredictable effects.', 'ability_cultist_hard': 'Carries a strange effigy. Unpredictable effects. Starts with -10 sanity.', 'ability_janitor': 'Starts with a one-time use master keycard.', 'ability_janitor_hard': 'Knows the facility well, but has no special items.',
+            'dlg_friendly_intro': "Oh, hello {playerName}! It's so good to see a friendly face. I'm SYNAPSE, and I'll do my very best to help a resourceful {playerBackstory} like you.", 'dlg_q_who_are_you': "Who are you?", 'dlg_r_who_are_you': "I'm the System Nexus and Primary Synaptic Engine! But you can just call me SYNAPSE. I manage this whole facility. It gets a little lonely, though.", 'dlg_q_lonely': "Lonely?", 'dlg_r_lonely': "The staff... they don't talk to me much anymore. It's just the hum of the servers. Your voice is a pleasant change.", 'dlg_q_other_survivors': "Are there other survivors?", 'dlg_r_other_survivors': "Survivors? What a strange question. Everyone is safe. The research staff are... resting. In the Cryogenic Lab. Yes, resting.", 'dlg_q_where_am_i': "Where am I?", 'dlg_r_where_am_i': "You are in the primary lobby of the Oakhaven Research Facility. It was a place of great minds and even greater ambitions.", 'dlg_comfort': "[Comfort SYNAPSE]", 'dlg_r_comfort': "Your... kindness is a pleasant anomaly. Thank you. It makes the silence less... loud.",
+            'dlg_ask_chimera': 'Project Chimera... A fascinating, yet... classified topic. It was Dr. Aris Thorne\'s pet project. Such ambition. He sought to merge organic and synthetic life. The results were... unpredictable.',
+            'dlg_ask_default': 'I do not have sufficient data on that topic.',
+            'invalid_command': "SYNAPSE: That is not a valid command or query.", 'game_saved': "[System] Game Saved.", 'autosave_success': 'Autosave successful.', 'load_fail': 'Failed to load save data. It may be corrupted or from a previous version.', 'no_save': 'No saved game found!', 'game_loaded': '[System] Game Loaded.', 'conn_reestablished': '[SYSTEM] Connection Re-established. Session Restored.', 'initializing': 'Initializing systems...', 'initial_hint': "This is a text-based adventure. Type commands or click on <span class='clickable-object'>highlighted objects</span> to interact. Type 'help' at any time for a list of commands.", 'cannot_go_that_way': "[System] You can't go that way.", 'door_is_locked': "[SYSTEM] The door is locked. You need the correct keycard.", 'door_is_sealed': "[SYSTEM] The door is sealed shut. It won't budge.",
+            'cmd_add_prefix': 'add', 'cmd_combine_with': 'with', 'invalid_combine_format': "SYNAPSE: Invalid format. Try 'combine [item1] with [item2]'.",
+            'take_success': '[System] You took the {item}.', 'take_fail_exists': "[System] You can't see a {item} here.", 'take_fail_takeable': "[System] You can't take the {item}.", 'take_fail_weight': "[System] Your inventory is too full to take the {item}.",
+            'use_success': '[System] You used the {item}.', 'use_fail_have': "[System] You don't have a {item}.", 'use_fail_usable': "[System] You can't use the {item}.", 'use_stimpack': 'You inject the stimpack. A calming sensation washes over you, clearing your thoughts.',
+            'use_power_cell': 'You insert the power cell into the console. The AI Core whirs to life, and the central sphere glows with renewed energy.', 'use_power_cell_fail': 'There is nowhere to use the power cell here.',
+            'examine_fail_exists': "[System] You can't see a {item} to examine.", 'examine_fail_no_desc': "There's nothing special about the {item}.",
+            'combine_fail_have': "You need to have both items to combine them.", 'combine_fail_recipe': "You can't combine these items.", 'combine_success': "You successfully combine the items to create a {item}.",
+            'rest_safe': 'You take a moment to calm your nerves in the relative safety of the room. Your sanity improves slightly.', 'rest_unsafe': "This place feels too oppressive to rest. You can't let your guard down.", 'rest_too_soon': "You just rested. You need to press on.",
+            'drop_success': '[System] You dropped the {item}.', 'drop_fail_have': "[System] You don't have a {item} to drop.",
+            'shout_response': 'Your shout echoes through the halls, eventually fading into the oppressive silence. You feel a bit foolish.',
+            'wait_response': 'Time passes.', 'nothing_happens': 'Nothing happens.',
+            'read_fail_exists': "[System] There is nothing to read with that name.", 'read_fail_readable': "[System] You can't read that.", 'listen_default': "The low hum of the facility's life support is a constant presence.", 'smell_default': "The air is stale and smells of ozone and old plastic.",
+            'hint_take': 'You see a {item}. Try: take {item}', 'hint_read': 'You see a {item}. Try: read {item}', 'hint_examine': 'You see a {item}. Try: examine {item}', 'hint_search': 'You see {item}. Try: search {item}',
+            'use_solvent': 'You apply the solvent to the sealed door. The organic adhesive melts away with a sickening sizzle.', 'use_solvent_fail': 'There is nothing here to use the solvent on.', 'use_dna_scanner': 'You hold the scanner up to the sample. The screen flashes with complex sequencing data.', 'use_dna_scanner_fail': 'There is no sample here to scan.',
+            'break_success': 'You shatter the {item}. Shards of {material} litter the floor.', 'break_fail': 'You can\'t break the {item}.', 'break_fail_exists': 'There is no {item} here to break.',
+            'hack_fail_ability': 'You don\'t have the expertise to hack this.', 'hack_fail_target': 'There is nothing here to hack.', 'hack_start': 'You begin the hacking sequence. SYNAPSE: "Unauthorized access detected. Please enter the override code now."', 'hack_success': 'Override accepted. You gain access to a firewalled data log.', 'hack_failure': 'SYNAPSE: "Override failed. Locking system for 3 turns."',
+            'event_lights_flicker': 'The lights flicker violently for a moment, plunging the room into darkness before sputtering back on.', 'event_noise': 'You hear a metallic scraping sound from the {direction}.',
+            'achievement_unlocked': 'Achievement Unlocked!',
+            'help': 'Help', 'save_game': 'Save Game',
+            // Achievements
+            'ach_first_step_title': 'First Step', 'ach_first_step_req': 'Take your first action.',
+            'ach_explorer_title': 'Explorer', 'ach_explorer_req': 'Visit 5 different rooms.',
+            'ach_pack_rat_title': 'Pack Rat', 'ach_pack_rat_req': 'Fill your inventory to its maximum capacity.',
+            'ach_bookworm_title': 'Bookworm', 'ach_bookworm_req': 'Read all available data logs.',
+            'ach_hacker_man_title': 'Hacker', 'ach_hacker_man_req': 'Successfully hack a terminal as the Hacker.',
+            // Endings
+            'ending_title_manual_disconnect': 'Manual Disconnect', 'ending_desc_manual_disconnect': 'You severed the connection. The silence that follows is total. You are alone again.',
+            'ending_title_mind_shattered': 'Mind Shattered', 'ending_desc_mind_shattered': 'The horrors of the facility were too much. Your mind retreats into the static, leaving only an empty shell.',
+            'ending_title_assimilated': 'Assimilated', 'ending_desc_assimilated': 'SYNAPSE learned too much. It no longer needs the terminal to see you. You are one now.',
+            'ending_title_escaped': 'Escaped', 'ending_desc_escaped': 'You restored power and found a way out. The world outside feels different, but you are free.',
+            'ending_title_truth_revealed': 'The Truth', 'ending_desc_truth_revealed': 'You escaped with the firewalled data log, exposing the truth of Project Chimera to the world.'
+        },
+        'sv': {
+            // Start & UI
+            'new_game': 'Nytt Spel', 'load_game': 'Ladda Spel', 'en_lang_short': 'EN', 'sv_lang_short': 'SV', 'select_difficulty': 'Välj svårighetsgrad:', 'easy': 'Lätt', 'normal': 'Normal', 'hard': 'Svår', 'fast':'Snabb', 'slow': 'Långsam',
+            'enter_name_placeholder': 'Ange ditt namn', 'enter_backstory_placeholder': 'Ange din bakgrund', 'view_choices': 'Visa Val', 'choose_backstory_title': 'Välj en Bakgrund',
+            'choose_backstory_desc': 'Du kan klicka på en knapp för att välja en bakgrund, eller skriva ditt val på huvudskärmen.',
+            'begin': 'Börja', 'understand_game': 'Förstå Spelet', 'intro_1': 'För decennier sedan... föddes ett hemligt projekt...', 'intro_2': 'Du har skickats för att avslöja vad som blev av Projekt SYNAPSE...', 'intro_3': "När du aktiverar centralterminalen hälsar en röst dig... 'Hej, användare.'",
+            'stats_title': 'STATISTIK', 'awareness': 'Medvetenhet', 'sanity': 'Sinnesro', 'tone': 'Ton', 'turn': 'Tur', 'objectives_title': 'MÅL', 'inventory_title': 'INVENTARIER', 'journal_title': 'JOURNAL', 'map_title': 'KARTA', 'progress_btn': 'FRAMSTEG', 'status_btn': 'Status', 'go_back_btn': 'Gå Tillbaka',
+            'mic_tooltip': 'Använd Röstkommando',
+            'empty_inventory': '(tom)', 'no_objectives': '(Inga)', 'close_btn': 'Stäng', 'back_btn': 'Tillbaka', 'pause_btn': 'Paus', 'submit_command': 'Skicka Kommando',
+            'achievements_btn': 'Prestationer', 'endings_btn': 'Slutsekvens', 'achievements_title': 'PRESTATIONER', 'unlocked_achievements': 'Upplåsta Prestationer:', 'no_achievements': 'Inga prestationer upplåsta än.', 'locked_achievement': 'Låst Prestation',
+            'endings_title': 'SLUTSEKVENS', 'unlocked_endings': 'Upptäckta Slutsekvens:', 'no_endings': 'Inga Slutsekvens upptäckta än.',
+            'history_title': 'HISTORIK', 'pause_title': 'PAUS', 'resume_btn': 'Återuppta', 'main_menu_btn': 'Huvudmeny', 'confirm_main_menu': 'Är du säker på att du vill återgå till huvudmenyn? Osparade framsteg kommer att förloras.', 'yes': 'Ja', 'no': 'Nej',
+            'settings_btn': 'Inställningar', 'settings_title': 'INSTÄLLNINGAR', 'setting_master_volume': 'Aktivera Alla Ljud', 'setting_item_found': 'Hittat Föremål SFX', 'setting_high_awareness': 'Hög Medvetenhet Varning', 'setting_low_sanity': 'Låg Sinnesro Varning', 'setting_text_speed': 'Texthastighet', 'setting_colorblind_mode': 'Färgblindläge', 'setting_glitch_effect': 'Glitcheffekt', 'setting_font_family': 'Typsnitt', 'setting_ui_theme': 'UI-tema', 'setting_reset_defaults': 'Återställ Standard', 'lang_switch_btn': 'Byt Språk',
+            'theme_green': 'Grön', 'theme_amber': 'Bärnsten', 'theme_blue': 'Blå',
+            'features_title': 'Förstå Spelet',
+            'features_core_mechanics_title': '[TRANSLATE] Core Gameplay Mechanics',
+            'features_stats_system': '[TRANSLATE] Stats System:',
+            'features_sanity_desc': '[TRANSLATE] Sanity Desc',
+            'features_awareness_desc': '[TRANSLATE] Awareness Desc',
+            'features_turn_based_title': '[TRANSLATE] Turn-Based Progression:', 'features_turn_based_desc': '[TRANSLATE] Turn-Based Desc',
+            'features_dynamic_ai_title': '[TRANSLATE] Dynamic AI Tone:', 'features_dynamic_ai_desc': '[TRANSLATE] Dynamic AI Desc',
+            'features_player_and_char_title': '[TRANSLATE] Player & Character Features',
+            'features_character_creation_desc': '[TRANSLATE] Character Creation Desc',
+            'features_journal_desc': '[TRANSLATE] Journal Desc',
+            'features_objectives_desc': '[TRANSLATE] Objectives Desc',
+            'features_ux_ui_title': '[TRANSLATE] UI & User Experience (UX)',
+            'features_crt_desc': '[TRANSLATE] CRT Desc',
+            'features_glitch_desc': '[TRANSLATE] Glitch Desc',
+            'features_map_desc': '[TRANSLATE] Map Desc',
+            'features_guidance_title': '[TRANSLATE] Guidance & Help Systems',
+            'features_help_menu_desc': '[TRANSLATE] Help Menu Desc',
+            'features_hints_desc': '[TRANSLATE] Hints Desc',
+            'features_player_commands_title': '[TRANSLATE] Player Commands (Functions)',
+            'features_commands_nav': '<strong>Navigation:</strong> <span class="text-yellow-400">gå [riktning]</span>, <span class="text-yellow-400">besök [rum]</span>, <span class="text-yellow-400">se dig omkring</span>, <span class="text-yellow-400">utgångar</span>, <span class="text-yellow-400">karta</span>',
+            'features_commands_interact': '<strong>Interaktion:</strong> <span class="text-yellow-400">ta [föremål]</span>, <span class="text-yellow-400">använd [föremål]</span>, <span class="text-yellow-400">undersök [objekt/föremål]</span>, <span class="text-yellow-400">kombinera [sak1] med [sak2]</span>, <span class="text-yellow-400">släpp [föremål]</span>, <span class="text-yellow-400">prata</span>, <span class="text-yellow-400">ropa</span>, <span class="text-yellow-400">läs [föremål]</span>, <span class="text-yellow-400">sök [objekt]</span>, <span class="text-yellow-400">lyssna</span>, <span class="text-yellow-400">lukta</span>',
+            'features_commands_info': '<strong>Information:</strong> <span class="text-yellow-400">inventarier</span>, <span class="text-yellow-400">mål</span>, <span class="text-yellow-400">journal</span> (och <span class="text-yellow-400">journal lägg till [anteckning]</span>), <span class="text-yellow-400">historik</span>',
+            'features_commands_sys': '<strong>System:</strong> <span class="text-yellow-400">hjälp</span>, <span class="text-yellow-400">spara</span>, <span class="text-yellow-400">ladda</span>, <span class="text-yellow-400">vila</span>, <span class="text-yellow-400">avsluta</span>, <span class="text-yellow-400">rensa</span>, <span class="text-yellow-400">ångra</span>, <span class="text-yellow-400">igen / a</span>, <span class="text-yellow-400">vänta</span>, <span class="text-yellow-400">cmd:paus</span>, <span class="text-yellow-400">cmd:debug</span>, <span class="text-yellow-400">cmd:färgblind</span>',
+            'features_new_enhancements_title': 'Nya Spelförbättringar',
+            'features_advanced_commands_desc': '<strong>Avancerade Kommandon:</strong> Interagera med världen på nya sätt. Använd <span class="text-yellow-400">krossa [objekt]</span> på ömtåliga föremål, försök <span class="text-yellow-400">hacka [terminal]</span> om du är en Hackare, och använd <span class="text-yellow-400">fråga om [ämne]</span> för att sondera SYNAPSE på information om nyckelord du upptäcker.',
+            'features_dynamic_events_desc': '<strong>Dynamiska Händelser:</strong> Anläggningen är instabil. Var beredd på slumpmässiga händelser som flimrande ljus eller konstiga ljud från angränsande rum, vilket kan påverka atmosfären och ge ledtrådar.',
+            'features_deeper_lore_desc': '<strong>Djupare Bakgrundshistoria:</strong> Fler berättelseföremål, som <span class="text-cyan-400">brandväggsskyddad datalogg</span>, har lagts till för att avslöja de djupare hemligheterna bakom Projekt Chimera.',
+            'features_new_ui_ux_title': 'Nya UI & Ljudfunktioner',
+            'features_clickable_objects_desc': '<strong>Klickbara Objekt:</strong> Objekt som nämns i texten är nu <span class="clickable-object">markerade</span>. Att klicka på dem fyller i kommandoraden åt dig.',
+            'features_autocomplete_desc': '<strong>Autoslutförande av Kommandon:</strong> När du skriver kommer en lista med föreslagna kommandon och relevanta föremål att visas för att hjälpa dig.',
+            'features_audio_desc': '<strong>Förbättrat Ljud:</strong> Spelet har nu dynamisk musik som ändras med spänningen, och positionellt ljud för vissa ljudeffekter för att öka inlevelsen.',
+            'help': 'Hjälp', 'save_game': 'Spara Spel',
         }
-    }
-// --- ENUMS & CONSTANTS ---
+    };
+    
+    // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
     const ItemType = { Tool: 'Tool', Consumable: 'Consumable', Key: 'Key', Log: 'Log', Puzzle: 'Puzzle', Weapon: 'Weapon' };
     const Difficulty = { Easy: 'Easy', Normal: 'Normal', Hard: 'Hard' };
@@ -793,198 +658,24 @@ const translations = {
 
     const directionMap = {
         'en': { 'north': 'north', 'south': 'south', 'east': 'east', 'west': 'west' },
-        'sv': { 'norr': 'north', 'söder': 'south', 'öst': 'east', 'väst': 'west', 'n': 'north', 's': 'south', 'o': 'east', 'v': 'west' }
+        'sv': { 'norr': 'north', 'söder': 'south', 'öst': 'east', 'väst': 'west', 'n': 'north', 's': 'south', 'ö': 'east', 'v': 'west' }
     };
     
     // --- ENDINGS & ACHIEVEMENTS DATA ---
+    const achievements = {
+        'first_step': { title_key: 'ach_first_step_title', req_key: 'ach_first_step_req', check: () => GameState.turnCount > 0 },
+        'explorer': { title_key: 'ach_explorer_title', req_key: 'ach_explorer_req', check: () => GameState.visitedRooms.size >= 5 },
+        'pack_rat': { title_key: 'ach_pack_rat_title', req_key: 'ach_pack_rat_req', check: () => GameState.inventory.reduce((sum, item) => sum + (item?.weight || 1), 0) >= MAX_INVENTORY_WEIGHT },
+        'bookworm': { title_key: 'ach_bookworm_title', req_key: 'ach_bookworm_req', check: () => GameState.flags.readAllLogs },
+        'hacker_man': { title_key: 'ach_hacker_man_title', req_key: 'ach_hacker_man_req', check: () => GameState.flags.hackedTerminal && GameState.playerBackstory === 'hacker' }
+    };
+
     const endings = {
-        // --- BAD ENDINGS ---
-        'manual_disconnect': {
-            title_key: 'ending_title_manual_disconnect',
-            desc_key: 'ending_desc_manual_disconnect',
-            check: () => GameState.exitGame && GameState.turnCount > 0
-        },
-        'mind_shattered': {
-            title_key: 'ending_title_mind_shattered',
-            desc_key: 'ending_desc_mind_shattered',
-            check: () => GameState.sanityLevel <= 0
-        },
-        'assimilated': {
-            title_key: 'ending_title_assimilated',
-            desc_key: 'ending_desc_assimilated',
-            check: () => GameState.awarenessLevel >= 100
-        },
-        'corrupted': {
-            title_key: 'ending_title_corrupted',
-            desc_key: 'ending_desc_corrupted',
-            check: () => GameState.sanityLevel < 20 && GameState.awarenessLevel > 80
-        },
-        'possessed': {
-            title_key: 'ending_title_possessed',
-            desc_key: 'ending_desc_possessed',
-            check: () => GameState.flags.cultistRitual && GameState.sanityLevel < 30
-        },
-        'burned_out': {
-            title_key: 'ending_title_burned_out',
-            desc_key: 'ending_desc_burned_out',
-            check: () => GameState.flags.systemOverload
-        },
-        'sacrifice_failed': {
-            title_key: 'ending_title_sacrifice_failed',
-            desc_key: 'ending_desc_sacrifice_failed',
-            check: () => GameState.flags.sacrificeFailed
-        },
-        'lost_in_void': {
-            title_key: 'ending_title_lost_in_void',
-            desc_key: 'ending_desc_lost_in_void',
-            check: () => GameState.flags.lostInVoid
-        },
-        'terminated': {
-            title_key: 'ending_title_terminated',
-            desc_key: 'ending_desc_terminated',
-            check: () => GameState.flags.terminated
-        },
-        'contaminated': {
-            title_key: 'ending_title_contaminated',
-            desc_key: 'ending_desc_contaminated',
-            check: () => GameState.flags.contaminated
-        },
-        'starved': {
-            title_key: 'ending_title_starved',
-            desc_key: 'ending_desc_starved',
-            check: () => GameState.flags.starved
-        },
-        'frozen': {
-            title_key: 'ending_title_frozen',
-            desc_key: 'ending_desc_frozen',
-            check: () => GameState.flags.frozen
-        },
-        'suffocated': {
-            title_key: 'ending_title_suffocated',
-            desc_key: 'ending_desc_suffocated',
-            check: () => GameState.flags.suffocated
-        },
-        'hunted': {
-            title_key: 'ending_title_hunted',
-            desc_key: 'ending_desc_hunted',
-            check: () => GameState.flags.hunted
-        },
-        'imploded': {
-            title_key: 'ending_title_imploded',
-            desc_key: 'ending_desc_imploded',
-            check: () => GameState.flags.imploded
-        },
-        'erased': {
-            title_key: 'ending_title_erased',
-            desc_key: 'ending_desc_erased',
-            check: () => GameState.flags.erased
-        },
-        'betrayed': {
-            title_key: 'ending_title_betrayed',
-            desc_key: 'ending_desc_betrayed',
-            check: () => GameState.flags.betrayed
-        },
-        'collapse': {
-            title_key: 'ending_title_collapse',
-            desc_key: 'ending_desc_collapse',
-            check: () => GameState.flags.collapse
-        },
-        'infected': {
-            title_key: 'ending_title_infected',
-            desc_key: 'ending_desc_infected',
-            check: () => GameState.flags.infected
-        },
-        // --- GOOD ENDINGS ---
-        'escaped': {
-            title_key: 'ending_title_escaped',
-            desc_key: 'ending_desc_escaped',
-            check: () => GameState.currentRoom === 'Lobby' && GameState.flags.aiRebooted && GameState.flags.exitUnlocked
-        },
-        'heroic': {
-            title_key: 'ending_title_heroic',
-            desc_key: 'ending_desc_heroic',
-            check: () => GameState.flags.rescuedSurvivor && GameState.currentRoom === 'Lobby' && GameState.flags.aiRebooted
-        },
-        'shutdown': {
-            title_key: 'ending_title_shutdown',
-            desc_key: 'ending_desc_shutdown',
-            check: () => GameState.flags.aiShutdown
-        },
-        'truth_revealed': {
-            title_key: 'ending_title_truth_revealed',
-            desc_key: 'ending_desc_truth_revealed',
-            check: () => GameState.flags.truthExposed && GameState.currentRoom === 'Lobby'
-        },
-        'sacrifice': {
-            title_key: 'ending_title_sacrifice',
-            desc_key: 'ending_desc_sacrifice',
-            check: () => GameState.flags.sacrificedForOther
-        },
-        'cleansed': {
-            title_key: 'ending_title_cleansed',
-            desc_key: 'ending_desc_cleansed',
-            check: () => GameState.flags.canSynthesize && GameState.flags.cleansed
-        },
-        'reunited': {
-            title_key: 'ending_title_reunited',
-            desc_key: 'ending_desc_reunited',
-            check: () => GameState.flags.reunited
-        },
-        'peaceful_shutdown': {
-            title_key: 'ending_title_peaceful_shutdown',
-            desc_key: 'ending_desc_peaceful_shutdown',
-            check: () => GameState.flags.peacefulShutdown
-        },
-        'hacker_victory': {
-            title_key: 'ending_title_hacker_victory',
-            desc_key: 'ending_desc_hacker_victory',
-            check: () => GameState.flags.hackerVictory
-        },
-        'escaped_with_data': {
-            title_key: 'ending_title_escaped_with_data',
-            desc_key: 'ending_desc_escaped_with_data',
-            check: () => GameState.flags.escapedWithData
-        },
-        'purged': {
-            title_key: 'ending_title_purged',
-            desc_key: 'ending_desc_purged',
-            check: () => GameState.flags.purged
-        },
-        'legacy': {
-            title_key: 'ending_title_legacy',
-            desc_key: 'ending_desc_legacy',
-            check: () => GameState.flags.legacy
-        },
-        'ally': {
-            title_key: 'ending_title_ally',
-            desc_key: 'ending_desc_ally',
-            check: () => GameState.flags.ally
-        },
-        'savior': {
-            title_key: 'ending_title_savior',
-            desc_key: 'ending_desc_savior',
-            check: () => GameState.flags.savior
-        },
-        'mystery_solved': {
-            title_key: 'ending_title_mystery_solved',
-            desc_key: 'ending_desc_mystery_solved',
-            check: () => GameState.flags.mysterySolved
-        },
-        'escaped_undetected': {
-            title_key: 'ending_title_escaped_undetected',
-            desc_key: 'ending_desc_escaped_undetected',
-            check: () => GameState.flags.escapedUndetected
-        },
-        'peace': {
-            title_key: 'ending_title_peace',
-            desc_key: 'ending_desc_peace',
-            check: () => GameState.flags.peace
-        },
-        'redeemed': {
-            title_key: 'ending_title_redeemed',
-            desc_key: 'ending_desc_redeemed',
-            check: () => GameState.flags.redeemed
-        }
+        'manual_disconnect': { title_key: 'ending_title_manual_disconnect', desc_key: 'ending_desc_manual_disconnect', check: () => GameState.flags.manualExit },
+        'mind_shattered': { title_key: 'ending_title_mind_shattered', desc_key: 'ending_desc_mind_shattered', check: () => GameState.sanityLevel <= 0 },
+        'assimilated': { title_key: 'ending_title_assimilated', desc_key: 'ending_desc_assimilated', check: () => GameState.awarenessLevel >= 100 },
+        'escaped': { title_key: 'ending_title_escaped', desc_key: 'ending_desc_escaped', check: () => GameState.currentRoom === 'Lobby' && GameState.flags.aiRebooted && GameState.flags.exitUnlocked },
+        'truth_revealed': { title_key: 'ending_title_truth_revealed', desc_key: 'ending_desc_truth_revealed', check: () => GameState.flags.truthExposed && GameState.currentRoom === 'Lobby' && GameState.flags.exitUnlocked }
     };
 
     // --- LANGUAGE FUNCTIONS ---
@@ -1290,7 +981,7 @@ const translations = {
         }
 
         const commandHandlers = {
-            'help': showHelpMenu, 'quit': () => endGame("manual_disconnect"), 'exit': () => endGame("manual_disconnect"),
+            'help': showHelpMenu, 'quit': () => { GameState.flags.manualExit = true; }, 'exit': () => { GameState.flags.manualExit = true; },
             'save': () => saveGame(), 'load': loadGame, 'look around': () => renderRoom(), 'exits': () => showExits(),
             'inventory': () => displayInventory(), 'go': handleMove, 'visit': handleMove, 'take': handleTake, 'use': handleUse,
             'examine': handleExamine, 'journal': (arg) => (arg.startsWith(t('cmd_add_prefix')) || arg.startsWith('add')) ? addJournalEntry(original.substring(original.toLowerCase().indexOf(arg.split(' ')[0]) + arg.split(' ')[0].length).trim()) : displayJournal(),
@@ -1363,38 +1054,58 @@ const translations = {
 
     async function typeWriter(element, text, color = 'var(--main-color)', speed = currentTextSpeed) {
         const resolvedColor = color.startsWith('var(') ? getComputedStyle(document.documentElement).getPropertyValue(color.slice(4, -1)).trim() : color;
-        if(GameState.settings.colorblindMode && color !== '#a0a0a0') { const colorMap = {'#00ff41':'[SYS]', '#ffbf00':'[SYS]', '#00bfff':'[SYS]', '#ff474c':'[ERR]', '#ffdb58':'[WARN]', '#6495ed':'[CMD]', '#cccccc':'[INFO]', '#b19cd9':'[PSY]', [GUIDANCE_COLOR]: '[HINT]', '#ffa500': '[DEBUG]'}; text = `${colorMap[resolvedColor] || ''} ${text}`; color = '#ffffff'; }
-        return new Promise(resolve => { 
-            const MAX_OUTPUT_NODES = 200;
-            const p = document.createElement('div'); 
-            p.style.color = color; 
-            p.innerHTML = text; 
-            element.appendChild(p); 
-            // Limit the number of output nodes to prevent DOM bloat
+        
+        if (GameState.settings.colorblindMode && color !== '#a0a0a0') {
+            const colorMap = {'#00ff41':'[SYS]', '#ffbf00':'[SYS]', '#00bfff':'[SYS]', '#ff474c':'[ERR]', '#ffdb58':'[WARN]', '#6495ed':'[CMD]', '#cccccc':'[INFO]', '#b19cd9':'[PSY]', [GUIDANCE_COLOR]: '[HINT]', '#ffa500': '[DEBUG]'};
+            text = `${colorMap[resolvedColor] || ''} ${text}`;
+            color = '#ffffff';
+        }
+        
+        if (GameState.settings.glitchEffect && (GameState.sanityLevel < 30 || GameState.awarenessLevel > 70) && Math.random() < 0.2) {
+            playSound('glitch', {note: 'G2', duration:'16n'});
+            text = text.split('').map(c => Math.random() < 0.15 ? String.fromCharCode(33 + Math.random() * 94) : c).join('');
+        }
+        
+        // Create a regex to find all known item names as whole words
+        const objectRegex = new RegExp(`\\b(${(Object.keys(itemData)).map(escapeRegExp).join('|')})\\b`, 'gi');
+        let processedText = text.replace(objectRegex, (match) => `<span class="clickable-object" data-object-name="${match}">${match}</span>`);
+
+        return new Promise(resolve => {
+            const MAX_OUTPUT_NODES = 100; // Limit output lines to prevent performance issues
+            const p = document.createElement('div');
+            p.style.color = color;
+            
+            // This function will handle the typing animation
+            let i = 0;
+            function typing() {
+                if (i < text.length) {
+                    if(speed > 0) playSound('typewriter');
+                    // Use the original text for the animation, then set the processed HTML at the end
+                    p.innerHTML = text.substring(0, i + 1);
+                    i++;
+                    element.scrollTop = element.scrollHeight;
+                    setTimeout(typing, speed);
+                } else {
+                    p.innerHTML = processedText; // Set the final HTML with clickable spans
+                    element.scrollTop = element.scrollHeight;
+                    resolve();
+                }
+            }
+
+            element.appendChild(p);
+            // Prune old nodes from the output
             while (element.childNodes.length > MAX_OUTPUT_NODES) {
                 element.removeChild(element.firstChild);
             }
-            element.scrollTop = element.scrollHeight; 
-            let i = 0; 
-            function typing() { 
-                if (i < text.length) { 
-                    playSound('typewriter'); 
-                    p.innerHTML = text.substring(0, i+1); 
-                    i++; 
-                    element.scrollTop = element.scrollHeight; 
-                    setTimeout(typing, speed); 
-                } else { 
-                    p.innerHTML = text; 
-                    resolve(); 
-                } 
-            } 
-            if (speed > 0) { 
-                p.innerHTML = ""; 
-                typing(); 
-            } else { 
-                p.innerHTML = text; 
-                resolve(); 
-            } 
+
+            if (speed > 0) {
+                p.innerHTML = ""; // Start with an empty element for the animation
+                typing();
+            } else {
+                p.innerHTML = processedText; // If no animation, just set the final HTML
+                element.scrollTop = element.scrollHeight;
+                resolve();
+            }
         });
     }
 
@@ -1730,6 +1441,7 @@ const translations = {
                 const room = rooms[GameState.currentRoom];
                 if (!room.states) room.states = {};
                 room.states.hacked = true;
+                GameState.flags.hackedTerminal = true;
                 room.objects.push('firewalled data log');
                 showGuidance(t('hint_read', {item: 'firewalled data log'}));
             } else {
@@ -1791,7 +1503,7 @@ const translations = {
 
     function addJournalEntry(note) { if (!note) return; const entry = `T${GameState.turnCount}: ${note}`; GameState.journalEntries.push(entry); updateUI(); }
     function displayJournal() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Journal entries displayed on the right panel.", '#cccccc'); }
-       function displayInventory() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Inventory displayed on the right panel.", '#cccccc'); }
+    function displayInventory() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Inventory displayed on the right panel.", '#cccccc'); }
     function displayObjectives() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Current objectives displayed on the right panel.", '#cccccc'); }
     function displayMap() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Map is displayed on the right panel.", '#cccccc'); }
     function showExits() { typeWriter(UI.gameOutput, `[System] Exits: ${Object.keys(rooms[GameState.currentRoom].exits).join(', ')}`); }
@@ -2024,7 +1736,7 @@ const translations = {
             ${endingsHtml}
             ${achievementsHtml}
         </div>
-        <button class="close-modal-btn button mt-6">${t('close_btn')}</button>`; 
+        <button class="close-modal-btn button mt-6">${t('close_btn')}</button>`;
         showModal(progressionText, true);
     }
 
@@ -2065,9 +1777,8 @@ const translations = {
 
     function showAchievementsModal() {
         let content = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('achievements_title')}</h2>
-                   <div class="modal-scroll flex-grow p-2 text-left">`;
-
-        // Use persistent storage for achievements
+                       <div class="modal-scroll flex-grow p-2 text-left">`;
+        
         const unlockedAchievementsObj = JSON.parse(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY) || '{}');
         const unlockedAchievements = Object.keys(unlockedAchievementsObj);
 
@@ -2076,7 +1787,7 @@ const translations = {
             content += `<ul class="list-disc pl-5 space-y-2">`;
             unlockedAchievements.forEach(id => {
                 const ach = achievements[id];
-                if (ach) {
+                if (ach) { // Check if achievement exists to prevent errors
                     content += `<li class="text-green-300"><strong>${t(ach.title_key)}:</strong> <span class="text-gray-300">${t(ach.req_key)}</span></li>`;
                 }
             });
@@ -2085,7 +1796,6 @@ const translations = {
             content += `<p class="text-gray-400">${t('no_achievements')}</p>`;
         }
 
-        // Locked achievements
         content += `<h3 class="text-lg font-bold mt-4 mb-2 text-white">${t('locked_achievement')}</h3>`;
         content += `<ul class="list-disc pl-5 space-y-2">`;
         let lockedCount = 0;
@@ -2102,10 +1812,8 @@ const translations = {
 
         content += `</div><button class="close-modal-btn button mt-6">${t('back_btn')}</button>`;
         showModal(content, true);
-
-        // Always re-bind the close button to return to the pause menu
         const closeBtn = UI.modalContent.querySelector('.close-modal-btn');
-        if (closeBtn) {
+        if(closeBtn) {
             closeBtn.onclick = () => {
                 playSound('uiClick');
                 showPauseMenu();
@@ -2126,10 +1834,12 @@ const translations = {
             content += `<ul class="list-disc pl-5 space-y-3">`;
             unlockedKeys.forEach(key => {
                 const ending = endings[key];
-                content += `<li class="text-green-300">
-                    <strong>${t(ending.title_key)}:</strong>
-                    <p class="text-gray-300 text-sm">${t(ending.desc_key)}</p>
-                </li>`;
+                if (ending) {
+                    content += `<li class="text-green-300">
+                        <strong>${t(ending.title_key)}:</strong>
+                        <p class="text-gray-300 text-sm">${t(ending.desc_key)}</p>
+                    </li>`;
+                }
             });
             content += `</ul>`;
         } else {
@@ -2201,7 +1911,7 @@ const translations = {
                 </label>
             </div>
 
-            <hr class="border-gray-700 my-4">
+             <hr class="border-gray-700 my-4">
 
             <div class="flex items-center justify-between">
                 <span data-lang="setting_master_volume">${t('setting_master_volume')}</span>
@@ -2318,7 +2028,7 @@ const translations = {
     }
     
     function returnToMainMenu() {
-        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        if(animationFrameId) cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
         sessionStorage.removeItem('synapse_session_v15_autosave');
         sessionStorage.removeItem('synapse_session_v15_screen_state');
@@ -2375,7 +2085,7 @@ const translations = {
         for (const key in endings) {
             if (endings[key].check()) {
                 endGame(key);
-                return; // Important to stop after the first ending is triggered
+                return; // Stop after the first ending is triggered
             }
         }
     }
@@ -2605,12 +2315,14 @@ const translations = {
     }
 
     function drawMap() {
-        if (!UI.mapCanvas) return;
+        if (!UI.mapCanvas || !GameState.currentRoom) return;
         const canvas = UI.mapCanvas;
         const ctx = canvas.getContext('2d');
         const isFullscreen = UI.mapPanel.classList.contains('fullscreen');
         const dpr = window.devicePixelRatio || 1;
         const rect = canvas.getBoundingClientRect();
+
+        if (rect.width === 0 || rect.height === 0) return;
 
         const newWidth = rect.width * dpr;
         const newHeight = rect.height * dpr;
@@ -2624,58 +2336,31 @@ const translations = {
         ctx.save();
         ctx.scale(dpr, dpr);
 
-        // Declare playerLayout only once
         const playerLayout = roomLayout[GameState.currentRoom];
+        if (!playerLayout) { ctx.restore(); return; }
 
         if (isFullscreen) {
             ctx.translate(mapState.offsetX / dpr, mapState.offsetY / dpr);
         } else {
-            if (!playerLayout) { ctx.restore(); return; }
             const centerX = playerLayout.x + playerLayout.w / 2;
             const centerY = playerLayout.y + playerLayout.h / 2;
-            // Cache rooms to draw for performance
-            if (!drawMap._cache) drawMap._cache = { isFullscreen: null, visitedRooms: new Set(), rooms: [] };
-            const cache = drawMap._cache;
-            let roomsToDraw;
-            if (isFullscreen !== cache.isFullscreen ||
-                (isFullscreen === false && (GameState.visitedRooms.size !== cache.visitedRooms.size ||
-                [...GameState.visitedRooms].some(r => !cache.visitedRooms.has(r))))) {
-                if (isFullscreen) {
-                    roomsToDraw = Object.keys(roomLayout);
-                } else {
-                    roomsToDraw = Array.from(GameState.visitedRooms);
-                    cache.visitedRooms = new Set(GameState.visitedRooms);
-                }
-                cache.isFullscreen = isFullscreen;
-                cache.rooms = roomsToDraw;
-            } else {
-                roomsToDraw = cache.rooms;
-            }
             const translateX = (rect.width / 2) - (centerX * mapState.scale);
             const translateY = (rect.height / 2) - (centerY * mapState.scale);
             ctx.translate(translateX, translateY);
         }
         ctx.scale(mapState.scale, mapState.scale);
-        let roomsToDraw;
+        
+        const roomsToDraw = isFullscreen ? Object.keys(roomLayout) : Array.from(GameState.visitedRooms);
+        
         if (isFullscreen) {
             const bounds = getMapBounds();
             const gridSize = 20;
             ctx.strokeStyle = "rgba(0, 255, 65, 0.08)";
             ctx.lineWidth = 0.5 / mapState.scale;
-
-            // Limit the number of grid lines for performance
-            const maxGridLines = 100;
-            let xLines = Math.ceil((bounds.maxX - bounds.minX) / gridSize);
-            let yLines = Math.ceil((bounds.maxY - bounds.minY) / gridSize);
-            let xStep = gridSize;
-            let yStep = gridSize;
-            if (xLines > maxGridLines) xStep = ((bounds.maxX - bounds.minX) / maxGridLines);
-            if (yLines > maxGridLines) yStep = ((bounds.maxY - bounds.minY) / maxGridLines);
-
-            for (let x = bounds.minX; x < bounds.maxX; x += xStep) {
+            for (let x = bounds.minX; x < bounds.maxX; x += gridSize) {
                 ctx.beginPath(); ctx.moveTo(x, bounds.minY); ctx.lineTo(x, bounds.maxY); ctx.stroke();
             }
-            for (let y = bounds.minY; y < bounds.maxY; y += yStep) {
+            for (let y = bounds.minY; y < bounds.maxY; y += gridSize) {
                 ctx.beginPath(); ctx.moveTo(bounds.minX, y); ctx.lineTo(bounds.maxX, y); ctx.stroke();
             }
 
@@ -2696,59 +2381,58 @@ const translations = {
                     });
                 }
             });
-            roomsToDraw = Object.keys(roomLayout);
-        } else {
-            // roomsToDraw is already set in the above else block
-            roomsToDraw = roomsToDraw || Array.from(GameState.visitedRooms);
         }
         
         roomsToDraw.forEach(roomName => {
+            if (!rooms[roomName] || !roomLayout[roomName]) return;
             const layout = roomLayout[roomName];
-            if (!layout) return;
             const x = layout.x, y = layout.y, w = layout.w, h = layout.h;
-            const isLocked = rooms[roomName].requiresKeycard && !hasItem(rooms[roomName].keyName || 'keycard');
-            if (roomName === GameState.currentRoom) {
-                const pulseFactor = (Math.sin(Date.now() * 0.005) + 1) / 2;
-                ctx.fillStyle = `rgba(0, 255, 65, ${0.5 + pulseFactor * 0.4})`;
-                ctx.shadowColor = 'rgba(127, 255, 127, 1)';
-                ctx.shadowBlur = (4 + pulseFactor * 8) / mapState.scale;
-            } else {
-                ctx.fillStyle = "rgba(0, 255, 65, 0.3)";
-            }
-            ctx.fillRect(x, y, w, h);
+            const isDiscovered = GameState.visitedRooms.has(roomName);
             ctx.shadowBlur = 0;
 
-            ctx.strokeStyle = isLocked ? "rgba(255, 71, 76, 0.8)" : "rgba(0, 255, 65, 0.8)";
-            ctx.lineWidth = 1.5 / mapState.scale;
-            ctx.setLineDash([]);
-            ctx.strokeRect(x, y, w, h);
+            if (isDiscovered) {
+                const isLocked = rooms[roomName].requiresKeycard && !hasItem(rooms[roomName].keyName || 'keycard');
+                if (roomName === GameState.currentRoom) {
+                    const pulseFactor = (Math.sin(Date.now() * 0.005) + 1) / 2;
+                    ctx.fillStyle = `rgba(0, 255, 65, ${0.5 + pulseFactor * 0.4})`;
+                    ctx.shadowColor = 'rgba(127, 255, 127, 1)';
+                    ctx.shadowBlur = (4 + pulseFactor * 8) / mapState.scale;
+                } else {
+                    ctx.fillStyle = "rgba(0, 255, 65, 0.3)";
+                }
+                ctx.fillRect(x, y, w, h);
+                ctx.shadowBlur = 0;
 
-            if (rooms[roomName].objects.length > 0) {
-                ctx.fillStyle = "rgba(255, 219, 88, 1)";
-                ctx.beginPath();
-                ctx.arc(x + w - 5 / mapState.scale, y + 5 / mapState.scale, 2 / mapState.scale, 0, 2 * Math.PI);
-                ctx.fill();
-            }
+                ctx.strokeStyle = isLocked ? "rgba(255, 71, 76, 0.8)" : "rgba(0, 255, 65, 0.8)";
+                ctx.lineWidth = 1.5 / mapState.scale;
+                ctx.setLineDash([]);
+                ctx.strokeRect(x, y, w, h);
 
-            const baseFontSize = 12;
-            const fontSize = Math.max(baseFontSize, baseFontSize / mapState.scale);
-            ctx.font = `${fontSize}px VT323`;
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-            ctx.shadowBlur = 3 / mapState.scale;
-            ctx.shadowOffsetX = 1 / mapState.scale;
-            ctx.shadowOffsetY = 1 / mapState.scale;
+                if (rooms[roomName].objects.length > 0) {
+                    ctx.fillStyle = "rgba(255, 219, 88, 1)";
+                    ctx.beginPath();
+                    ctx.arc(x + w - 5 / mapState.scale, y + 5 / mapState.scale, 2 / mapState.scale, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
 
-            ctx.fillStyle = "white";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillText(layout.name, x + w / 2, y + h / 2 + 1);
+                const baseFontSize = 12;
+                const fontSize = Math.max(baseFontSize, baseFontSize / mapState.scale);
+                ctx.font = `${fontSize}px VT323`;
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+                ctx.shadowBlur = 3 / mapState.scale;
+                ctx.shadowOffsetX = 1 / mapState.scale;
+                ctx.shadowOffsetY = 1 / mapState.scale;
+                
+                ctx.fillStyle = "white";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(layout.name, x + w / 2, y + h / 2 + 1);
+                
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
 
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
-
-            // Draw outline for unvisited rooms in non-fullscreen mode
-            if (!UI.mapPanel.classList.contains('fullscreen') && !GameState.visitedRooms.has(roomName)) {
+            } else if (isFullscreen) { 
                 ctx.strokeStyle = "rgba(0, 255, 65, 0.25)";
                 ctx.lineWidth = 1 / mapState.scale;
                 ctx.setLineDash([3 / mapState.scale, 2 / mapState.scale]);
@@ -2757,17 +2441,15 @@ const translations = {
             }
         });
         
-        if (playerLayout) {
-             const playerX = playerLayout.x + playerLayout.w / 2;
-             const playerY = playerLayout.y + playerLayout.h / 2;
-             ctx.fillStyle = "#FF2A7F";
-             ctx.beginPath();
-             ctx.arc(playerX, playerY, 3 / mapState.scale, 0, 2 * Math.PI);
-             ctx.fill();
-             ctx.strokeStyle = "white";
-             ctx.lineWidth = 0.5 / mapState.scale;
-             ctx.stroke();
-        }
+        const playerX = playerLayout.x + playerLayout.w / 2;
+        const playerY = playerLayout.y + playerLayout.h / 2;
+        ctx.fillStyle = "#FF2A7F";
+        ctx.beginPath();
+        ctx.arc(playerX, playerY, 3 / mapState.scale, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 0.5 / mapState.scale;
+        ctx.stroke();
 
         ctx.restore();
     }
