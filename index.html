@@ -286,60 +286,72 @@
     <canvas id="background-canvas"></canvas>
     <div id="app-container" class="w-full h-full bg-black/75 p-2 sm:p-4 flex flex-col">
         
-        <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full overflow-y-auto">
-            <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-black bg-opacity-60 relative">
-                 <div class="title-wrapper -mt-24">
-                    <h1 id="game-title" data-text="SYNAPSE" class="text-7xl md:text-9xl font-bold title-slasher mb-4">SYNAPSE</h1>
+        <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full">
+            <div class="w-full h-full flex flex-col items-center justify-center bg-black bg-opacity-60">
+                <!-- Header for lang buttons -->
+                <div class="w-full flex justify-end p-2">
+                    <div id="lang-buttons" class="flex gap-2">
+                        <button id="lang-en-btn" data-lang="en_lang_short" data-text="EN" class="button text-xs !px-2 !py-1 btn-drip">EN</button>
+                        <button id="lang-sv-btn" data-lang="sv_lang_short" data-text="SV" class="button text-xs !px-2 !py-1 opacity-50 btn-drip">SV</button>
+                    </div>
                 </div>
-                <div id="intro-text-container" class="max-w-4xl text-sm md:text-base text-white mt-20"></div>
-                 <div id="start-options" class="mt-10 flex flex-wrap justify-center gap-4">
-                     <button id="new-game-btn" data-lang="new_game" data-text="New Game" class="button btn-glow btn-drip">New Game</button>
-                     <button id="load-game-btn" data-lang="load_game" data-text="Load Game" class="button btn-glow btn-drip">Load Game</button>
-                 </div>
-                 <div class="absolute top-4 right-4 flex gap-2">
-                    <button id="lang-en-btn" data-lang="en_lang_short" data-text="EN" class="button text-xs !px-2 !py-1 btn-drip">EN</button>
-                    <button id="lang-sv-btn" data-lang="sv_lang_short" data-text="SV" class="button text-xs !px-2 !py-1 opacity-50 btn-drip">SV</button>
-                 </div>
-                 <div class="absolute bottom-4 right-4">
-                    <button id="view-features-btn" data-lang="understand_game" data-text="Understand the Game" class="button btn-glow btn-drip">Understand the Game</button>
-                 </div>
-                 <div class="absolute bottom-4 left-4">
+
+                <!-- Main content flex-grow -->
+                <div class="flex-grow flex flex-col items-center justify-center text-center px-4 w-full">
+                    <div class="title-wrapper -mt-16 sm:-mt-20">
+                        <h1 id="game-title" data-text="SYNAPSE" class="text-7xl md:text-9xl font-bold title-slasher mb-4">SYNAPSE</h1>
+                    </div>
+                    <div id="intro-text-container" class="max-w-4xl text-sm md:text-base text-white mt-8 sm:mt-12"></div>
+                    <div id="start-options" class="mt-10 flex flex-wrap justify-center gap-4">
+                        <button id="new-game-btn" data-lang="new_game" data-text="New Game" class="button btn-glow btn-drip">New Game</button>
+                        <button id="load-game-btn" data-lang="load_game" data-text="Load Game" class="button btn-glow btn-drip">Load Game</button>
+                    </div>
+                </div>
+
+                <!-- Footer for other buttons -->
+                <div class="w-full flex flex-wrap justify-between items-center p-2 gap-2">
                     <button id="start-settings-btn" data-lang="settings_btn" data-text="Settings" class="button btn-glow btn-drip">Settings</button>
+                    <button id="view-features-btn" data-lang="understand_game" data-text="Understand the Game" class="button btn-glow btn-drip">Understand the Game</button>
                 </div>
             </div>
         </div>
 
-        <div id="player-setup" class="hidden flex-col items-center justify-center text-center h-full overflow-y-auto">
-             <div class="w-full h-full flex flex-col items-center justify-center p-4 bg-black bg-opacity-60 relative">
-                 <div class="title-wrapper -mt-12 mb-8">
-                     <h1 data-text="SYNAPSE" class="text-6xl md:text-7xl font-bold title-slasher">SYNAPSE</h1>
-                 </div>
-                 <p class="mb-4" data-lang="select_difficulty">Select difficulty:</p>
-                 <div class="flex gap-4 mb-6">
-                     <button class="difficulty-btn button" data-difficulty="Easy" data-lang="easy">Easy</button>
-                     <button class="difficulty-btn button button-primary" data-difficulty="Normal" data-lang="normal">Normal</button>
-                     <button class="difficulty-btn button" data-difficulty="Hard" data-lang="hard">Hard</button>
-                 </div>
-                 <input type="text" id="player-name" data-lang-placeholder="enter_name_placeholder" placeholder="Enter your name" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 mb-4 focus:outline-none p-1">
-                 <div class="flex items-center gap-2 mb-6">
-                     <input type="text" id="player-backstory" data-lang-placeholder="enter_backstory_placeholder" placeholder="Enter your backstory" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 focus:outline-none p-1">
-                     <button id="view-backstories-btn" class="button text-xs px-2 py-1" data-lang="view_choices">View Choices</button>
-                 </div>
-                 <div id="ability-display" class="text-center text-cyan-400 min-h-[4rem] mt-2 mb-4 p-2 border border-cyan-400/30 rounded-md bg-black/50 w-full max-w-md flex items-center justify-center"></div>
-                 <div class="flex gap-4">
-                    <button id="back-to-start-btn" data-lang="go_back_btn" data-text="Go Back" class="button btn-glow btn-drip">Go Back</button>
-                    <button id="start-game-btn" class="button button-primary" data-lang="begin">Begin</button>
-                 </div>
+        <div id="player-setup" class="hidden flex-col items-center justify-center text-center h-full">
+             <div class="w-full h-full flex flex-col items-center justify-center bg-black bg-opacity-60">
+                <!-- Header for lang buttons -->
+                <div class="w-full flex justify-end p-2">
+                    <div id="setup-lang-buttons" class="flex gap-2">
+                        <button data-lang="en_lang_short" data-text="EN" class="button text-xs !px-2 !py-1 btn-drip">EN</button>
+                        <button data-lang="sv_lang_short" data-text="SV" class="button text-xs !px-2 !py-1 opacity-50 btn-drip">SV</button>
+                    </div>
+                </div>
 
-                 <!-- Buttons added to match start screen -->
-                 <div id="setup-lang-buttons" class="absolute top-4 right-4 flex gap-2">
-                    <button data-lang="en_lang_short" data-text="EN" class="button text-xs !px-2 !py-1 btn-drip">EN</button>
-                    <button data-lang="sv_lang_short" data-text="SV" class="button text-xs !px-2 !py-1 opacity-50 btn-drip">SV</button>
-                 </div>
-                 <div class="absolute bottom-4 left-4">
+                <!-- Main Content -->
+                <div class="flex-grow flex flex-col items-center justify-center text-center px-4 w-full overflow-y-auto">
+                    <div class="title-wrapper -mt-8 mb-4">
+                        <h1 data-text="SYNAPSE" class="text-6xl md:text-7xl font-bold title-slasher">SYNAPSE</h1>
+                    </div>
+                    <p class="mb-4" data-lang="select_difficulty">Select difficulty:</p>
+                    <div class="flex gap-4 mb-6">
+                        <button class="difficulty-btn button" data-difficulty="Easy" data-lang="easy">Easy</button>
+                        <button class="difficulty-btn button button-primary" data-difficulty="Normal" data-lang="normal">Normal</button>
+                        <button class="difficulty-btn button" data-difficulty="Hard" data-lang="hard">Hard</button>
+                    </div>
+                    <input type="text" id="player-name" data-lang-placeholder="enter_name_placeholder" placeholder="Enter your name" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 mb-4 focus:outline-none p-1">
+                    <div class="flex items-center gap-2 mb-6">
+                        <input type="text" id="player-backstory" data-lang-placeholder="enter_backstory_placeholder" placeholder="Enter your backstory" class="bg-transparent border-b-2 border-[#00ff41] text-center w-64 focus:outline-none p-1">
+                        <button id="view-backstories-btn" class="button text-xs px-2 py-1" data-lang="view_choices">View Choices</button>
+                    </div>
+                    <div id="ability-display" class="text-center text-cyan-400 min-h-[4rem] mt-2 mb-4 p-2 border border-cyan-400/30 rounded-md bg-black/50 w-full max-w-md flex items-center justify-center"></div>
+                    <div class="flex gap-4">
+                       <button id="back-to-start-btn" data-lang="go_back_btn" data-text="Go Back" class="button btn-glow btn-drip">Go Back</button>
+                       <button id="start-game-btn" class="button button-primary" data-lang="begin">Begin</button>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                 <div class="w-full flex flex-wrap justify-between items-center p-2 gap-2">
                     <button id="setup-settings-btn" data-lang="settings_btn" data-text="Settings" class="button btn-glow btn-drip">Settings</button>
-                 </div>
-                 <div class="absolute bottom-4 right-4">
                     <button id="setup-features-btn" data-lang="understand_game" data-text="Understand the Game" class="button btn-glow btn-drip">Understand the Game</button>
                  </div>
             </div>
@@ -493,6 +505,7 @@
             'hack_fail_ability': 'You don\'t have the expertise to hack this.', 'hack_fail_target': 'There is nothing here to hack.', 'hack_start': 'You begin the hacking sequence. SYNAPSE: "Unauthorized access detected. Please enter the override code now."', 'hack_success': 'Override accepted. You gain access to a firewalled data log.', 'hack_failure': 'SYNAPSE: "Override failed. Locking system for 3 turns."',
             'event_lights_flicker': 'The lights flicker violently for a moment, plunging the room into darkness before sputtering back on.', 'event_noise': 'You hear a metallic scraping sound from the {direction}.',
             'achievement_unlocked': 'Achievement Unlocked!',
+            'help': 'Help', 'save_game': 'Save Game',
         },
         'sv': {
             'new_game': 'Nytt Spel', 'load_game': 'Ladda Spel',
@@ -508,7 +521,7 @@
             'dlg_ask_chimera': 'Projekt Chimera... Ett fascinerande, men... klassificerat ämne. Det var Dr. Aris Thornes favoritprojekt. Sådan ambition. Han försökte slå samman organiskt och syntetiskt liv. Resultaten var... oförutsägbara.',
             'dlg_ask_default': 'Jag har inte tillräckligt med data om det ämnet.',
             'invalid_command': "SYNAPSE: Det är inte ett giltigt kommando eller fråga.", 'game_saved': "[System] Spel sparat.", 'autosave_success': 'Automatisk sparande lyckades.', 'load_fail': 'Kunde inte ladda spardata. Den kan vara korrupt eller från en tidigare version.', 'no_save': 'Inget sparat spel hittades!', 'game_loaded': '[System] Spel laddat.', 'conn_reestablished': '[SYSTEM] Anslutning återupprättad. Session återställd.', 'initializing': 'Initierar system...', 'initial_hint': "Detta är ett textbaserat äventyr. Skriv kommandon eller klicka på <span class='clickable-object'>markerade objekt</span> för att interagera. Skriv 'hjälp' när som helst för en lista med kommandon.", 'cannot_go_that_way': "[System] Du kan inte gå den vägen.", 'door_is_locked': "[SYSTEM] Dörren är låst. Du behöver rätt nyckelkort.", 'door_is_sealed': "[SYSTEM] Dörren är förseglad. Den rubbas inte.",
-            'lang_switch_btn': 'Byt Språk', 'back_btn': 'Tillbaka', 'pause_btn': 'Paus', 'main_menu_btn': 'Huvudmeny', 'save_game': 'Spara Spel', 'load_game': 'Ladda Spel',
+            'lang_switch_btn': 'Byt Språk', 'back_btn': 'Tillbaka', 'pause_btn': 'Paus', 'main_menu_btn': 'Huvudmeny', 'save_game': 'Spara Spel', 'load_game': 'Ladda Spel', 'help': 'Hjälp', 'resume_btn': 'Återuppta', 'settings_btn': 'Inställningar',
         }
     };
     
@@ -556,6 +569,7 @@
         micBtn: document.getElementById('mic-btn'),
         viewProgressionBtn: document.getElementById('view-progression-btn'),
         langEnBtn: document.getElementById('lang-en-btn'), langSvBtn: document.getElementById('lang-sv-btn'),
+        langButtons: document.getElementById('lang-buttons'),
         setupLangButtons: document.getElementById('setup-lang-buttons'),
         setupSettingsBtn: document.getElementById('setup-settings-btn'),
         setupFeaturesBtn: document.getElementById('setup-features-btn'),
@@ -817,7 +831,7 @@
             'solvent': { name: 'solvent', weight: 1, type: ItemType.Puzzle, hintType: 'take', description: { en: 'A vial of powerful chemical solvent, capable of dissolving organic compounds.', sv: 'En ampull med kraftfullt kemiskt lösningsmedel, kapabel att lösa upp organiska föreningar.' }},
             'dna scanner': { name: 'dna scanner', weight: 1, type: ItemType.Tool, hintType: 'take', description: { en: 'A handheld device for rapid genetic sequence analysis.', sv: 'En handhållen enhet för snabb analys av genetiska sekvenser.' }},
             'tissue sample': { name: 'tissue sample', weight: 1, type: ItemType.Puzzle, hintType: 'take', description: { en: 'A small sample of grotesque, pulsating organic tissue in a petri dish.', sv: 'Ett litet prov av grotesk, pulserande organisk vävnad i en petriskål.' }},
-            'whiteboard': { name: 'whiteboard', weight: 99, type: ItemType.Log, hintType: 'read', description: { en: "The whiteboard is covered in frantic scrawls. One section is circled in red: 'SUBJECT ZERO - UNSTABLE. CHIMERIC DNA. IT IS... GROWING. WE USED AN ORGANIC ADHESIVE TO SEAL THE SPECIMEN ROOM. GOD HELP US.'", sv: "Vittavlan är täckt av frenetiska klotter. En sektion är inringad i rött: 'SUBJEKT NOLL - INSTABIL. KIMÄRISKT DNA. DEN... VÄXER. VI ANVÄNDE ETT ORGANISKT LIM FÖR ATT FÖRSEGLA PROVRUMMET. GUD HJÄLPE OSS.'" }},
+            'whiteboard': { name: 'whiteboard', weight: 99, type: ItemType.Log, hintType: 'read', description: { en: "The whiteboard is covered in frantic scrawls. One section is circled in red: 'SUBJECT ZERO - UNSTABLE. CHIMERIC DNA. IT IS... GROWING. WE USED AN ORGANIC ADHESIVE TO SEAL THE SPECIMEN ROOM. GOD HELP US.'", sv: "Vittavlan är täckt av frenetiska klotter. En sektion är inringad i rött: 'SUBJEKT NOLL - INSTABIL. KIMÄRISKT DNA. DEN... VÄXER. VI ANVÄNDE ETT ORGANISKT LIM FÖR ATT FÖRSEGLA PROVRUMMET. GUD HJÄLPE OSS.'" } },
             'bio-waste bin': { name: 'bio-waste bin', weight: 99, type: ItemType.Puzzle, hintType: 'search', description: { en: "A large red container for hazardous biological materials.", sv: "En stor röd behållare för farligt biologiskt material."}},
         };
         const roomData = { 
@@ -1616,19 +1630,21 @@
 
     function showPauseMenu() {
         const pauseText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('pause_title')}</h2>
-        <div class="flex flex-col gap-2">
-            <button id="pause-achievements" class="button">${t('achievements_btn')}</button>
-            <button id="pause-endings" class="button">${t('endings_btn')}</button>
-            <hr class="border-gray-700 my-2">
-            <button id="pause-features" class="button">${t('understand_game')}</button>
-            <button id="pause-help" class="button">${t('help')}</button>
-            <button id="pause-settings" class="button">${t('settings_btn')}</button>
-            <button id="pause-lang" class="button">${t('lang_switch_btn')}</button>
-            <hr class="border-gray-700 my-2">
-            <button id="pause-save" class="button">${t('save_game')}</button>
-            <button id="pause-load" class="button">${t('load_game')}</button>
-            <button id="pause-main-menu" class="button text-yellow-300 border-yellow-300/80">${t('main_menu_btn')}</button>
-            <button id="pause-resume" class="button button-primary mt-4">${t('resume_btn')}</button>
+        <div class="modal-scroll flex-grow pr-2">
+            <div class="flex flex-col gap-2">
+                <button id="pause-achievements" class="button">${t('achievements_btn')}</button>
+                <button id="pause-endings" class="button">${t('endings_btn')}</button>
+                <hr class="border-gray-700 my-2">
+                <button id="pause-features" class="button">${t('understand_game')}</button>
+                <button id="pause-help" class="button">${t('help')}</button>
+                <button id="pause-settings" class="button">${t('settings_btn')}</button>
+                <button id="pause-lang" class="button">${t('lang_switch_btn')}</button>
+                <hr class="border-gray-700 my-2">
+                <button id="pause-save" class="button">${t('save_game')}</button>
+                <button id="pause-load" class="button">${t('load_game')}</button>
+                <button id="pause-main-menu" class="button text-yellow-300 border-yellow-300/80">${t('main_menu_btn')}</button>
+                <button id="pause-resume" class="button button-primary mt-4">${t('resume_btn')}</button>
+            </div>
         </div>`; 
         showModal(pauseText, true); 
         document.getElementById('pause-save').onclick = () => { playSound('uiClick'); saveGame(); hideModal(); }; 
@@ -2522,6 +2538,7 @@
         
         setupButtonClick(UI.langEnBtn, setLanguage, 'en');
         setupButtonClick(UI.langSvBtn, setLanguage, 'sv');
+        
         const setupLangEnBtn = UI.setupLangButtons.children[0];
         const setupLangSvBtn = UI.setupLangButtons.children[1];
         setupButtonClick(setupLangEnBtn, setLanguage, 'en');
