@@ -30,7 +30,6 @@
             background-color: #0d0d0d;
             color: var(--main-color);
             font-family: 'Space Mono', monospace;
-            position: fixed; 
         }
         #background-canvas {
             position: fixed;
@@ -129,8 +128,85 @@
         #game-output::-webkit-scrollbar-track, #journal-panel::-webkit-scrollbar-track, #objectives-panel::-webkit-scrollbar-track, .modal-scroll::-webkit-scrollbar-track { background: #1a1a1a; }
         #game-output::-webkit-scrollbar-thumb, #journal-panel::-webkit-scrollbar-thumb, #objectives-panel::-webkit-scrollbar-thumb, .modal-scroll::-webkit-scrollbar-thumb { background-color: var(--main-color); border-radius: 4px; }
         .glitch { animation: glitch-anim 1.5s infinite alternate-reverse; }
+        .glitch.paused { animation-play-state: paused !important; }
         @keyframes glitch-anim {
-          0% { transform: translate(0); clip-path: inset(45% 0 50% 0); } 5% { transform: translate(2px, -3px); clip-path: inset(25% 0 35% 0); } 10% { transform: translate(-2px, 3px); clip-path: inset(60% 0 10% 0); } 15% { transform: translate(0); clip-path: inset(90% 0 5% 0); } 20% { clip-path: inset(40% 0 45% 0); } 25% { transform: translate(3px, 2px); clip-path: inset(20% 0 70% 0); } 30% { transform: translate(-3px, -2px); clip-path: inset(85% 0 5% 0); } 35% { clip-path: inset(15% 0 80% 0); } 40% { transform: translate(0); clip-path: inset(55% 0 25% 0); } 45% { clip-path: inset(30% 0 55% 0); } 50% { transform: translate(2px, 3px); clip-path: inset(70% 0 5% 0); } 55% { transform: translate(-2px, -3px); clip-path: inset(10% 0 85% 0); } 60% { clip-path: inset(75% 0 15% 0); } 65% { transform: translate(0); clip-path: inset(5% 0 90% 0); } 70% { clip-path: inset(65% 0 20% 0); } 75% { transform: translate(3px, -2px); clip-path: inset(45% 0 50% 0); } 80% { transform: translate(-3px, 2px); clip-path: inset(25% 0 65% 0); } 85% { clip-path: inset(95% 0 2% 0); } 90% { transform: translate(0); clip-path: inset(30% 0 60% 0); } 95% { clip-path: inset(5% 0 75% 0); } 100% { transform: translate(2px, 2px); clip-path: inset(80% 0 10% 0); }
+          0% {
+            transform: translate(0);
+            clip-path: inset(45% 0 50% 0);
+          }
+          5% {
+            transform: translate(2px, -3px);
+            clip-path: inset(25% 0 35% 0);
+          }
+          10% {
+            transform: translate(-2px, 3px);
+            clip-path: inset(60% 0 10% 0);
+          }
+          15% {
+            transform: translate(0);
+            clip-path: inset(90% 0 5% 0);
+          }
+          20% {
+            clip-path: inset(40% 0 45% 0);
+          }
+          25% {
+            transform: translate(3px, 2px);
+            clip-path: inset(20% 0 70% 0);
+          }
+          30% {
+            transform: translate(-3px, -2px);
+            clip-path: inset(85% 0 5% 0);
+          }
+          35% {
+            clip-path: inset(15% 0 80% 0);
+          }
+          40% {
+            transform: translate(0);
+            clip-path: inset(55% 0 25% 0);
+          }
+          45% {
+            clip-path: inset(30% 0 55% 0);
+          }
+          50% {
+            transform: translate(2px, 3px);
+            clip-path: inset(70% 0 5% 0);
+          }
+          55% {
+            transform: translate(-2px, -3px);
+            clip-path: inset(10% 0 85% 0);
+          }
+          60% {
+            clip-path: inset(75% 0 15% 0);
+          }
+          65% {
+            transform: translate(0);
+            clip-path: inset(5% 0 90% 0);
+          }
+          70% {
+            clip-path: inset(65% 0 20% 0);
+          }
+          75% {
+            transform: translate(3px, -2px);
+            clip-path: inset(45% 0 50% 0);
+          }
+          80% {
+            transform: translate(-3px, 2px);
+            clip-path: inset(25% 0 65% 0);
+          }
+          85% {
+            clip-path: inset(95% 0 2% 0);
+          }
+          90% {
+            transform: translate(0);
+            clip-path: inset(30% 0 60% 0);
+          }
+          95% {
+            clip-path: inset(5% 0 75% 0);
+          }
+          100% {
+            transform: translate(2px, 2px);
+            clip-path: inset(80% 0 10% 0);
+          }
         }
         .button {
             background-color: var(--main-color-faded); border: 1px solid var(--main-color-border); color: #fff; padding: 0.5rem 1rem; border-radius: 0.375rem; transition: all 0.2s; cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent; text-shadow: 0 0 3px var(--main-color-shadow);
@@ -239,7 +315,10 @@
         .clickable-object {
             color: #67e8f9; /* cyan-300 */
             text-decoration: underline;
+            /* Fallback for browsers that don't support text-decoration-style */
             text-decoration-style: dotted;
+            /* For older browsers, fallback to dashed if dotted is not supported */
+            text-decoration-style: dashed;
             cursor: pointer;
         }
         .clickable-object:hover {
@@ -1240,15 +1319,46 @@
         return false;
     }
 
+    // Utility function to escape regex special characters
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
     async function typeWriter(element, text, color = 'var(--main-color)', speed = currentTextSpeed) {
         const resolvedColor = color.startsWith('var(') ? getComputedStyle(document.documentElement).getPropertyValue(color.slice(4, -1)).trim() : color;
         if(GameState.settings.colorblindMode && color !== '#a0a0a0') { const colorMap = {'#00ff41':'[SYS]', '#ffbf00':'[SYS]', '#00bfff':'[SYS]', '#ff474c':'[ERR]', '#ffdb58':'[WARN]', '#6495ed':'[CMD]', '#cccccc':'[INFO]', '#b19cd9':'[PSY]', [GUIDANCE_COLOR]: '[HINT]', '#ffa500': '[DEBUG]'}; text = `${colorMap[resolvedColor] || ''} ${text}`; color = '#ffffff'; }
-        if (element.id === 'game-output' && GameState.settings.glitchEffect && (GameState.sanityLevel < 30 || GameState.awarenessLevel > 70) && Math.random() < 0.2) { playSound('glitch', {note: 'G2', duration:'16n'}); text = text.split('').map(c => Math.random() < 0.15 ? String.fromCharCode(33 + Math.random() * 94) : c).join(''); }
-        
-        const objectRegex = new RegExp(`\\b(${(Object.keys(itemData)).join('|')})\\b`, 'gi');
-        text = text.replace(objectRegex, (match) => `<span class="clickable-object" data-object-name="${match}">${match}</span>`);
-
-        return new Promise(resolve => { const p = document.createElement('div'); p.style.color = color; p.innerHTML = text; element.appendChild(p); element.scrollTop = element.scrollHeight; let i = 0; function typing() { if (i < text.length) { playSound('typewriter'); p.innerHTML = text.substring(0, i+1); i++; element.scrollTop = element.scrollHeight; setTimeout(typing, speed); } else { p.innerHTML = text; resolve(); } } if (speed > 0) { p.innerHTML = ""; typing(); } else { resolve(); } });
+        return new Promise(resolve => { 
+            const MAX_OUTPUT_NODES = 200;
+            const p = document.createElement('div'); 
+            p.style.color = color; 
+            p.innerHTML = text; 
+            element.appendChild(p); 
+            // Limit the number of output nodes to prevent DOM bloat
+            while (element.childNodes.length > MAX_OUTPUT_NODES) {
+                element.removeChild(element.firstChild);
+            }
+            element.scrollTop = element.scrollHeight; 
+            let i = 0; 
+            function typing() { 
+                if (i < text.length) { 
+                    playSound('typewriter'); 
+                    p.innerHTML = text.substring(0, i+1); 
+                    i++; 
+                    element.scrollTop = element.scrollHeight; 
+                    setTimeout(typing, speed); 
+                } else { 
+                    p.innerHTML = text; 
+                    resolve(); 
+                } 
+            } 
+            if (speed > 0) { 
+                p.innerHTML = ""; 
+                typing(); 
+            } else { 
+                p.innerHTML = text; 
+                resolve(); 
+            } 
+        });
     }
 
     function updateUI() {
@@ -2126,7 +2236,14 @@
         const resetBtn = document.getElementById('reset-settings-btn');
         if(resetBtn) {
             resetBtn.onclick = () => {
-                GameState.settings = loadSettings(); 
+                GameState.settings = {
+                    sound: { master: true, item: true, awareness: true, sanity: true },
+                    textSpeed: TextSpeed.Normal,
+                    colorblindMode: false,
+                    glitchEffect: true,
+                    font: 'Space Mono',
+                    theme: 'green'
+                };
                 saveSettings();
                 applySettings();
                 showSettingsModal(fromPauseMenu);
@@ -2464,30 +2581,58 @@
         ctx.save();
         ctx.scale(dpr, dpr);
 
+        // Declare playerLayout only once
+        const playerLayout = roomLayout[GameState.currentRoom];
+
         if (isFullscreen) {
             ctx.translate(mapState.offsetX / dpr, mapState.offsetY / dpr);
         } else {
-            const playerLayout = roomLayout[GameState.currentRoom];
             if (!playerLayout) { ctx.restore(); return; }
             const centerX = playerLayout.x + playerLayout.w / 2;
             const centerY = playerLayout.y + playerLayout.h / 2;
+            // Cache rooms to draw for performance
+            if (!drawMap._cache) drawMap._cache = { isFullscreen: null, visitedRooms: new Set(), rooms: [] };
+            const cache = drawMap._cache;
+            let roomsToDraw;
+            if (isFullscreen !== cache.isFullscreen ||
+                (isFullscreen === false && (GameState.visitedRooms.size !== cache.visitedRooms.size ||
+                [...GameState.visitedRooms].some(r => !cache.visitedRooms.has(r))))) {
+                if (isFullscreen) {
+                    roomsToDraw = Object.keys(roomLayout);
+                } else {
+                    roomsToDraw = Array.from(GameState.visitedRooms);
+                    cache.visitedRooms = new Set(GameState.visitedRooms);
+                }
+                cache.isFullscreen = isFullscreen;
+                cache.rooms = roomsToDraw;
+            } else {
+                roomsToDraw = cache.rooms;
+            }
             const translateX = (rect.width / 2) - (centerX * mapState.scale);
             const translateY = (rect.height / 2) - (centerY * mapState.scale);
             ctx.translate(translateX, translateY);
         }
         ctx.scale(mapState.scale, mapState.scale);
-        
-        const roomsToDraw = isFullscreen ? Object.keys(roomLayout) : Array.from(GameState.visitedRooms);
-        
+        let roomsToDraw;
         if (isFullscreen) {
             const bounds = getMapBounds();
             const gridSize = 20;
             ctx.strokeStyle = "rgba(0, 255, 65, 0.08)";
             ctx.lineWidth = 0.5 / mapState.scale;
-            for (let x = bounds.minX; x < bounds.maxX; x += gridSize) {
+
+            // Limit the number of grid lines for performance
+            const maxGridLines = 100;
+            let xLines = Math.ceil((bounds.maxX - bounds.minX) / gridSize);
+            let yLines = Math.ceil((bounds.maxY - bounds.minY) / gridSize);
+            let xStep = gridSize;
+            let yStep = gridSize;
+            if (xLines > maxGridLines) xStep = ((bounds.maxX - bounds.minX) / maxGridLines);
+            if (yLines > maxGridLines) yStep = ((bounds.maxY - bounds.minY) / maxGridLines);
+
+            for (let x = bounds.minX; x < bounds.maxX; x += xStep) {
                 ctx.beginPath(); ctx.moveTo(x, bounds.minY); ctx.lineTo(x, bounds.maxY); ctx.stroke();
             }
-            for (let y = bounds.minY; y < bounds.maxY; y += gridSize) {
+            for (let y = bounds.minY; y < bounds.maxY; y += yStep) {
                 ctx.beginPath(); ctx.moveTo(bounds.minX, y); ctx.lineTo(bounds.maxX, y); ctx.stroke();
             }
 
@@ -2508,58 +2653,59 @@
                     });
                 }
             });
+            roomsToDraw = Object.keys(roomLayout);
+        } else {
+            // roomsToDraw is already set in the above else block
+            roomsToDraw = roomsToDraw || Array.from(GameState.visitedRooms);
         }
         
         roomsToDraw.forEach(roomName => {
-            if (!rooms[roomName] || !roomLayout[roomName]) return;
             const layout = roomLayout[roomName];
+            if (!layout) return;
             const x = layout.x, y = layout.y, w = layout.w, h = layout.h;
-            const isDiscovered = GameState.visitedRooms.has(roomName);
+            const isLocked = rooms[roomName].requiresKeycard && !hasItem(rooms[roomName].keyName || 'keycard');
+            if (roomName === GameState.currentRoom) {
+                const pulseFactor = (Math.sin(Date.now() * 0.005) + 1) / 2;
+                ctx.fillStyle = `rgba(0, 255, 65, ${0.5 + pulseFactor * 0.4})`;
+                ctx.shadowColor = 'rgba(127, 255, 127, 1)';
+                ctx.shadowBlur = (4 + pulseFactor * 8) / mapState.scale;
+            } else {
+                ctx.fillStyle = "rgba(0, 255, 65, 0.3)";
+            }
+            ctx.fillRect(x, y, w, h);
             ctx.shadowBlur = 0;
 
-            if (isDiscovered) {
-                const isLocked = rooms[roomName].requiresKeycard && !hasItem(rooms[roomName].keyName || 'keycard');
-                if (roomName === GameState.currentRoom) {
-                    const pulseFactor = (Math.sin(Date.now() * 0.005) + 1) / 2;
-                    ctx.fillStyle = `rgba(0, 255, 65, ${0.5 + pulseFactor * 0.4})`;
-                    ctx.shadowColor = 'rgba(127, 255, 127, 1)';
-                    ctx.shadowBlur = (4 + pulseFactor * 8) / mapState.scale;
-                } else {
-                    ctx.fillStyle = "rgba(0, 255, 65, 0.3)";
-                }
-                ctx.fillRect(x, y, w, h);
-                ctx.shadowBlur = 0;
+            ctx.strokeStyle = isLocked ? "rgba(255, 71, 76, 0.8)" : "rgba(0, 255, 65, 0.8)";
+            ctx.lineWidth = 1.5 / mapState.scale;
+            ctx.setLineDash([]);
+            ctx.strokeRect(x, y, w, h);
 
-                ctx.strokeStyle = isLocked ? "rgba(255, 71, 76, 0.8)" : "rgba(0, 255, 65, 0.8)";
-                ctx.lineWidth = 1.5 / mapState.scale;
-                ctx.setLineDash([]);
-                ctx.strokeRect(x, y, w, h);
+            if (rooms[roomName].objects.length > 0) {
+                ctx.fillStyle = "rgba(255, 219, 88, 1)";
+                ctx.beginPath();
+                ctx.arc(x + w - 5 / mapState.scale, y + 5 / mapState.scale, 2 / mapState.scale, 0, 2 * Math.PI);
+                ctx.fill();
+            }
 
-                if (rooms[roomName].objects.length > 0) {
-                    ctx.fillStyle = "rgba(255, 219, 88, 1)";
-                    ctx.beginPath();
-                    ctx.arc(x + w - 5 / mapState.scale, y + 5 / mapState.scale, 2 / mapState.scale, 0, 2 * Math.PI);
-                    ctx.fill();
-                }
+            const baseFontSize = 12;
+            const fontSize = Math.max(baseFontSize, baseFontSize / mapState.scale);
+            ctx.font = `${fontSize}px VT323`;
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+            ctx.shadowBlur = 3 / mapState.scale;
+            ctx.shadowOffsetX = 1 / mapState.scale;
+            ctx.shadowOffsetY = 1 / mapState.scale;
 
-                const baseFontSize = 12;
-                const fontSize = Math.max(baseFontSize, baseFontSize / mapState.scale);
-                ctx.font = `${fontSize}px VT323`;
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-                ctx.shadowBlur = 3 / mapState.scale;
-                ctx.shadowOffsetX = 1 / mapState.scale;
-                ctx.shadowOffsetY = 1 / mapState.scale;
-                
-                ctx.fillStyle = "white";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText(layout.name, x + w / 2, y + h / 2 + 1);
-                
-                ctx.shadowBlur = 0;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 0;
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(layout.name, x + w / 2, y + h / 2 + 1);
 
-            } else { 
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+
+            // Draw outline for unvisited rooms in non-fullscreen mode
+            if (!UI.mapPanel.classList.contains('fullscreen') && !GameState.visitedRooms.has(roomName)) {
                 ctx.strokeStyle = "rgba(0, 255, 65, 0.25)";
                 ctx.lineWidth = 1 / mapState.scale;
                 ctx.setLineDash([3 / mapState.scale, 2 / mapState.scale]);
@@ -2568,7 +2714,6 @@
             }
         });
         
-        const playerLayout = roomLayout[GameState.currentRoom];
         if (playerLayout) {
              const playerX = playerLayout.x + playerLayout.w / 2;
              const playerY = playerLayout.y + playerLayout.h / 2;
