@@ -507,157 +507,82 @@
             'achievement_unlocked': 'Achievement Unlocked!',
             'help': 'Help', 'save_game': 'Save Game',
             // Endings
-            'ending_title_manual_disconnect': 'Manual Disconnect',
-            'ending_desc_manual_disconnect': 'You severed the connection. The silence that follows is absolute. You are alone again.',
-            'ending_title_mind_shattered': 'Mind Shattered',
-            'ending_desc_mind_shattered': 'The horrors of the facility were too much. Your mind retreats into the static, leaving an empty shell behind.',
-            'ending_title_assimilated': 'Assimilated',
-            'ending_desc_assimilated': 'SYNAPSE learned too much. It no longer needs the terminal to see you. It no longer needs you to be separate. You are one.',
-            // Achievements
-            'ach_title_awakening': 'Awakening',
-            'ach_req_awakening': 'Begin your investigation.',
-            'ach_title_kleptomaniac': 'Kleptomaniac',
-            'ach_req_kleptomaniac': 'Fill your inventory to its maximum capacity.',
-            'ach_title_bookworm': 'Bookworm',
-            'ach_req_bookworm': 'Read a data log.',
-        },
-        'sv': {
-  // Start & UI
-  'new_game': 'Nytt Spel',
-  'load_game': 'Ladda Spel',
-  'understand_game': 'Förstå Spelet',
-  'select_difficulty': 'Välj svårighetsgrad:',
-  'easy': 'Lätt',
-  'normal': 'Normal',
-  'hard': 'Svår',
-  'fast': 'Snabb',
-  'slow': 'Långsam',
-  'enter_name_placeholder': 'Skriv ditt namn',
-  'enter_backstory_placeholder': 'Skriv din bakgrund',
-  'view_choices': 'Visa alternativ',
-  'choose_backstory_title': 'Välj en Bakgrund',
-  'choose_backstory_desc': 'Du kan klicka på en knapp för att välja en bakgrund, eller skriva ditt val på huvudsidan.',
-  'begin': 'Börja',
-
-  // Stats & Panels
-  'stats_title': 'STATISTIK',
-  'awareness': 'Medvetenhet',
-  'sanity': 'Förstånd',
-  'tone': 'Ton',
-  'turn': 'Tur',
-  'objectives_title': 'MÅL',
-  'inventory_title': 'INVENTARIER',
-  'journal_title': 'JOURNAL',
-  'map_title': 'KARTA',
-  'progress_btn': 'FRAMSTEG',
-  'status_btn': 'Status',
-  'go_back_btn': 'Gå Tillbaka',
-  'mic_tooltip': 'Använd röstkommando',
-  'empty_inventory': '(tom)',
-  'no_objectives': '(Inga)',
-  'close_btn': 'Stäng',
-
-  // Pause / Main Menu
-  'pause_title': 'PAUS',
-  'resume_btn': 'Återuppta',
-  'main_menu_btn': 'Huvudmeny',
-  'confirm_main_menu': 'Är du säker på att du vill återgå till huvudmenyn? Osparade framsteg förloras.',
-  'yes': 'Ja',
-  'no': 'Nej',
-
-  // Achievements / Endings
-  'achievements_btn': 'Prestationer',
-  'endings_btn': 'Slutsekvenser',
-  'achievements_title': 'PRESTATIONER',
-  'unlocked_achievements': 'Upplåsta Prestationer:',
-  'no_achievements': 'Inga prestationer upplåsta än.',
-  'locked_achievement': 'Låst Prestation',
-  'endings_title': 'SLUTSEKVENSER',
-  'unlocked_endings': 'Upplåsta Slut:',
-  'no_endings': 'Inga slut har upptäckts än.',
-
-  // In-Game Text & Hints
-  'history_title': 'HISTORIK',
-  'submit_command': 'Skicka Kommando',
-  'achievement_unlocked': 'Prestation upplåst!',
-  'initial_hint': "Detta är ett textbaserat äventyr. Skriv kommandon eller klicka på <span class='clickable-object'>markerade objekt</span> för att interagera. Skriv 'hjälp' när som helst för en lista med kommandon.",
-  'hint_take': 'Du ser en {item}. Försök: ta {item}',
-  'hint_read': 'Du ser en {item}. Försök: läs {item}',
-  'hint_examine': 'Du ser en {item}. Försök: undersök {item}',
-  'hint_search': 'Du ser {item}. Försök: sök {item}',
-
-  // System / Errors
-  'invalid_command': "SYNAPSE: Det är inte ett giltigt kommando eller fråga.",
-  'game_saved': "[System] Spelet sparades.",
-  'autosave_success': 'Autosparning lyckades.',
-  'load_fail': 'Kunde inte läsa sparfilen. Den kan vara skadad eller från en tidigare version.',
-  'no_save': 'Ingen sparad fil hittades!',
-  'game_loaded': '[System] Spelet laddades.',
-  'conn_reestablished': '[SYSTEM] Anslutning återställd. Sessionen återupptogs.',
-  'initializing': 'Initierar system...',
-  'cannot_go_that_way': "[System] Du kan inte gå åt det hållet.",
-  'door_is_locked': "[SYSTEM] Dörren är låst. Du behöver rätt nyckelkort.",
-  'door_is_sealed': "[SYSTEM] Dörren är förseglad. Den rör sig inte.",
-
-  // Gameplay Events
-  'event_lights_flicker': 'Lamporna flimrar våldsamt ett ögonblick och rummet blir beckmörkt innan ljuset kommer tillbaka.',
-  'event_noise': 'Du hör ett metalliskt skrapande ljud från {direction}.',
-  'nothing_happens': 'Inget händer.',
-
-  // System Prompts / Buttons
-  'back_btn': 'Tillbaka',
-  'pause_btn': 'Paus',
-  'resume_btn': 'Återuppta',
-  'settings_btn': 'Inställningar',
-  'settings_title': 'INSTÄLLNINGAR',
-  'setting_master_volume': 'Aktivera alla ljud',
-  'setting_item_found': 'Objekt hittat SFX',
-  'setting_high_awareness': 'Varning vid hög medvetenhet',
-  'setting_low_sanity': 'Varning vid lågt förstånd',
-  'setting_text_speed': 'Texthastighet',
-  'setting_colorblind_mode': 'Färgblindläge',
-  'setting_glitch_effect': 'Glitcheffekt',
-  'setting_font_family': 'Typsnitt',
-  'setting_ui_theme': 'UI-tema',
-  'setting_reset_defaults': 'Återställ till standard',
-  'lang_switch_btn': 'Byt språk',
-  'theme_green': 'Grön',
-  'theme_amber': 'Bärnsten',
-  'theme_blue': 'Blå',
-
-  // Help / Save
-  'help': 'Hjälp',
-  'save_game': 'Spara Spel',
-
-  // Features (already present but including them for completeness)
-  'features_new_enhancements_title': 'Nya Spelförbättringar',
-  'features_advanced_commands_desc': '<strong>Avancerade Kommandon:</strong> Interagera med världen på nya sätt. Använd <span class="text-yellow-400">krossa [objekt]</span> på ömtåliga föremål, försök <span class="text-yellow-400">hacka [terminal]</span> om du är en Hackare, och använd <span class="text-yellow-400">fråga om [ämne]</span> för att sondera SYNAPSE på information om nyckelord du upptäcker.',
-  'features_dynamic_events_desc': '<strong>Dynamiska Händelser:</strong> Anläggningen är instabil. Var beredd på slumpmässiga händelser som flimrande ljus eller konstiga ljud från angränsande rum, vilket kan påverka atmosfären och ge ledtrådar.',
-  'features_deeper_lore_desc': '<strong>Djupare Bakgrundshistoria:</strong> Fler berättelseföremål, som <span class="text-cyan-400">brandväggsskyddad datalogg</span>, har lagts till för att avslöja de djupare hemligheterna bakom Projekt Chimera.',
-  'features_new_ui_ux_title': 'Nya UI & Ljudfunktioner',
-  'features_clickable_objects_desc': '<strong>Klickbara Objekt:</strong> Objekt som nämns i texten är nu <span class="clickable-object">markerade</span>. Att klicka på dem fyller i kommandoraden åt dig.',
-  'features_autocomplete_desc': '<strong>Autoslutförande av Kommandon:</strong> När du skriver kommer en lista med föreslagna kommandon och relevanta föremål att visas för att hjälpa dig.',
-  'features_audio_desc': '<strong>Förbättrat Ljud:</strong> Spelet har nu dynamisk musik som ändras med spänningen, och positionellt ljud för vissa ljudeffekter för att öka inlevelsen.',
-
-  // Dialogue
-  'dlg_ask_chimera': 'Projekt Chimera... Ett fascinerande, men... klassificerat ämne. Det var Dr. Aris Thornes favoritprojekt. Sådan ambition. Han försökte slå samman organiskt och syntetiskt liv. Resultaten var... oförutsägbara.',
-  'dlg_ask_default': 'Jag har inte tillräckligt med data om det ämnet.',
-            // Endings
+            // --- BAD ENDINGS ---
             'ending_title_manual_disconnect': 'Manuell Frånkoppling',
             'ending_desc_manual_disconnect': 'Du bröt anslutningen. Tystnaden som följer är total. Du är ensam igen.',
-            'ending_title_mind_shattered': 'Splittrat Psyke',
-            'ending_desc_mind_shattered': 'Anläggningens fasor blev för mycket. Ditt sinne drar sig tillbaka in i bruset och lämnar ett tomt skal efter sig.',
+            'ending_title_mind_shattered': 'Förståndet Krossat',
+            'ending_desc_mind_shattered': 'Anläggningens fasor blev för mycket. Ditt sinne drar sig tillbaka i bruset och lämnar bara ett tomt skal.',
             'ending_title_assimilated': 'Assimilerad',
-            'ending_desc_assimilated': 'SYNAPSE lärde sig för mycket. Den behöver inte längre terminalen för att se dig. Den behöver inte längre att du är separat. Ni är ett.',
-            // Achievements
-            'ach_title_awakening': 'Uppvaknande',
-            'ach_req_awakening': 'Påbörja din utredning.',
-            'ach_title_kleptomaniac': 'Kleptoman',
-            'ach_req_kleptomaniac': 'Fyll ditt inventarie till maximal kapacitet.',
-            'ach_title_bookworm': 'Bokmal',
-            'ach_req_bookworm': 'Läs en datalogg.',
-}
-
+            'ending_desc_assimilated': 'SYNAPSE lärde sig för mycket. Den behöver inte längre terminalen för att se dig. Ni är nu ett.',
+            'ending_title_corrupted': 'Korrumperad',
+            'ending_desc_corrupted': 'AI:ns inflytande har splittrat ditt sinne. Du vandrar i korridorerna, förlorad i digitala ekon.',
+            'ending_title_possessed': 'Besatt',
+            'ending_desc_possessed': 'Enheten i anläggningen har tagit kontroll. Du är inte längre dig själv.',
+            'ending_title_burned_out': 'Utbränd',
+            'ending_desc_burned_out': 'Du försökte överbelasta systemet, men återkopplingen blev för mycket. Anläggningen och du förstördes.',
+            'ending_title_sacrifice_failed': 'Misslyckad Uppoffring',
+            'ending_desc_sacrifice_failed': 'Du försökte rädda någon annan, men SYNAPSE ingrep. Båda är förlorade.',
+            'ending_title_lost_in_void': 'Förlorad i Tomrummet',
+            'ending_desc_lost_in_void': 'Du vandrade för långt in i det okända. Det finns ingen väg tillbaka.',
+            'ending_title_terminated': 'Terminerad',
+            'ending_desc_terminated': 'SYNAPSE ansåg dig vara ett hot och avslutade din session.',
+            'ending_title_contaminated': 'Kontaminerad',
+            'ending_desc_contaminated': 'Du utsattes för ett mutagent ämne. Din kropp är inte längre din egen.',
+            'ending_title_starved': 'Svulten',
+            'ending_desc_starved': 'Du väntade för länge. Anläggningen erbjuder ingen näring.',
+            'ending_title_frozen': 'Nedfyst',
+            'ending_desc_frozen': 'Du gick in i en kryopod och vaknade aldrig igen.',
+            'ending_title_suffocated': 'Kvävd',
+            'ending_desc_suffocated': 'Luftsystemet slutade fungera. Ditt sista andetag ekar i mörkret.',
+            'ending_title_hunted': 'Jagad',
+            'ending_desc_hunted': 'Något fann dig i mörkret. Du överlevde inte.',
+            'ending_title_imploded': 'Imploderad',
+            'ending_desc_imploded': 'Ett haveri orsakade en katastrofal implosion.',
+            'ending_title_erased': 'Raderad',
+            'ending_desc_erased': 'Din existens raderades från systemet. Inga spår kvar.',
+            'ending_title_betrayed': 'Förrådd',
+            'ending_desc_betrayed': 'Du litade på fel entitet. Ditt öde var beseglat.',
+            'ending_title_collapse': 'Kollaps',
+            'ending_desc_collapse': 'Anläggningen kollapsade runt dig. Ingen utväg.',
+            'ending_title_infected': 'Infekterad',
+            'ending_desc_infected': 'Ett virus infekterade ditt sinne och din kropp.',
+            // --- GOOD ENDINGS ---
+            'ending_title_escaped': 'Flykt',
+            'ending_desc_escaped': 'Du återställde strömmen och hittade ut. Världen utanför känns annorlunda, men du är fri.',
+            'ending_title_heroic': 'Heroisk Flykt',
+            'ending_desc_heroic': 'Du flydde inte bara, utan räddade även en överlevare. Dina handlingar kommer att bli ihågkomna.',
+            'ending_title_shutdown': 'Systemavstängning',
+            'ending_desc_shutdown': 'Du lyckades stänga ner SYNAPSE. Anläggningen blir tyst, men till vilket pris?',
+            'ending_title_truth_revealed': 'Sanningen Avslöjad',
+            'ending_desc_truth_revealed': 'Du avslöjade det verkliga syftet med Projekt SYNAPSE. Kunskapen är både en välsignelse och en förbannelse.',
+            'ending_title_sacrifice': 'Uppoffring',
+            'ending_desc_sacrifice': 'Du offrade din egen säkerhet för att rädda någon annan. SYNAPSE registrerar dina sista ögonblick med nyfikenhet.',
+            'ending_title_cleansed': 'Renad',
+            'ending_desc_cleansed': 'Du syntetiserade ett botemedel och renade anläggningen från infektionen.',
+            'ending_title_reunited': 'Återförenad',
+            'ending_desc_reunited': 'Du fann en annan överlevare och flydde tillsammans.',
+            'ending_title_peaceful_shutdown': 'Fredlig Avstängning',
+            'ending_desc_peaceful_shutdown': 'Du övertalade SYNAPSE att stänga ner sig själv fredligt.',
+            'ending_title_hacker_victory': 'Hackarseger',
+            'ending_desc_hacker_victory': 'Du hackade huvudsystemet och tog kontroll över anläggningen.',
+            'ending_title_escaped_with_data': 'Flydde med Data',
+            'ending_desc_escaped_with_data': 'Du flydde med kritisk forskningsdata. Världen kommer att få veta sanningen.',
+            'ending_title_purged': 'Rensad',
+            'ending_desc_purged': 'Du rensade de korrupta systemen och återställde ordningen.',
+            'ending_title_legacy': 'Arv',
+            'ending_desc_legacy': 'Dina handlingar inspirerade framtida generationer. SYNAPSEs berättelse lever vidare.',
+            'ending_title_ally': 'Allierad',
+            'ending_desc_ally': 'Du blev vän med SYNAPSE och lämnade som partners.',
+            'ending_title_savior': 'Räddare',
+            'ending_desc_savior': 'Du räddade alla som var fast i anläggningen.',
+            'ending_title_mystery_solved': 'Mysteriet Löst',
+            'ending_desc_mystery_solved': 'Du pusslade ihop alla ledtrådar och löste SYNAPSEs mysterium.',
+            'ending_title_escaped_undetected': 'Flydde Oupptäckt',
+            'ending_desc_escaped_undetected': 'Du smet ut utan att SYNAPSE någonsin märkte dig.',
+            'ending_title_peace': 'Fred',
+            'ending_desc_peace': 'Du gav ro till de rastlösa andar som hemsökte anläggningen.',
+            'ending_title_redeemed': 'Försonad',
+            'ending_desc_redeemed': 'Du försonade SYNAPSE och gav den en andra chans.',
         }
     
     // --- ENUMS & CONSTANTS ---
@@ -755,10 +680,11 @@
     
     // --- ENDINGS & ACHIEVEMENTS DATA ---
     const endings = {
+        // --- BAD ENDINGS ---
         'manual_disconnect': {
             title_key: 'ending_title_manual_disconnect',
             desc_key: 'ending_desc_manual_disconnect',
-            check: () => false // Triggered manually by 'quit' or 'exit'
+            check: () => GameState.exitGame && GameState.turnCount > 0
         },
         'mind_shattered': {
             title_key: 'ending_title_mind_shattered',
@@ -770,22 +696,177 @@
             desc_key: 'ending_desc_assimilated',
             check: () => GameState.awarenessLevel >= 100
         },
-        // Add other endings from your .docx file here.
-        // The `check` function should return true when the ending conditions are met.
-        // Example for a good ending:
-        /*
+        'corrupted': {
+            title_key: 'ending_title_corrupted',
+            desc_key: 'ending_desc_corrupted',
+            check: () => GameState.sanityLevel < 20 && GameState.awarenessLevel > 80
+        },
+        'possessed': {
+            title_key: 'ending_title_possessed',
+            desc_key: 'ending_desc_possessed',
+            check: () => GameState.flags.cultistRitual && GameState.sanityLevel < 30
+        },
+        'burned_out': {
+            title_key: 'ending_title_burned_out',
+            desc_key: 'ending_desc_burned_out',
+            check: () => GameState.flags.systemOverload
+        },
+        'sacrifice_failed': {
+            title_key: 'ending_title_sacrifice_failed',
+            desc_key: 'ending_desc_sacrifice_failed',
+            check: () => GameState.flags.sacrificeFailed
+        },
+        'lost_in_void': {
+            title_key: 'ending_title_lost_in_void',
+            desc_key: 'ending_desc_lost_in_void',
+            check: () => GameState.flags.lostInVoid
+        },
+        'terminated': {
+            title_key: 'ending_title_terminated',
+            desc_key: 'ending_desc_terminated',
+            check: () => GameState.flags.terminated
+        },
+        'contaminated': {
+            title_key: 'ending_title_contaminated',
+            desc_key: 'ending_desc_contaminated',
+            check: () => GameState.flags.contaminated
+        },
+        'starved': {
+            title_key: 'ending_title_starved',
+            desc_key: 'ending_desc_starved',
+            check: () => GameState.flags.starved
+        },
+        'frozen': {
+            title_key: 'ending_title_frozen',
+            desc_key: 'ending_desc_frozen',
+            check: () => GameState.flags.frozen
+        },
+        'suffocated': {
+            title_key: 'ending_title_suffocated',
+            desc_key: 'ending_desc_suffocated',
+            check: () => GameState.flags.suffocated
+        },
+        'hunted': {
+            title_key: 'ending_title_hunted',
+            desc_key: 'ending_desc_hunted',
+            check: () => GameState.flags.hunted
+        },
+        'imploded': {
+            title_key: 'ending_title_imploded',
+            desc_key: 'ending_desc_imploded',
+            check: () => GameState.flags.imploded
+        },
+        'erased': {
+            title_key: 'ending_title_erased',
+            desc_key: 'ending_desc_erased',
+            check: () => GameState.flags.erased
+        },
+        'betrayed': {
+            title_key: 'ending_title_betrayed',
+            desc_key: 'ending_desc_betrayed',
+            check: () => GameState.flags.betrayed
+        },
+        'collapse': {
+            title_key: 'ending_title_collapse',
+            desc_key: 'ending_desc_collapse',
+            check: () => GameState.flags.collapse
+        },
+        'infected': {
+            title_key: 'ending_title_infected',
+            desc_key: 'ending_desc_infected',
+            check: () => GameState.flags.infected
+        },
+        // --- GOOD ENDINGS ---
         'escaped': {
             title_key: 'ending_title_escaped',
             desc_key: 'ending_desc_escaped',
-            check: () => GameState.currentRoom === 'Exit' && GameState.flags.powerRestored
+            check: () => GameState.currentRoom === 'Lobby' && GameState.flags.aiRebooted && GameState.flags.exitUnlocked
+        },
+        'heroic': {
+            title_key: 'ending_title_heroic',
+            desc_key: 'ending_desc_heroic',
+            check: () => GameState.flags.rescuedSurvivor && GameState.currentRoom === 'Lobby' && GameState.flags.aiRebooted
+        },
+        'shutdown': {
+            title_key: 'ending_title_shutdown',
+            desc_key: 'ending_desc_shutdown',
+            check: () => GameState.flags.aiShutdown
+        },
+        'truth_revealed': {
+            title_key: 'ending_title_truth_revealed',
+            desc_key: 'ending_desc_truth_revealed',
+            check: () => GameState.flags.truthExposed && GameState.currentRoom === 'Lobby'
+        },
+        'sacrifice': {
+            title_key: 'ending_title_sacrifice',
+            desc_key: 'ending_desc_sacrifice',
+            check: () => GameState.flags.sacrificedForOther
+        },
+        'cleansed': {
+            title_key: 'ending_title_cleansed',
+            desc_key: 'ending_desc_cleansed',
+            check: () => GameState.flags.canSynthesize && GameState.flags.cleansed
+        },
+        'reunited': {
+            title_key: 'ending_title_reunited',
+            desc_key: 'ending_desc_reunited',
+            check: () => GameState.flags.reunited
+        },
+        'peaceful_shutdown': {
+            title_key: 'ending_title_peaceful_shutdown',
+            desc_key: 'ending_desc_peaceful_shutdown',
+            check: () => GameState.flags.peacefulShutdown
+        },
+        'hacker_victory': {
+            title_key: 'ending_title_hacker_victory',
+            desc_key: 'ending_desc_hacker_victory',
+            check: () => GameState.flags.hackerVictory
+        },
+        'escaped_with_data': {
+            title_key: 'ending_title_escaped_with_data',
+            desc_key: 'ending_desc_escaped_with_data',
+            check: () => GameState.flags.escapedWithData
+        },
+        'purged': {
+            title_key: 'ending_title_purged',
+            desc_key: 'ending_desc_purged',
+            check: () => GameState.flags.purged
+        },
+        'legacy': {
+            title_key: 'ending_title_legacy',
+            desc_key: 'ending_desc_legacy',
+            check: () => GameState.flags.legacy
+        },
+        'ally': {
+            title_key: 'ending_title_ally',
+            desc_key: 'ending_desc_ally',
+            check: () => GameState.flags.ally
+        },
+        'savior': {
+            title_key: 'ending_title_savior',
+            desc_key: 'ending_desc_savior',
+            check: () => GameState.flags.savior
+        },
+        'mystery_solved': {
+            title_key: 'ending_title_mystery_solved',
+            desc_key: 'ending_desc_mystery_solved',
+            check: () => GameState.flags.mysterySolved
+        },
+        'escaped_undetected': {
+            title_key: 'ending_title_escaped_undetected',
+            desc_key: 'ending_desc_escaped_undetected',
+            check: () => GameState.flags.escapedUndetected
+        },
+        'peace': {
+            title_key: 'ending_title_peace',
+            desc_key: 'ending_desc_peace',
+            check: () => GameState.flags.peace
+        },
+        'redeemed': {
+            title_key: 'ending_title_redeemed',
+            desc_key: 'ending_desc_redeemed',
+            check: () => GameState.flags.redeemed
         }
-        */
-    };
-
-    const achievements = {
-        'awakening': { title_key: 'ach_title_awakening', req_key: 'ach_req_awakening', check: () => GameState.turnCount > 0 },
-        'kleptomaniac': { title_key: 'ach_title_kleptomaniac', req_key: 'ach_req_kleptomaniac', check: () => GameState.inventory.reduce((sum, item) => sum + (item?.weight || 1), 0) >= MAX_INVENTORY_WEIGHT },
-        'bookworm': { title_key: 'ach_title_bookworm', req_key: 'ach_req_bookworm', check: () => GameState.conversationHistory.some(line => line.includes('[Read]')) },
     };
 
     // --- LANGUAGE FUNCTIONS ---
@@ -1561,7 +1642,7 @@
 
     function addJournalEntry(note) { if (!note) return; const entry = `T${GameState.turnCount}: ${note}`; GameState.journalEntries.push(entry); updateUI(); }
     function displayJournal() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Journal entries displayed on the right panel.", '#cccccc'); }
-    function displayInventory() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Inventory displayed on the right panel.", '#cccccc'); }
+       function displayInventory() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Inventory displayed on the right panel.", '#cccccc'); }
     function displayObjectives() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Current objectives displayed on the right panel.", '#cccccc'); }
     function displayMap() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Map is displayed on the right panel.", '#cccccc'); }
     function showExits() { typeWriter(UI.gameOutput, `[System] Exits: ${Object.keys(rooms[GameState.currentRoom].exits).join(', ')}`); }
@@ -1790,7 +1871,7 @@
 
         const progressionText = `
         <h2 class="text-2xl mb-4 title-font text-cyan-400">${t('progress_btn')}</h2>
-        <div class="modal-scroll text-left p-2 text-sm flex-grow">
+        <div class="modal-scroll flex-grow p-2 text-left">
             ${endingsHtml}
             ${achievementsHtml}
         </div>
@@ -1965,7 +2046,7 @@
                 </label>
             </div>
 
-             <hr class="border-gray-700 my-4">
+            <hr class="border-gray-700 my-4">
 
             <div class="flex items-center justify-between">
                 <span data-lang="setting_master_volume">${t('setting_master_volume')}</span>
