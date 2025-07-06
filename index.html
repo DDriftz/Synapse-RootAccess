@@ -508,22 +508,129 @@
             'help': 'Help', 'save_game': 'Save Game',
         },
         'sv': {
-            'new_game': 'Nytt Spel', 'load_game': 'Ladda Spel',
-            'understand_game': 'Förstå Spelet',
-            'features_new_enhancements_title': 'Nya Spelförbättringar',
-            'features_advanced_commands_desc': '<strong>Avancerade Kommandon:</strong> Interagera med världen på nya sätt. Använd <span class="text-yellow-400">krossa [objekt]</span> på ömtåliga föremål, försök <span class="text-yellow-400">hacka [terminal]</span> om du är en Hackare, och använd <span class="text-yellow-400">fråga om [ämne]</span> för att sondera SYNAPSE på information om nyckelord du upptäcker.',
-            'features_dynamic_events_desc': '<strong>Dynamiska Händelser:</strong> Anläggningen är instabil. Var beredd på slumpmässiga händelser som flimrande ljus eller konstiga ljud från angränsande rum, vilket kan påverka atmosfären och ge ledtrådar.',
-            'features_deeper_lore_desc': '<strong>Djupare Bakgrundshistoria:</strong> Fler berättelseföremål, som <span class="text-cyan-400">brandväggsskyddad datalogg</span>, har lagts till för att avslöja de djupare hemligheterna bakom Projekt Chimera.',
-            'features_new_ui_ux_title': 'Nya UI & Ljudfunktioner',
-            'features_clickable_objects_desc': '<strong>Klickbara Objekt:</strong> Objekt som nämns i texten är nu <span class="clickable-object">markerade</span>. Att klicka på dem fyller i kommandoraden åt dig.',
-            'features_autocomplete_desc': '<strong>Autoslutförande av Kommandon:</strong> När du skriver kommer en lista med föreslagna kommandon och relevanta föremål att visas för att hjälpa dig.',
-            'features_audio_desc': '<strong>Förbättrat Ljud:</strong> Spelet har nu dynamisk musik som ändras med spänningen, och positionellt ljud för vissa ljudeffekter för att öka inlevelsen.',
-            'dlg_ask_chimera': 'Projekt Chimera... Ett fascinerande, men... klassificerat ämne. Det var Dr. Aris Thornes favoritprojekt. Sådan ambition. Han försökte slå samman organiskt och syntetiskt liv. Resultaten var... oförutsägbara.',
-            'dlg_ask_default': 'Jag har inte tillräckligt med data om det ämnet.',
-            'invalid_command': "SYNAPSE: Det är inte ett giltigt kommando eller fråga.", 'game_saved': "[System] Spel sparat.", 'autosave_success': 'Automatisk sparande lyckades.', 'load_fail': 'Kunde inte ladda spardata. Den kan vara korrupt eller från en tidigare version.', 'no_save': 'Inget sparat spel hittades!', 'game_loaded': '[System] Spel laddat.', 'conn_reestablished': '[SYSTEM] Anslutning återupprättad. Session återställd.', 'initializing': 'Initierar system...', 'initial_hint': "Detta är ett textbaserat äventyr. Skriv kommandon eller klicka på <span class='clickable-object'>markerade objekt</span> för att interagera. Skriv 'hjälp' när som helst för en lista med kommandon.", 'cannot_go_that_way': "[System] Du kan inte gå den vägen.", 'door_is_locked': "[SYSTEM] Dörren är låst. Du behöver rätt nyckelkort.", 'door_is_sealed': "[SYSTEM] Dörren är förseglad. Den rubbas inte.",
-            'lang_switch_btn': 'Byt Språk', 'back_btn': 'Tillbaka', 'pause_btn': 'Paus', 'main_menu_btn': 'Huvudmeny', 'save_game': 'Spara Spel', 'load_game': 'Ladda Spel', 'help': 'Hjälp', 'resume_btn': 'Återuppta', 'settings_btn': 'Inställningar',
+  // Start & UI
+  'new_game': 'Nytt Spel',
+  'load_game': 'Ladda Spel',
+  'understand_game': 'Förstå Spelet',
+  'select_difficulty': 'Välj svårighetsgrad:',
+  'easy': 'Lätt',
+  'normal': 'Normal',
+  'hard': 'Svår',
+  'fast': 'Snabb',
+  'slow': 'Långsam',
+  'enter_name_placeholder': 'Skriv ditt namn',
+  'enter_backstory_placeholder': 'Skriv din bakgrund',
+  'view_choices': 'Visa alternativ',
+  'choose_backstory_title': 'Välj en Bakgrund',
+  'choose_backstory_desc': 'Du kan klicka på en knapp för att välja en bakgrund, eller skriva ditt val på huvudsidan.',
+  'begin': 'Börja',
+
+  // Stats & Panels
+  'stats_title': 'STATISTIK',
+  'awareness': 'Medvetenhet',
+  'sanity': 'Förstånd',
+  'tone': 'Ton',
+  'turn': 'Tur',
+  'objectives_title': 'MÅL',
+  'inventory_title': 'INVENTARIER',
+  'journal_title': 'JOURNAL',
+  'map_title': 'KARTA',
+  'progress_btn': 'FRAMSTEG',
+  'status_btn': 'Status',
+  'go_back_btn': 'Gå Tillbaka',
+  'mic_tooltip': 'Använd röstkommando',
+  'empty_inventory': '(tom)',
+  'no_objectives': '(Inga)',
+  'close_btn': 'Stäng',
+
+  // Pause / Main Menu
+  'pause_title': 'PAUS',
+  'resume_btn': 'Återuppta',
+  'main_menu_btn': 'Huvudmeny',
+  'confirm_main_menu': 'Är du säker på att du vill återgå till huvudmenyn? Osparade framsteg förloras.',
+  'yes': 'Ja',
+  'no': 'Nej',
+
+  // Achievements / Endings
+  'achievements_btn': 'Prestationer',
+  'endings_btn': 'Slut',
+  'achievements_title': 'PRESTATIONER',
+  'unlocked_achievements': 'Upplåsta Prestationer:',
+  'no_achievements': 'Inga prestationer upplåsta än.',
+  'locked_achievement': 'Låst Prestation',
+  'endings_title': 'SLUT',
+  'unlocked_endings': 'Upplåsta Slut:',
+  'no_endings': 'Inga slut har upptäckts än.',
+
+  // In-Game Text & Hints
+  'history_title': 'HISTORIK',
+  'submit_command': 'Skicka Kommando',
+  'achievement_unlocked': 'Prestation upplåst!',
+  'initial_hint': "Detta är ett textbaserat äventyr. Skriv kommandon eller klicka på <span class='clickable-object'>markerade objekt</span> för att interagera. Skriv 'hjälp' när som helst för en lista med kommandon.",
+  'hint_take': 'Du ser en {item}. Försök: ta {item}',
+  'hint_read': 'Du ser en {item}. Försök: läs {item}',
+  'hint_examine': 'Du ser en {item}. Försök: undersök {item}',
+  'hint_search': 'Du ser {item}. Försök: sök {item}',
+
+  // System / Errors
+  'invalid_command': "SYNAPSE: Det är inte ett giltigt kommando eller fråga.",
+  'game_saved': "[System] Spelet sparades.",
+  'autosave_success': 'Autosparning lyckades.',
+  'load_fail': 'Kunde inte läsa sparfilen. Den kan vara skadad eller från en tidigare version.',
+  'no_save': 'Ingen sparad fil hittades!',
+  'game_loaded': '[System] Spelet laddades.',
+  'conn_reestablished': '[SYSTEM] Anslutning återställd. Sessionen återupptogs.',
+  'initializing': 'Initierar system...',
+  'cannot_go_that_way': "[System] Du kan inte gå åt det hållet.",
+  'door_is_locked': "[SYSTEM] Dörren är låst. Du behöver rätt nyckelkort.",
+  'door_is_sealed': "[SYSTEM] Dörren är förseglad. Den rör sig inte.",
+
+  // Gameplay Events
+  'event_lights_flicker': 'Lamporna flimrar våldsamt ett ögonblick och rummet blir beckmörkt innan ljuset kommer tillbaka.',
+  'event_noise': 'Du hör ett metalliskt skrapande ljud från {direction}.',
+  'nothing_happens': 'Inget händer.',
+
+  // System Prompts / Buttons
+  'back_btn': 'Tillbaka',
+  'pause_btn': 'Paus',
+  'resume_btn': 'Återuppta',
+  'settings_btn': 'Inställningar',
+  'settings_title': 'INSTÄLLNINGAR',
+  'setting_master_volume': 'Aktivera alla ljud',
+  'setting_item_found': 'Objekt hittat SFX',
+  'setting_high_awareness': 'Varning vid hög medvetenhet',
+  'setting_low_sanity': 'Varning vid lågt förstånd',
+  'setting_text_speed': 'Texthastighet',
+  'setting_colorblind_mode': 'Färgblindläge',
+  'setting_glitch_effect': 'Glitcheffekt',
+  'setting_font_family': 'Typsnitt',
+  'setting_ui_theme': 'UI-tema',
+  'setting_reset_defaults': 'Återställ till standard',
+  'lang_switch_btn': 'Byt språk',
+  'theme_green': 'Grön',
+  'theme_amber': 'Bärnsten',
+  'theme_blue': 'Blå',
+
+  // Help / Save
+  'help': 'Hjälp',
+  'save_game': 'Spara Spel',
+
+  // Features (already present but including them for completeness)
+  'features_new_enhancements_title': 'Nya Spelförbättringar',
+  'features_advanced_commands_desc': '<strong>Avancerade Kommandon:</strong> Interagera med världen på nya sätt. Använd <span class="text-yellow-400">krossa [objekt]</span> på ömtåliga föremål, försök <span class="text-yellow-400">hacka [terminal]</span> om du är en Hackare, och använd <span class="text-yellow-400">fråga om [ämne]</span> för att sondera SYNAPSE på information om nyckelord du upptäcker.',
+  'features_dynamic_events_desc': '<strong>Dynamiska Händelser:</strong> Anläggningen är instabil. Var beredd på slumpmässiga händelser som flimrande ljus eller konstiga ljud från angränsande rum, vilket kan påverka atmosfären och ge ledtrådar.',
+  'features_deeper_lore_desc': '<strong>Djupare Bakgrundshistoria:</strong> Fler berättelseföremål, som <span class="text-cyan-400">brandväggsskyddad datalogg</span>, har lagts till för att avslöja de djupare hemligheterna bakom Projekt Chimera.',
+  'features_new_ui_ux_title': 'Nya UI & Ljudfunktioner',
+  'features_clickable_objects_desc': '<strong>Klickbara Objekt:</strong> Objekt som nämns i texten är nu <span class="clickable-object">markerade</span>. Att klicka på dem fyller i kommandoraden åt dig.',
+  'features_autocomplete_desc': '<strong>Autoslutförande av Kommandon:</strong> När du skriver kommer en lista med föreslagna kommandon och relevanta föremål att visas för att hjälpa dig.',
+  'features_audio_desc': '<strong>Förbättrat Ljud:</strong> Spelet har nu dynamisk musik som ändras med spänningen, och positionellt ljud för vissa ljudeffekter för att öka inlevelsen.',
+
+  // Dialogue
+  'dlg_ask_chimera': 'Projekt Chimera... Ett fascinerande, men... klassificerat ämne. Det var Dr. Aris Thornes favoritprojekt. Sådan ambition. Han försökte slå samman organiskt och syntetiskt liv. Resultaten var... oförutsägbara.',
+  'dlg_ask_default': 'Jag har inte tillräckligt med data om det ämnet.',
+}
+
         }
-    };
     
     // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
