@@ -585,6 +585,7 @@ const translations = {
     'event_lights_flicker': 'The lights flicker violently for a moment, plunging the room into darkness before sputtering back on.', 'event_noise': 'You hear a metallic scraping sound from the {direction}.',
     'achievement_unlocked': 'Achievement Unlocked!',
     'help': 'Help', 'save_game': 'Save Game',
+   }
     // Endings
     // --- BAD ENDINGS ---
      sv: {
@@ -660,7 +661,7 @@ const translations = {
             'ending_title_escaped_undetected': 'Flydde Oupptäckt',
             'ending_desc_escaped_undetected': 'Du smet ut utan att SYNAPSE någonsin märkte dig.',
             'ending_title_peace': 'Fred',
-     },
+    },
     'ending_desc_peace': 'Du gav ro till de rastlösa andar som hemsökte anläggningen.',
     'ending_title_redeemed': 'Försonad',
     'ending_desc_redeemed': 'Du försonade SYNAPSE och gav den en andra chans.'
@@ -668,6 +669,40 @@ const translations = {
   // You can add Swedish translations here as a new property, e.g. 'sv': { ... }
 };
 
+    // --- UTILITY FUNCTIONS ---
+    function getTranslation(key) {
+        return translations[currentLanguage][key] || key;
+    }
+
+    function setLanguage(lang) {
+        currentLanguage = lang;
+        document.documentElement.lang = lang;
+        updateUI();
+    }
+
+    function updateUI() {
+        // Update all UI elements with translations
+        document.querySelectorAll('[data-translate]').forEach(el => {
+            const key = el.getAttribute('data-translate');
+            el.textContent = getTranslation(key);
+        });
+    }
+
+    function saveGame() {
+        localStorage.setItem('synapse_game_state', JSON.stringify(GameState));
+        console.log(getTranslation('game_saved'));
+    }
+
+    function loadGame() {
+        const savedState = localStorage.getItem('synapse_game_state');
+        if (savedState) {
+            GameState = JSON.parse(savedState);
+            console.log(getTranslation('game_loaded'));
+            updateUI();
+        } else {
+            console.error(getTranslation('no_save'));
+        }
+    }
 // --- ENUMS & CONSTANTS ---
     const ChatbotTone = { Friendly: 'Friendly', Ambiguous: 'Ambiguous', Sinister: 'Sinister', Malicious: 'Malicious' };
     const ItemType = { Tool: 'Tool', Consumable: 'Consumable', Key: 'Key', Log: 'Log', Puzzle: 'Puzzle', Weapon: 'Weapon' };
@@ -2283,7 +2318,7 @@ const translations = {
     }
     
     function returnToMainMenu() {
-        if(animationFrameId) cancelAnimationFrame(animationFrameId);
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
         sessionStorage.removeItem('synapse_session_v15_autosave');
         sessionStorage.removeItem('synapse_session_v15_screen_state');
