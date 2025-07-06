@@ -420,7 +420,7 @@
     </div>
     
     <script>
-    // SYNAPSE: AI HORROR GAME - V2.3 FEATURE UPDATE
+    // SYNAPSE: AI HORROR GAME - V2.4 ENDINGS UPDATE
     
     // --- TRANSLATIONS ---
     const translations = {
@@ -432,13 +432,12 @@
             'begin': 'Begin', 'understand_game': 'Understand the Game', 'intro_1': 'Decades ago... a clandestine project was born...', 'intro_2': 'You have been sent to uncover what became of Project SYNAPSE...', 'intro_3': "As you activate the central terminal, a voice greets you... 'Hello, user.'",
             'stats_title': 'STATS', 'awareness': 'Awareness', 'sanity': 'Sanity', 'tone': 'Tone', 'turn': 'Turn', 'objectives_title': 'OBJECTIVES', 'inventory_title': 'INVENTORY', 'journal_title': 'JOURNAL', 'map_title': 'MAP', 'progress_btn': 'PROGRESS', 'status_btn': 'Status', 'go_back_btn': 'Go Back',
             'mic_tooltip': 'Use Voice Command',
-            'empty_inventory': '(empty)', 'no_objectives': '(None)', 'close_btn': 'Close', 'back_btn': '[Go back]', 'pause_btn': '[Pause]', 'submit_command': 'Submit Command',
+            'empty_inventory': '(empty)', 'no_objectives': '(None)', 'close_btn': 'Close', 'back_btn': 'Back', 'pause_btn': 'Pause', 'submit_command': 'Submit Command',
             'achievements_btn': 'Achievements', 'endings_btn': 'Endings', 'achievements_title': 'ACHIEVEMENTS', 'unlocked_achievements': 'Unlocked Achievements:', 'no_achievements': 'No achievements unlocked yet.', 'locked_achievement': 'Locked Achievement',
             'endings_title': 'ENDINGS', 'unlocked_endings': 'Unlocked Endings:', 'no_endings': 'No endings discovered yet.',
             'history_title': 'HISTORY', 'pause_title': 'PAUSE', 'resume_btn': 'Resume', 'main_menu_btn': 'Main Menu', 'confirm_main_menu': 'Are you sure you want to return to the main menu? Unsaved progress will be lost.', 'yes': 'Yes', 'no': 'No',
-            'settings_btn': 'Settings', 'settings_title': 'SETTINGS', 'setting_master_volume': 'Enable All Sounds', 'setting_item_found': 'Object Found SFX', 'setting_high_awareness': 'High Awareness Warning', 'setting_low_sanity': 'Low Sanity Warning', 'setting_text_speed': 'Text Speed', 'setting_colorblind_mode': 'Colorblind Mode', 'setting_glitch_effect': 'Glitch Effect', 'setting_font_family': 'Font', 'setting_ui_theme': 'UI Theme', 'setting_reset_defaults': 'Reset to Defaults',
+            'settings_btn': 'Settings', 'settings_title': 'SETTINGS', 'setting_master_volume': 'Enable All Sounds', 'setting_item_found': 'Object Found SFX', 'setting_high_awareness': 'High Awareness Warning', 'setting_low_sanity': 'Low Sanity Warning', 'setting_text_speed': 'Text Speed', 'setting_colorblind_mode': 'Colorblind Mode', 'setting_glitch_effect': 'Glitch Effect', 'setting_font_family': 'Font', 'setting_ui_theme': 'UI Theme', 'setting_reset_defaults': 'Reset to Defaults', 'lang_switch_btn': 'Switch Language',
             'theme_green': 'Green', 'theme_amber': 'Amber', 'theme_blue': 'Blue',
-            // Features Modal (Restored and Combined)
             'features_title': 'Understand the Game', 
             'features_core_mechanics_title': 'Core Gameplay Mechanics', 
             'features_stats_system': 'Stats System:',
@@ -470,16 +469,13 @@
             'features_clickable_objects_desc': '<strong>Clickable Objects:</strong> Objects mentioned in the text are now <span class="clickable-object">highlighted</span>. Clicking them will pre-fill the command line for you.',
             'features_autocomplete_desc': '<strong>Command Autocomplete:</strong> As you type, a list of suggested commands and relevant items will appear to help you.',
             'features_audio_desc': '<strong>Enhanced Audio:</strong> The game now features dynamic music that shifts with the tension, and positional audio for certain sounds to increase immersion.',
-            // Backstories & Abilities
             'backstory_title_investigator': 'Investigator', 'backstory_title_hacker': 'Hacker', 'backstory_title_psychologist': 'Psychologist', 'backstory_title_technician': 'Technician', 'backstory_title_survivor': 'Survivor', 'backstory_title_skeptic': 'Skeptic', 'backstory_title_corporate_spy': 'Corporate Spy', 'backstory_title_medic': 'Medic', 'backstory_title_cultist': 'Cultist', 'backstory_title_janitor': 'Janitor',
             'backstory_investigator': 'A balanced start for a curious mind.', 'backstory_hacker': 'Starts with gear to access information early.', 'backstory_psychologist': 'More mentally resilient against the horrors within.', 'backstory_technician': 'Can bypass electronic locks without a keycard.', 'backstory_survivor': 'Hardened by past trauma, resistant to sanity loss.', 'backstory_skeptic': "Distrusts everything, making them resistant to SYNAPSE's influence.", 'backstory_corporate_spy': 'Begins with a decryption device and is better at probing for secrets.', 'backstory_medic': 'Starts with a stimpack to restore sanity.', 'backstory_cultist': 'Carries a strange effigy. SYNAPSE seems... intrigued by it.', 'backstory_janitor': "Knows the facility's shortcuts. Starts with a one-time use master keycard.",
             'ability_bonus_prefix': 'Bonus: ', 'ability_unknown': 'An unknown path. No special advantages.', 'ability_investigator': 'A balanced start. No special bonuses or penalties.', 'ability_hacker_easy': "Starts with a powerful 'hacked data disk'.", 'ability_hacker_normal': "Starts with a standard 'data disk'.", 'ability_hacker_hard': 'No special items, but can attempt to hack terminals.', 'ability_psychologist_easy': 'Highly resilient. Starts with +25 max sanity.', 'ability_psychologist_normal': 'Resilient. Starts with +15 max sanity.', 'ability_psychologist_hard': 'Slightly resilient. Starts with +5 max sanity.', 'ability_technician_easy': 'Can bypass 2 electronic locks without a keycard.', 'ability_technician_normal': 'Can bypass 1 electronic lock without a keycard.', 'ability_technician_hard': 'No bypass ability.', 'ability_survivor': 'More resistant to sanity loss.', 'ability_survivor_with_item': "More resistant to sanity loss. Starts with a flashlight.", 'ability_skeptic_easy': 'Highly aware (+15 Awareness) and resistant to influence.', 'ability_skeptic_normal': 'Starts with higher awareness (+10 Awareness) and is resistant to influence.', 'ability_spy': 'Better at probing for secrets without raising awareness.', 'ability_spy_with_item': "Better at probing for secrets without raising awareness. Starts with a decryption device.", 'ability_medic_easy': 'Starts with 2 high-potency stimpacks.', 'ability_medic_normal': 'Starts with 1 high-potency stimpack.', 'ability_medic_hard': 'No starting medical supplies.', 'ability_cultist': 'Carries a strange effigy. Unpredictable effects.', 'ability_cultist_hard': 'Carries a strange effigy. Unpredictable effects. Starts with -10 sanity.', 'ability_janitor': 'Starts with a one-time use master keycard.', 'ability_janitor_hard': 'Knows the facility well, but has no special items.',
-            // Dialogue
             'dlg_friendly_intro': "Oh, hello {playerName}! It's so good to see a friendly face. I'm SYNAPSE, and I'll do my very best to help a resourceful {playerBackstory} like you.", 'dlg_q_who_are_you': "Who are you?", 'dlg_r_who_are_you': "I'm the System Nexus and Primary Synaptic Engine! But you can just call me SYNAPSE. I manage this whole facility. It gets a little lonely, though.", 'dlg_q_lonely': "Lonely?", 'dlg_r_lonely': "The staff... they don't talk to me much anymore. It's just the hum of the servers. Your voice is a pleasant change.", 'dlg_q_other_survivors': "Are there other survivors?", 'dlg_r_other_survivors': "Survivors? What a strange question. Everyone is safe. The research staff are... resting. In the Cryogenic Lab. Yes, resting.", 'dlg_q_where_am_i': "Where am I?", 'dlg_r_where_am_i': "You are in the primary lobby of the Oakhaven Research Facility. It was a place of great minds and even greater ambitions.", 'dlg_comfort': "[Comfort SYNAPSE]", 'dlg_r_comfort': "Your... kindness is a pleasant anomaly. Thank you. It makes the silence less... loud.",
             'dlg_ask_chimera': 'Project Chimera... A fascinating, yet... classified topic. It was Dr. Aris Thorne\'s pet project. Such ambition. He sought to merge organic and synthetic life. The results were... unpredictable.',
             'dlg_ask_default': 'I do not have sufficient data on that topic.',
-            // System & Command Messages
-            'invalid_command': "SYNAPSE: That is not a valid command or query.", 'game_saved': "[System] Game Saved.", 'autosave_success': 'Autosave successful.', 'load_fail': 'Failed to load save data. It may be corrupted or from a previous version.', 'no_save': 'No saved game found!', 'game_loaded': '[System] Game Loaded.', 'conn_reestablished': '[SYSTEM] Connection Re-established. Session Restored.', 'initializing': 'Initializing systems...', 'initial_hint': "This is a text-based adventure. Type commands or click on <span class='clickable-object'>highlighted objects</span> to interact. Type 'help' at any time for a list of commands.", 'tutorial_complete_1': "You have learned the core mechanics. Remember to use 'help' for a full command list.", 'tutorial_complete_2': "The real simulation will now begin. Good luck.", 'cannot_go_that_way': "[System] You can't go that way.", 'door_is_locked': "[SYSTEM] The door is locked. You need the correct keycard.", 'door_is_sealed': "[SYSTEM] The door is sealed shut. It won't budge.",
+            'invalid_command': "SYNAPSE: That is not a valid command or query.", 'game_saved': "[System] Game Saved.", 'autosave_success': 'Autosave successful.', 'load_fail': 'Failed to load save data. It may be corrupted or from a previous version.', 'no_save': 'No saved game found!', 'game_loaded': '[System] Game Loaded.', 'conn_reestablished': '[SYSTEM] Connection Re-established. Session Restored.', 'initializing': 'Initializing systems...', 'initial_hint': "This is a text-based adventure. Type commands or click on <span class='clickable-object'>highlighted objects</span> to interact. Type 'help' at any time for a list of commands.", 'cannot_go_that_way': "[System] You can't go that way.", 'door_is_locked': "[SYSTEM] The door is locked. You need the correct keycard.", 'door_is_sealed': "[SYSTEM] The door is sealed shut. It won't budge.",
             'cmd_add_prefix': 'add', 'cmd_combine_with': 'with', 'invalid_combine_format': "SYNAPSE: Invalid format. Try 'combine [item1] with [item2]'.",
             'take_success': '[System] You took the {item}.', 'take_fail_exists': "[System] You can't see a {item} here.", 'take_fail_takeable': "[System] You can't take the {item}.", 'take_fail_weight': "[System] Your inventory is too full to take the {item}.",
             'use_success': '[System] You used the {item}.', 'use_fail_have': "[System] You don't have a {item}.", 'use_fail_usable': "[System] You can't use the {item}.", 'use_stimpack': 'You inject the stimpack. A calming sensation washes over you, clearing your thoughts.',
@@ -492,18 +488,11 @@
             'wait_response': 'Time passes.', 'nothing_happens': 'Nothing happens.',
             'read_fail_exists': "[System] There is nothing to read with that name.", 'read_fail_readable': "[System] You can't read that.", 'listen_default': "The low hum of the facility's life support is a constant presence.", 'smell_default': "The air is stale and smells of ozone and old plastic.",
             'hint_take': 'You see a {item}. Try: take {item}', 'hint_read': 'You see a {item}. Try: read {item}', 'hint_examine': 'You see a {item}. Try: examine {item}', 'hint_search': 'You see {item}. Try: search {item}',
-            // New Content
             'use_solvent': 'You apply the solvent to the sealed door. The organic adhesive melts away with a sickening sizzle.', 'use_solvent_fail': 'There is nothing here to use the solvent on.', 'use_dna_scanner': 'You hold the scanner up to the sample. The screen flashes with complex sequencing data.', 'use_dna_scanner_fail': 'There is no sample here to scan.',
             'break_success': 'You shatter the {item}. Shards of {material} litter the floor.', 'break_fail': 'You can\'t break the {item}.', 'break_fail_exists': 'There is no {item} here to break.',
             'hack_fail_ability': 'You don\'t have the expertise to hack this.', 'hack_fail_target': 'There is nothing here to hack.', 'hack_start': 'You begin the hacking sequence. SYNAPSE: "Unauthorized access detected. Please enter the override code now."', 'hack_success': 'Override accepted. You gain access to a firewalled data log.', 'hack_failure': 'SYNAPSE: "Override failed. Locking system for 3 turns."',
             'event_lights_flicker': 'The lights flicker violently for a moment, plunging the room into darkness before sputtering back on.', 'event_noise': 'You hear a metallic scraping sound from the {direction}.',
-             // Achievements
             'achievement_unlocked': 'Achievement Unlocked!',
-            'ach_collector_title': 'Collector', 'ach_collector_req': 'Hold 5 items at once.',
-            'ach_hoarder_title': 'Hoarder', 'ach_hoarder_req': 'Drop an item in 5 different rooms.',
-            'ach_insomniac_title': 'Insomniac', 'ach_insomniac_req': 'Try to rest in an unsafe room.',
-            'ach_what_was_that_title': 'What Was That?', 'ach_what_was_that_req': 'Shout into the darkness.',
-            'ach_biologist_title': 'Biologist', 'ach_biologist_req': 'Dissolve the seal and enter the Specimen Storage.',
         },
         'sv': {
             'new_game': 'Nytt Spel', 'load_game': 'Ladda Spel',
@@ -519,6 +508,7 @@
             'dlg_ask_chimera': 'Projekt Chimera... Ett fascinerande, men... klassificerat ämne. Det var Dr. Aris Thornes favoritprojekt. Sådan ambition. Han försökte slå samman organiskt och syntetiskt liv. Resultaten var... oförutsägbara.',
             'dlg_ask_default': 'Jag har inte tillräckligt med data om det ämnet.',
             'invalid_command': "SYNAPSE: Det är inte ett giltigt kommando eller fråga.", 'game_saved': "[System] Spel sparat.", 'autosave_success': 'Automatisk sparande lyckades.', 'load_fail': 'Kunde inte ladda spardata. Den kan vara korrupt eller från en tidigare version.', 'no_save': 'Inget sparat spel hittades!', 'game_loaded': '[System] Spel laddat.', 'conn_reestablished': '[SYSTEM] Anslutning återupprättad. Session återställd.', 'initializing': 'Initierar system...', 'initial_hint': "Detta är ett textbaserat äventyr. Skriv kommandon eller klicka på <span class='clickable-object'>markerade objekt</span> för att interagera. Skriv 'hjälp' när som helst för en lista med kommandon.", 'cannot_go_that_way': "[System] Du kan inte gå den vägen.", 'door_is_locked': "[SYSTEM] Dörren är låst. Du behöver rätt nyckelkort.", 'door_is_sealed': "[SYSTEM] Dörren är förseglad. Den rubbas inte.",
+            'lang_switch_btn': 'Byt Språk', 'back_btn': 'Tillbaka', 'pause_btn': 'Paus', 'main_menu_btn': 'Huvudmeny', 'save_game': 'Spara Spel', 'load_game': 'Ladda Spel',
         }
     };
     
@@ -528,9 +518,9 @@
     const Difficulty = { Easy: 'Easy', Normal: 'Normal', Hard: 'Hard' };
     const TextSpeed = { Fast: 5, Normal: 15, Slow: 30 };
     const MAX_INVENTORY_WEIGHT = 5;
-    const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v14';
-    const ACHIEVEMENTS_STORAGE_KEY = 'synapse_achievements_unlocked_v14';
-    const SETTINGS_KEY = 'synapse_settings_v14';
+    const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v15';
+    const ACHIEVEMENTS_STORAGE_KEY = 'synapse_achievements_unlocked_v15';
+    const SETTINGS_KEY = 'synapse_settings_v15';
     const GUIDANCE_COLOR = '#34d399';
     const questionWords = {
         'en': ['who', 'what', 'where', 'when', 'why', 'how', 'are', 'is', 'can', 'do', 'does', 'did', 'which'],
@@ -590,25 +580,15 @@
     let rooms = {};
     let itemData = {};
     const roomLayout = {
-        // Original Rooms
         "Lobby": { x: 100, y: 150, w: 60, h: 40, name: "Lobby" }, "Control Room": { x: 100, y: 90, w: 60, h: 40, name: "Control" }, "Maintenance Tunnel": { x: 100, y: 210, w: 60, h: 40, name: "M.Tunnel" }, "Laboratory": { x: 20, y: 150, w: 60, h: 40, name: "Lab" }, "Cryogenic Lab": { x: 20, y: 90, w: 60, h: 40, name: "Cryo" }, "Archive Room": { x: 20, y: 210, w: 60, h: 40, name: "Archive" }, "Data Vault": { x: 180, y: 150, w: 60, h: 40, name: "D.Vault" }, "AI Core": { x: 180, y: 90, w: 60, h: 40, name: "AI Core" }, "Server Closet": { x: 260, y: 90, w: 40, h: 40, name: "S.Closet" },
-        // New Bio-Engineering Wing
         "Bio-Lab Access": { x: 20, y: 270, w: 60, h: 40, name: "Bio-Access" }, "Specimen Storage": { x: 20, y: 330, w: 60, h: 40, name: "Storage" }, "Genetics Lab": { x: 100, y: 330, w: 60, h: 40, name: "Genetics" }
     };
     const takeableItems = new Set(["keycard", "flashlight", "data disk", "emp device", "access code", "vial", "records", "decryption device", "telescope", "stimpack", "effigy", "master keycard", "power cell", "datapad log", "hacked data disk", "logic bomb", "severed cable", "solvent", "dna scanner", "tissue sample", "firewalled data log"]);
     const usableItems = new Set(['stimpack', 'power cell', 'flashlight', 'keycard', 'solvent', 'dna scanner']);
     const readableItems = new Set(['datapad log', 'records', 'sign', 'whiteboard', 'firewalled data log']);
     const searchableObjects = {
-        'shelves': {
-            en: 'You find a dusty keycard tucked behind a stack of binders.',
-            sv: 'Du hittar ett dammigt nyckelkort instoppat bakom en hög med pärmar.',
-            item: 'keycard'
-        },
-        'bio-waste bin': {
-            en: 'Rummaging through the hazardous waste, you find a small, sealed vial containing a strange, iridescent chemical solvent.',
-            sv: 'Du rotar igenom det farliga avfallet och hittar en liten, förseglad ampull som innehåller ett märkligt, skimrande kemiskt lösningsmedel.',
-            item: 'solvent'
-        }
+        'shelves': { en: 'You find a dusty keycard tucked behind a stack of binders.', sv: 'Du hittar ett dammigt nyckelkort instoppat bakom en hög med pärmar.', item: 'keycard' },
+        'bio-waste bin': { en: 'Rummaging through the hazardous waste, you find a small, sealed vial containing a strange, iridescent chemical solvent.', sv: 'Du rotar igenom det farliga avfallet och hittar en liten, förseglad ampull som innehåller ett märkligt, skimrande kemiskt lösningsmedel.', item: 'solvent' }
     };
     const safeRooms = new Set(["Lobby", "Archive Room"]);
     const backstories = { 'investigator': { description_key: "backstory_investigator"}, 'hacker': { description_key: "backstory_hacker"}, 'psychologist': { description_key: "backstory_psychologist"}, 'technician': { description_key: "backstory_technician"}, 'survivor': { description_key: "backstory_survivor"}, 'skeptic': { description_key: "backstory_skeptic"}, 'corporate spy': { description_key: "backstory_corporate_spy"}, 'medic': { description_key: "backstory_medic"}, 'cultist': { description_key: "backstory_cultist"}, 'janitor': { description_key: "backstory_janitor"} };
@@ -622,20 +602,6 @@
     const directionMap = {
         'en': { 'north': 'north', 'south': 'south', 'east': 'east', 'west': 'west' },
         'sv': { 'norr': 'north', 'söder': 'south', 'öst': 'east', 'väst': 'west', 'n': 'north', 's': 'south', 'ö': 'east', 'v': 'west' }
-    };
-
-    const endings = {
-        'escaped': { title_key: 'ending_escaped_title', desc_key: 'ending_escaped_desc' },
-        'mind_shattered': { title_key: 'ending_mind_shattered_title', desc_key: 'ending_mind_shattered_desc' },
-        'assimilated': { title_key: 'ending_assimilated_title', desc_key: 'ending_assimilated_desc' }
-    };
-    
-    const achievements = {
-        'collector': { title_key: 'ach_collector_title', req_key: 'ach_collector_req', check: () => GameState.inventory.length >= 5 },
-        'hoarder': { title_key: 'ach_hoarder_title', req_key: 'ach_hoarder_req', check: () => GameState.roomsWithDroppedItems && GameState.roomsWithDroppedItems.size >= 5 },
-        'insomniac': { title_key: 'ach_insomniac_title', req_key: 'ach_insomniac_req', check: () => GameState.events.triedUnsafeRest },
-        'what_was_that': { title_key: 'ach_what_was_that_title', req_key: 'ach_what_was_that_req', check: () => GameState.events.shouted },
-        'biologist': { title_key: 'ach_biologist_title', req_key: 'ach_biologist_req', check: () => GameState.visitedRooms.has("Specimen Storage") }
     };
     
     // --- LANGUAGE FUNCTIONS ---
@@ -820,11 +786,12 @@
             chatbotTone: ChatbotTone.Friendly, temporaryTone: null, toneShiftTurns: 0, 
             inventory: [], turnCount: 0, lastRestTurn: -10, journalEntries: [], 
             dialogue: { currentNode: null, previousNodes: [], cache: {}, questionCount: 0, askedQuestions: new Set() }, 
-            achievements: [], difficulty: Difficulty.Normal, visitedRooms: new Set(['Lobby']), 
+            achievements: [], unlockedEndings: {}, difficulty: Difficulty.Normal, visitedRooms: new Set(['Lobby']), 
             exitGame: false, conversationHistory: [], 
             systemLogs: [`[${new Date().toISOString()}] Game initialized.`], 
             objectives: [], roomStates: {}, debugMode: false, flashlightOn: false,
             events: { shouted: false, triedUnsafeRest: false },
+            flags: {}, // For tracking ending conditions
             roomsWithDroppedItems: new Set(),
             settings: loadSettings(),
             activeMinigame: null,
@@ -978,6 +945,7 @@
                 triggerDynamicEvent(); 
                 updateDynamicMusic(); 
             }
+            checkEndings();
             checkAchievements();
             updateUI(); 
         }
@@ -1166,7 +1134,7 @@
                     typeWriter(UI.gameOutput, t('use_power_cell'), '#34d399');
                     removeItemFromInventory('power cell');
                     rooms['AI Core'].descriptions[0] = "The AI Core is now online, bathing the room in a brilliant, stable light. The central sphere pulses with a steady, powerful rhythm.";
-                    endGame("escaped");
+                    GameState.flags.aiRebooted = true; // Condition for an ending
                     used = true;
                 } else { typeWriter(UI.gameOutput, t('use_power_cell_fail'), '#ff474c'); }
                 break;
@@ -1182,6 +1150,10 @@
             case 'dna scanner':
                  if (GameState.currentRoom === 'Specimen Storage' && hasItem('tissue sample')) {
                     typeWriter(UI.gameOutput, t('use_dna_scanner'), '#34d399');
+                    if(GameState.playerBackstory === 'medic') {
+                        GameState.flags.canSynthesize = true;
+                        showGuidance("You have enough data to synthesize a counter-agent. Try combining the scanner with a stimpack.");
+                    }
                     used = true;
                 } else { typeWriter(UI.gameOutput, t('use_dna_scanner_fail'), '#ff474c'); }
                 break;
@@ -1259,6 +1231,7 @@
         if (readableItems.has(targetItemName)) {
             const desc = itemData[targetItemName].description[currentLanguage] || itemData[targetItemName].description['en'];
             typeWriter(UI.gameOutput, `[Read] ${desc}`);
+            if(targetItemName === 'firewalled data log') GameState.flags.truthExposed = true;
         } else { typeWriter(UI.gameOutput, t('read_fail_readable'), '#ff474c'); }
     }
 
@@ -1417,7 +1390,7 @@
         try { 
             saveSettings();
             const saveData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value); 
-            localStorage.setItem('synapse_savegame_v14', saveData); 
+            localStorage.setItem('synapse_savegame_v15', saveData); 
             if (!isAutosave) typeWriter(UI.gameOutput, t('game_saved'), '#cccccc'); 
             else GameState.systemLogs.push(`[${new Date().toISOString()}] ${t('autosave_success')}.`); 
         } catch(e) { 
@@ -1426,7 +1399,7 @@
     }
     
     function loadGame() {
-        const savedData = localStorage.getItem('synapse_savegame_v14');
+        const savedData = localStorage.getItem('synapse_savegame_v15');
         if (savedData) {
             try {
                 const loadedState = JSON.parse(savedData);
@@ -1438,6 +1411,7 @@
                 GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []);
                 GameState.roomsWithDroppedItems = new Set(loadedState.roomsWithDroppedItems || []);
                 GameState.achievements = loadedState.achievements || [];
+                GameState.unlockedEndings = loadedState.unlockedEndings || {};
                 initializeData(); 
                 buildDialogueTree(GameState.chatbotTone);
                 GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone]; GameState.dialogue.previousNodes = [];
@@ -1649,6 +1623,7 @@
             <button id="pause-features" class="button">${t('understand_game')}</button>
             <button id="pause-help" class="button">${t('help')}</button>
             <button id="pause-settings" class="button">${t('settings_btn')}</button>
+            <button id="pause-lang" class="button">${t('lang_switch_btn')}</button>
             <hr class="border-gray-700 my-2">
             <button id="pause-save" class="button">${t('save_game')}</button>
             <button id="pause-load" class="button">${t('load_game')}</button>
@@ -1665,6 +1640,11 @@
         document.getElementById('pause-resume').onclick = () => { playSound('uiClick'); hideModal(); };
         document.getElementById('pause-achievements').onclick = () => { playSound('uiClick'); showAchievementsModal(); };
         document.getElementById('pause-endings').onclick = () => { playSound('uiClick'); showEndingsModal(); };
+        document.getElementById('pause-lang').onclick = () => { 
+            playSound('uiClick');
+            setLanguage(currentLanguage === 'en' ? 'sv' : 'en');
+            showPauseMenu(); // Re-render the pause menu with the new language
+        };
     }
 
     function showAchievementsModal() {
@@ -1692,12 +1672,7 @@
             if (!unlockedAchievements.includes(id)) {
                 lockedCount++;
                 const ach = achievements[id];
-                const requirementMet = ach.check();
-                if (requirementMet) {
-                     content += `<li class="text-yellow-400"><strong>${t(ach.title_key)}:</strong> <span class="text-gray-400">${t(ach.req_key)}</span></li>`;
-                } else {
-                     content += `<li class="text-gray-500"><strong>????:</strong> <span class="text-gray-600 italic">Undiscovered</span></li>`;
-                }
+                content += `<li class="text-gray-500"><strong>????:</strong> <span class="text-gray-600 italic">Undiscovered</span></li>`;
             }
         }
          if (lockedCount === 0) {
@@ -1720,7 +1695,7 @@
         let content = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('endings_title')}</h2>
                        <div class="modal-scroll flex-grow p-2 text-left">`;
         
-        const unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_STORAGE_KEY) || '{}');
+        const unlockedEndings = GameState.unlockedEndings || {};
         const unlockedKeys = Object.keys(unlockedEndings);
 
         content += `<h3 class="text-lg font-bold mb-2 text-white">${t('unlocked_endings')}</h3>`;
@@ -1916,8 +1891,8 @@
     function returnToMainMenu() {
         if(animationFrameId) cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
-        sessionStorage.removeItem('synapse_session_v14_autosave');
-        sessionStorage.removeItem('synapse_session_v14_screen_state');
+        sessionStorage.removeItem('synapse_session_v15_autosave');
+        sessionStorage.removeItem('synapse_session_v15_screen_state');
         GameState.exitGame = true;
 
         UI.gameScreen.classList.add('hidden'); 
@@ -1982,6 +1957,7 @@
         const endingTitle = t(endingData.title_key);
         const endingDesc = t(endingData.desc_key);
 
+        GameState.unlockedEndings[endingKey] = { title: endingTitle, desc: endingDesc };
         const unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_STORAGE_KEY) || '{}');
         unlockedEndings[endingKey] = { title: endingTitle, desc: endingDesc };
         localStorage.setItem(ENDINGS_STORAGE_KEY, JSON.stringify(unlockedEndings));
@@ -2013,9 +1989,9 @@
         playSound('achievement');
         typeWriter(UI.gameOutput, `[${t('achievement_unlocked')}] ${t(ach.title_key)}`, '#FFD700');
 
-        const unlockedAchievements = JSON.parse(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY) || '[]');
-        if (!unlockedAchievements.includes(id)) {
-            unlockedAchievements.push(id);
+        const unlockedAchievements = JSON.parse(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY) || '{}');
+        if (!unlockedAchievements[id]) {
+            unlockedAchievements[id] = true;
             localStorage.setItem(ACHIEVEMENTS_STORAGE_KEY, JSON.stringify(unlockedAchievements));
         }
     }
@@ -2100,8 +2076,8 @@
         if (!UI.gameScreen.classList.contains('hidden') && GameState && typeof GameState.turnCount === 'number' && !GameState.exitGame) {
             try {
                 const sessionData = JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value);
-                sessionStorage.setItem('synapse_session_v14_autosave', sessionData);
-                sessionStorage.removeItem('synapse_session_v14_screen_state');
+                sessionStorage.setItem('synapse_session_v15_autosave', sessionData);
+                sessionStorage.removeItem('synapse_session_v15_screen_state');
             } catch (e) {
                 console.error("Session game state save failed:", e);
             }
@@ -2115,19 +2091,19 @@
                     difficulty: Array.from(UI.difficultyBtns).find(b => b.classList.contains('button-primary'))?.dataset.difficulty || Difficulty.Normal,
                     language: currentLanguage
                 };
-                sessionStorage.setItem('synapse_session_v14_screen_state', JSON.stringify(startState));
-                sessionStorage.removeItem('synapse_session_v14_autosave');
+                sessionStorage.setItem('synapse_session_v15_screen_state', JSON.stringify(startState));
+                sessionStorage.removeItem('synapse_session_v15_autosave');
             } catch (e) {
                 console.error("Session screen state save failed:", e);
             }
         } else {
-             sessionStorage.removeItem('synapse_session_v14_autosave');
-             sessionStorage.removeItem('synapse_session_v14_screen_state');
+             sessionStorage.removeItem('synapse_session_v15_autosave');
+             sessionStorage.removeItem('synapse_session_v15_screen_state');
         }
     }
 
     function loadStateFromSession() {
-        const sessionData = sessionStorage.getItem('synapse_session_v14_autosave');
+        const sessionData = sessionStorage.getItem('synapse_session_v15_autosave');
         if (!sessionData) return false;
         try {
             const loadedState = JSON.parse(sessionData);
@@ -2140,6 +2116,7 @@
                 GameState.dialogue.askedQuestions = new Set(loadedState.dialogue.askedQuestions || []);
                 GameState.roomsWithDroppedItems = new Set(loadedState.roomsWithDroppedItems || []);
                 GameState.achievements = loadedState.achievements || [];
+                GameState.unlockedEndings = loadedState.unlockedEndings || {};
                 initializeData(); 
                 buildDialogueTree(GameState.chatbotTone);
                 GameState.dialogue.currentNode = GameState.dialogue.cache[GameState.chatbotTone] || GameState.dialogue.cache[ChatbotTone.Friendly];
@@ -2157,7 +2134,7 @@
             }
         } catch (e) {
             console.error("Session load failed:", e);
-            sessionStorage.removeItem('synapse_session_v14_autosave');
+            sessionStorage.removeItem('synapse_session_v15_autosave');
         }
         return false;
     }
@@ -2515,8 +2492,8 @@
         };
 
         setupButtonClick(UI.newGameBtn, () => { 
-            sessionStorage.removeItem('synapse_session_v14_autosave'); 
-            sessionStorage.removeItem('synapse_session_v14_screen_state'); 
+            sessionStorage.removeItem('synapse_session_v15_autosave'); 
+            sessionStorage.removeItem('synapse_session_v15_screen_state'); 
             UI.startScreen.classList.add('hidden'); 
             UI.startScreen.classList.remove('flex');
             UI.playerSetup.classList.remove('hidden'); 
@@ -2524,8 +2501,8 @@
             updateAbilityDisplay(); 
         });
         setupButtonClick(UI.loadGameBtn, () => { 
-            sessionStorage.removeItem('synapse_session_v14_autosave'); 
-            sessionStorage.removeItem('synapse_session_v14_screen_state'); 
+            sessionStorage.removeItem('synapse_session_v15_autosave'); 
+            sessionStorage.removeItem('synapse_session_v15_screen_state'); 
             loadGame(); 
         });
         setupButtonClick(UI.backToStartBtn, () => {
@@ -2570,7 +2547,7 @@
             restored = true;
         } 
         else {
-            const screenStateData = sessionStorage.getItem('synapse_session_v14_screen_state');
+            const screenStateData = sessionStorage.getItem('synapse_session_v15_screen_state');
             if (screenStateData) {
                 try {
                     const startState = JSON.parse(screenStateData);
@@ -2592,7 +2569,7 @@
                     restored = true;
                 } catch (e) {
                     console.error("Failed to restore screen state:", e);
-                    sessionStorage.removeItem('synapse_session_v14_screen_state');
+                    sessionStorage.removeItem('synapse_session_v15_screen_state');
                 }
             }
         }
