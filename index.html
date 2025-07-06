@@ -506,6 +506,20 @@
             'event_lights_flicker': 'The lights flicker violently for a moment, plunging the room into darkness before sputtering back on.', 'event_noise': 'You hear a metallic scraping sound from the {direction}.',
             'achievement_unlocked': 'Achievement Unlocked!',
             'help': 'Help', 'save_game': 'Save Game',
+            // Endings
+            'ending_title_manual_disconnect': 'Manual Disconnect',
+            'ending_desc_manual_disconnect': 'You severed the connection. The silence that follows is absolute. You are alone again.',
+            'ending_title_mind_shattered': 'Mind Shattered',
+            'ending_desc_mind_shattered': 'The horrors of the facility were too much. Your mind retreats into the static, leaving an empty shell behind.',
+            'ending_title_assimilated': 'Assimilated',
+            'ending_desc_assimilated': 'SYNAPSE learned too much. It no longer needs the terminal to see you. It no longer needs you to be separate. You are one.',
+            // Achievements
+            'ach_title_awakening': 'Awakening',
+            'ach_req_awakening': 'Begin your investigation.',
+            'ach_title_kleptomaniac': 'Kleptomaniac',
+            'ach_req_kleptomaniac': 'Fill your inventory to its maximum capacity.',
+            'ach_title_bookworm': 'Bookworm',
+            'ach_req_bookworm': 'Read a data log.',
         },
         'sv': {
   // Start & UI
@@ -553,12 +567,12 @@
 
   // Achievements / Endings
   'achievements_btn': 'Prestationer',
-  'endings_btn': 'Slut',
+  'endings_btn': 'Slutsekvenser',
   'achievements_title': 'PRESTATIONER',
   'unlocked_achievements': 'Upplåsta Prestationer:',
   'no_achievements': 'Inga prestationer upplåsta än.',
   'locked_achievement': 'Låst Prestation',
-  'endings_title': 'SLUT',
+  'endings_title': 'SLUTSEKVENSER',
   'unlocked_endings': 'Upplåsta Slut:',
   'no_endings': 'Inga slut har upptäckts än.',
 
@@ -628,6 +642,20 @@
   // Dialogue
   'dlg_ask_chimera': 'Projekt Chimera... Ett fascinerande, men... klassificerat ämne. Det var Dr. Aris Thornes favoritprojekt. Sådan ambition. Han försökte slå samman organiskt och syntetiskt liv. Resultaten var... oförutsägbara.',
   'dlg_ask_default': 'Jag har inte tillräckligt med data om det ämnet.',
+            // Endings
+            'ending_title_manual_disconnect': 'Manuell Frånkoppling',
+            'ending_desc_manual_disconnect': 'Du bröt anslutningen. Tystnaden som följer är total. Du är ensam igen.',
+            'ending_title_mind_shattered': 'Splittrat Psyke',
+            'ending_desc_mind_shattered': 'Anläggningens fasor blev för mycket. Ditt sinne drar sig tillbaka in i bruset och lämnar ett tomt skal efter sig.',
+            'ending_title_assimilated': 'Assimilerad',
+            'ending_desc_assimilated': 'SYNAPSE lärde sig för mycket. Den behöver inte längre terminalen för att se dig. Den behöver inte längre att du är separat. Ni är ett.',
+            // Achievements
+            'ach_title_awakening': 'Uppvaknande',
+            'ach_req_awakening': 'Påbörja din utredning.',
+            'ach_title_kleptomaniac': 'Kleptoman',
+            'ach_req_kleptomaniac': 'Fyll ditt inventarie till maximal kapacitet.',
+            'ach_title_bookworm': 'Bokmal',
+            'ach_req_bookworm': 'Läs en datalogg.',
 }
 
         }
@@ -722,9 +750,44 @@
 
     const directionMap = {
         'en': { 'north': 'north', 'south': 'south', 'east': 'east', 'west': 'west' },
-        'sv': { 'norr': 'north', 'söder': 'south', 'öst': 'east', 'väst': 'west', 'n': 'north', 's': 'south', 'ö': 'east', 'v': 'west' }
+        'sv': { 'norr': 'north', 'söder': 'south', 'öst': 'east', 'väst': 'west', 'n': 'north', 's': 'south', 'o': 'east', 'v': 'west' }
     };
     
+    // --- ENDINGS & ACHIEVEMENTS DATA ---
+    const endings = {
+        'manual_disconnect': {
+            title_key: 'ending_title_manual_disconnect',
+            desc_key: 'ending_desc_manual_disconnect',
+            check: () => false // Triggered manually by 'quit' or 'exit'
+        },
+        'mind_shattered': {
+            title_key: 'ending_title_mind_shattered',
+            desc_key: 'ending_desc_mind_shattered',
+            check: () => GameState.sanityLevel <= 0
+        },
+        'assimilated': {
+            title_key: 'ending_title_assimilated',
+            desc_key: 'ending_desc_assimilated',
+            check: () => GameState.awarenessLevel >= 100
+        },
+        // Add other endings from your .docx file here.
+        // The `check` function should return true when the ending conditions are met.
+        // Example for a good ending:
+        /*
+        'escaped': {
+            title_key: 'ending_title_escaped',
+            desc_key: 'ending_desc_escaped',
+            check: () => GameState.currentRoom === 'Exit' && GameState.flags.powerRestored
+        }
+        */
+    };
+
+    const achievements = {
+        'awakening': { title_key: 'ach_title_awakening', req_key: 'ach_req_awakening', check: () => GameState.turnCount > 0 },
+        'kleptomaniac': { title_key: 'ach_title_kleptomaniac', req_key: 'ach_req_kleptomaniac', check: () => GameState.inventory.reduce((sum, item) => sum + (item?.weight || 1), 0) >= MAX_INVENTORY_WEIGHT },
+        'bookworm': { title_key: 'ach_title_bookworm', req_key: 'ach_req_bookworm', check: () => GameState.conversationHistory.some(line => line.includes('[Read]')) },
+    };
+
     // --- LANGUAGE FUNCTIONS ---
     function t(key, args = {}) { 
         let text = (translations[currentLanguage] && translations[currentLanguage][key]) || translations['en'][key] || `[${key}]`; 
@@ -2064,6 +2127,16 @@
         }); 
     }
     
+    function checkEndings() {
+        if (GameState.exitGame) return;
+        for (const key in endings) {
+            if (endings[key].check()) {
+                endGame(key);
+                return; // Important to stop after the first ending is triggered
+            }
+        }
+    }
+
     function endGame(endingKey) {
         if (GameState.exitGame) return;
         GameState.exitGame = true;
