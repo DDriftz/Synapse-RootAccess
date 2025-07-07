@@ -1231,51 +1231,6 @@
     }
     
     async function handleDialogueCommand(input) {
-            'examine': handleExamine, 'journal': (arg) => (arg.startsWith(t('cmd_add_prefix')) || arg.startsWith('add')) ? addJournalEntry(original.substring(original.toLowerCase().indexOf(arg.split(' ')[0]) + arg.split(' ')[0].length).trim()) : displayJournal(),
-            'rest': handleRest, 'combine': (arg) => { const separator = ` ${t('cmd_combine_with')} `; handleCombine(arg.replace(separator, ' with ')) },
-            'objectives': displayObjectives, 'map': displayMap,
-            'cls': () => { UI.gameOutput.innerHTML = ''; }, 'history': showHistory, 'undo': undoLastAction, 'again': () => processPlayerInput(commandHistory[commandHistory.length - 2] || ''),
-            'drop': handleDrop, 'talk': handleTalk, 'open': () => typeWriter(UI.gameOutput, t('nothing_happens')), 'close': () => typeWriter(UI.gameOutput, t('nothing_happens')), 'push': () => typeWriter(UI.gameOutput, t('nothing_happens')), 'pull': () => typeWriter(UI.gameOutput, t('nothing_happens')),
-            'wait': () => typeWriter(UI.gameOutput, t('wait_response')), 'shout': handleShout,
-            'read': handleRead, 'search': handleSearch, 'listen': handleListen, 'smell': handleSmell,
-            'turn on': (arg) => handleToggle(true, arg), 'turn off': (arg) => handleToggle(false, arg),
-            'cmd:pause': showPauseMenu, 'cmd:debug': toggleDebug, 'cmd:colorblind': toggleColorblind,
-            'break': handleBreak, 'hack': handleHack, 'ask': handleAsk,
-        };
-        
-        let handled = await handleDialogueCommand(input);
-        if (!handled) {
-            const handler = commandHandlers[command];
-            if (handler) {
-                handler(argument);
-                handled = true;
-            }
-        }
-
-        if (!handled) { playSound('sanityLoss'); await typeWriter(UI.gameOutput, t('invalid_command')); GameState.awarenessLevel++; }
-        
-        UI.playerInput.value = '';
-        UI.autocompleteBox.innerHTML = '';
-        UI.autocompleteBox.classList.add('hidden');
-
-        const isAction = !['help', 'inventory', 'journal', 'look around', 'exits', 'map', 'save', 'load', 'cls', 'history', 'undo', 'cmd:debug', 'cmd:colorblind'].includes(command);
-        if((isAction || handled) && !GameState.exitGame) {
-            if(isAction) {
-                GameState.turnCount++;
-                if (GameState.systemLockdownTurns > 0) GameState.systemLockdownTurns--;
-                triggerDynamicEvent(); 
-                updateDynamicMusic(); 
-            }
-            checkEndings();
-            checkAchievements();
-            updateUI(); 
-        }
-        if (GameState.debugMode) {
-             typeWriter(UI.gameOutput, `[DEBUG] ${JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value)}`, '#ffa500');
-        }
-    }
-    
-    async function handleDialogueCommand(input) {
         const currentNode = GameState.dialogue.currentNode;
         if (!currentNode || !currentNode.responses) return false;
 
@@ -1285,6 +1240,51 @@
                 GameState.awarenessLevel += responseNode.awarenessChange || 0;
                 GameState.sanityLevel = Math.max(0, GameState.sanityLevel + (responseNode.sanityChange || 0));
                 await displayChatbotResponse(responseNode.message_key);
+                GameState.dialogue.previousNodes.push(currentNode);
+                GameState.dialogue.currentNode = responseNode.responses ? responseNode : null;
+                renderDialogueOptions();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Utility function to escape regex special characters
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    async function typeWriter(element, text, color = 'var(--main-color)', speed = currentTextSpeed) {
+        const resolvedColor = color.startsWith('var(') ? getComputedStyle(document.documentElement).getPropertyValue(color.slice(4, -1)).trim() : color;
+        
+        if (GameState.settings.colorblindMode && color !== '#a0a0a0') {
+            const colorMap = {'#00ff41':'[SYS]', '#ffbf00':'[SYS]', '#00bfff':'[SYS]', '#ff474c':'[ERR]', '#ffdb58':'[WARN]', '#6495ed':'[CMD]', '#cccccc':'[INFO]', '#b19cd9':'[PSY]', [GUIDANCE_COLOR]: '[HINT]', '#ffa500': '[DEBUG]'};
+            text = `${colorMap[resolvedColor] || ''} ${text}`;
+            color = '#ffffff';
+        }
+        
+        if (GameState.settings.glitchEffect && (GameState.sanityLevel < 30 || GameState.awarenessLevel > 70) && Math.random() < 0.2) {
+            playSound('glitch', {note: 'G2', duration:'16n'});
+            text = text.split('').map(c => Math.random() < 0.15 ? String.fromCharCode(33 + Math.random() * 94) : c).join('');
+        }
+        
+        // Create a regex to find all known item names as whole words
+        const objectRegex = new RegExp(`\\b(${(Object.keys(itemData)).map(escapeRegExp).join('|')})\\b`, 'gi');
+        let processedText = text.replace(objectRegex, (match) => `<span class="clickable-object" data-object-name="${match}">${match}</span>`);
+
+        return new Promise(resolve => {
+            const MAX_OUTPUT_NODES = 100; // Limit output lines to prevent performance issues
+            const p = document.createElement('div');
+            p.style.color = color;
+            
+            // This function will handle the typing animation
+            let i = 0;
+            function typing() {
+                if (i < text.length) {
+                    if(speed > 0) playSound('typewriter');
+                    // Use the original text for the animation, then set the processed HTML at the end
+                    p.innerHTML = text.substring(0, i + 1);
+                    i++;
                     element.scrollTop = element.scrollHeight;
                     setTimeout(typing, speed);
                 } else {
