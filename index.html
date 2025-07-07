@@ -419,7 +419,7 @@
                 <div class="input-caret"></div>
                 <button id="mic-btn" class="button !p-2 ml-2" data-lang-title="mic_tooltip" title="Use Voice Command">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/>
+                        <path d="M5 3a3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/>
                         <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
                     </svg>
                 </button>
@@ -447,7 +447,7 @@
             'empty_inventory': '(empty)', 'no_objectives': '(None)', 'close_btn': 'Close', 'back_btn': 'Back', 'pause_btn': 'Pause', 'submit_command': 'Submit Command',
             'achievements_btn': 'Achievements', 'endings_btn': 'Endings', 'achievements_title': 'ACHIEVEMENTS', 'unlocked_achievements': 'Unlocked Achievements:', 'no_achievements': 'No achievements unlocked yet.', 'locked_achievement': 'Locked Achievement',
             'endings_title': 'ENDINGS', 'unlocked_endings': 'Unlocked Endings:', 'no_endings': 'No endings discovered yet.',
-            'history_title': 'HISTORY', 'pause_title': 'PAUSE', 'resume_btn': 'Resume', 'main_menu_btn': 'Main Menu', 'confirm_main_menu': 'Are you sure you want to return to the main menu? Unsaved progress will be lost.', 'yes': 'Yes', 'no': 'No',
+            'history_title': 'HISTORY', 'pause_title': 'PAUS', 'resume_btn': 'Resume', 'main_menu_btn': 'Main Menu', 'confirm_main_menu': 'Are you sure you want to return to the main menu? Unsaved progress will be lost.', 'yes': 'Yes', 'no': 'No',
             'settings_btn': 'Settings', 'settings_title': 'SETTINGS', 'setting_master_volume': 'Enable All Sounds', 'setting_item_found': 'Object Found SFX', 'setting_high_awareness': 'High Awareness Warning', 'setting_low_sanity': 'Low Sanity Warning', 'setting_text_speed': 'Text Speed', 'setting_colorblind_mode': 'Colorblind Mode', 'setting_glitch_effect': 'Glitch Effect', 'setting_font_family': 'Font', 'setting_ui_theme': 'UI Theme', 'setting_reset_defaults': 'Reset to Defaults', 'lang_switch_btn': 'Switch Language',
             'theme_green': 'Green', 'theme_amber': 'Amber', 'theme_blue': 'Blue',
             'features_title': 'Understand the Game', 
@@ -511,13 +511,7 @@
             'ach_explorer_title': 'Explorer', 'ach_explorer_req': 'Visit 5 different rooms.',
             'ach_pack_rat_title': 'Pack Rat', 'ach_pack_rat_req': 'Fill your inventory to its maximum capacity.',
             'ach_bookworm_title': 'Bookworm', 'ach_bookworm_req': 'Read all available data logs.',
-            'ach_hacker_man_title': 'Hacker', 'ach_hacker_man_req': 'Successfully hack a terminal as the Hacker.',
-            // Endings
-            'ending_title_manual_disconnect': 'Manual Disconnect', 'ending_desc_manual_disconnect': 'You severed the connection. The silence that follows is total. You are alone again.',
-            'ending_title_mind_shattered': 'Mind Shattered', 'ending_desc_mind_shattered': 'The horrors of the facility were too much. Your mind retreats into the static, leaving only an empty shell.',
-            'ending_title_assimilated': 'Assimilated', 'ending_desc_assimilated': 'SYNAPSE learned too much. It no longer needs the terminal to see you. You are one now.',
-            'ending_title_escaped': 'Escaped', 'ending_desc_escaped': 'You restored power and found a way out. The world outside feels different, but you are free.',
-            'ending_title_truth_revealed': 'The Truth', 'ending_desc_truth_revealed': 'You escaped with the firewalled data log, exposing the truth of Project Chimera to the world.'
+            'ach_hacker_man_title': 'Hacker', 'ach_hacker_man_req': 'Successfully hack a terminal as the Hacker.'
         },
         'sv': {
             // Start & UI
@@ -577,6 +571,7 @@
     const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v15';
     const ACHIEVEMENTS_STORAGE_KEY = 'synapse_achievements_unlocked_v15';
     const SETTINGS_KEY = 'synapse_settings_v15';
+    const PLAYER_CHOICES_KEY = 'synapse_player_choices_v15'; // New key for player choices
     const GUIDANCE_COLOR = '#34d399';
     const questionWords = {
         'en': ['who', 'what', 'where', 'when', 'why', 'how', 'are', 'is', 'can', 'do', 'does', 'did', 'which'],
@@ -667,7 +662,7 @@
         'explorer': { title_key: 'ach_explorer_title', req_key: 'ach_explorer_req', check: () => GameState.visitedRooms.size >= 5 },
         'pack_rat': { title_key: 'ach_pack_rat_title', req_key: 'ach_pack_rat_req', check: () => GameState.inventory.reduce((sum, item) => sum + (item?.weight || 1), 0) >= MAX_INVENTORY_WEIGHT },
         'bookworm': { title_key: 'ach_bookworm_title', req_key: 'ach_bookworm_req', check: () => GameState.flags.readAllLogs },
-        'hacker_man': { title_key: 'ach_hacker_man_title', req_key: 'ach_hacker_man_req', check: () => GameState.flags.hackedTerminal && GameState.playerBackstory === 'hacker' }
+        'hacker_man': { title_key: 'ach_hacker_man_title', req_key: 'ach_hacker_man_req', check: () => GameState.playerBackstory === 'hacker' && GameState.flags.hackedTerminal }
     };
 
     const endings = {
@@ -1008,8 +1003,7 @@
             sounds.glitch.volume.value = -25;
             sounds.doorOpen = new Tone.Player({ url: "https://storage.googleapis.com/immersive-dev-public-include/synapse/door.mp3" }).toDestination();
             sounds.sanityLoss = new Tone.Player({ url: "https://storage.googleapis.com/immersive-dev-public-include/synapse/sanity_loss.mp3" }).toDestination();
-            sounds.itemPickup = new Tone.Player({ url: "https://storage.googleapis.com/immersive-dev-public-include/synapse/pickup.mp3" }).toDestination();
-            sounds.achievement = new Tone.Player({ url: "https://storage.googleapis.com/immersive-dev-public-include/synapse/achievement.mp3" }).toDestination();
+            sounds.itemPickup = new Tone.Player({ url: "https://storage.googleapis.com/immersive-dev-public-include/synapse/achievement.mp3" }).toDestination();
             
             sounds.panner = new Tone.Panner(0).toDestination();
             sounds.noiseEvent = new Tone.NoiseSynth({noise: {type: 'white'}, envelope: {attack: 0.01, decay: 0.2, sustain: 0}}).connect(sounds.panner);
@@ -1095,6 +1089,12 @@
             'tissue sample': { name: 'tissue sample', weight: 1, type: ItemType.Puzzle, hintType: 'take', description: { en: 'A small sample of grotesque, pulsating organic tissue in a petri dish.', sv: 'Ett litet prov av grotesk, pulserande organisk vävnad i en petriskål.' }},
             'whiteboard': { name: 'whiteboard', weight: 99, type: ItemType.Log, hintType: 'read', description: { en: "The whiteboard is covered in frantic scrawls. One section is circled in red: 'SUBJECT ZERO - UNSTABLE. CHIMERIC DNA. IT IS... GROWING. WE USED AN ORGANIC ADHESIVE TO SEAL THE SPECIMEN ROOM. GOD HELP US.'", sv: "Vittavlan är täckt av frenetiska klotter. En sektion är inringad i rött: 'SUBJEKT NOLL - INSTABIL. KIMÄRISKT DNA. DEN... VÄXER. VI ANVÄNDE ETT ORGANISKT LIM FÖR ATT FÖRSEGLA PROVRUMMET. GUD HJÄLPE OSS.'" } },
             'bio-waste bin': { name: 'bio-waste bin', weight: 99, type: ItemType.Puzzle, hintType: 'search', description: { en: "A large red container for hazardous biological materials.", sv: "En stor röd behållare för farligt biologiskt material."}},
+            // --- NEW ITEM DEFINITIONS FOR STARTING GEAR ---
+            'decryption device': { name: 'decryption device', weight: 1, type: ItemType.Tool, description: { en: 'A small device used to bypass digital security.', sv: 'En liten enhet som används för att kringgå digital säkerhet.' } },
+            'effigy': { name: 'effigy', weight: 1, type: ItemType.Puzzle, description: { en: 'A strange, carved effigy. It radiates an unsettling aura.', sv: 'En märklig, snidad bild. Den utstrålar en oroande aura.' } },
+            'master keycard': { name: 'master keycard', weight: 1, type: ItemType.Key, description: { en: 'A master keycard, granting access to all locked areas.', sv: 'Ett huvudnyckelkort som ger tillgång till alla låsta områden.' } },
+            'hacked data disk': { name: 'hacked data disk', weight: 1, type: ItemType.Log, description: { en: 'A data disk with its encryption forcefully bypassed. Contains sensitive Project SYNAPSE logs.', sv: 'En datadisk med dess kryptering tvångsmässigt kringgått. Innehåller känsliga Projekt SYNAPSE-loggar.' } },
+            // --- END NEW ITEM DEFINITIONS ---
         };
         const roomData = { 
             "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows over sterile corporate furniture and a sad, potted plant." }, exits: { north: "Control Room", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: ['sign', 'datapad log', 'potted plant'], breakable: {'potted plant': 'ceramic'} }, 
@@ -1321,7 +1321,8 @@
         const currentWeight = GameState.inventory.reduce((sum, item) => sum + (item?.weight || 1), 0);
         UI.inventory.weight.textContent = `${currentWeight}`;
         if(currentWeight >= MAX_INVENTORY_WEIGHT) UI.inventory.weight.parentElement.classList.add('text-red-500'); else UI.inventory.weight.parentElement.classList.remove('text-red-500');
-        UI.inventory.list.innerHTML = GameState.inventory.length > 0 ? GameState.inventory.map(item => `<li>- ${item.name}</li>`).join('') : `<li>${t('empty_inventory')}</li>`;
+        // Safely render inventory items, checking if item is defined before accessing its properties
+        UI.inventory.list.innerHTML = GameState.inventory.length > 0 ? GameState.inventory.map(item => `<li>- ${item ? item.name : '[Unknown Item]'}</li>`).join('') : `<li>${t('empty_inventory')}</li>`;
         UI.journal.list.innerHTML = GameState.journalEntries.slice().reverse().map(entry => `<li>${entry}</li>`).join('');
         UI.objectives.list.innerHTML = GameState.objectives.length > 0 ? GameState.objectives.map(obj => `<li>${obj.completed ? `<span class="text-gray-500 line-through">${obj.text}</span>` : `&gt; ${obj.text}`}</li>`).join('') : `<li>${t('no_objectives')}</li>`;
         
@@ -1746,7 +1747,7 @@
                 UI.startScreen.classList.add('hidden'); 
                 UI.playerSetup.classList.add('hidden');
                 UI.gameScreen.classList.remove('hidden'); 
-                UI.gameScreen.classList.add('flex');
+                UI.gameScreen.classList.add('flex'); 
                 UI.gameOutput.innerHTML = ''; 
                 typeWriter(UI.gameOutput, t('game_loaded'), '#cccccc');
                 renderRoom(); 
@@ -1901,7 +1902,7 @@
             <!-- Inventory -->
             <div id="modal-inventory-panel" class="mb-4">
                 <h3 class="font-bold border-b border-[var(--main-color-border)] mb-2">${t('inventory_title')} (${currentWeight}/${MAX_INVENTORY_WEIGHT})</h3>
-                <ul class="list-none p-0">${GameState.inventory.length > 0 ? GameState.inventory.map(item => `<li>- ${item.name}</li>`).join('') : `<li>${t('empty_inventory')}</li>`}</ul>
+                <ul class="list-none p-0">${GameState.inventory.length > 0 ? GameState.inventory.map(item => `<li>- ${item ? item.name : '[Unknown Item]'}</li>`).join('') : `<li>${t('empty_inventory')}</li>`}</ul>
             </div>
             <!-- Objectives -->
             <div id="modal-objectives-panel" class="mb-4">
@@ -2254,6 +2255,42 @@
         hideModal();
     }
 
+    // --- NEW FUNCTIONS FOR SAVING/LOADING PLAYER CHOICES ---
+    function savePlayerChoices() {
+        try {
+            const playerChoices = {
+                playerName: UI.playerNameInput.value,
+                playerBackstory: UI.playerBackstoryInput.value,
+                difficulty: Array.from(UI.difficultyBtns).find(b => b.classList.contains('button-primary'))?.dataset.difficulty || Difficulty.Normal,
+                language: currentLanguage
+            };
+            localStorage.setItem(PLAYER_CHOICES_KEY, JSON.stringify(playerChoices));
+        } catch (e) {
+            console.error("Failed to save player choices:", e);
+        }
+    }
+
+    function loadPlayerChoices() {
+        try {
+            const savedChoices = localStorage.getItem(PLAYER_CHOICES_KEY);
+            if (savedChoices) {
+                const choices = JSON.parse(savedChoices);
+                UI.playerNameInput.value = choices.playerName || '';
+                UI.playerBackstoryInput.value = choices.playerBackstory || '';
+                
+                UI.difficultyBtns.forEach(btn => btn.classList.remove('button-primary'));
+                const difficultyBtn = Array.from(UI.difficultyBtns).find(b => b.dataset.difficulty === choices.difficulty) || UI.difficultyBtns[1];
+                difficultyBtn.classList.add('button-primary');
+                
+                setLanguage(choices.language || 'en'); // Apply language immediately
+            }
+        } catch (e) {
+            console.error("Failed to load player choices:", e);
+            localStorage.removeItem(PLAYER_CHOICES_KEY); // Clear corrupted data
+        }
+    }
+    // --- END NEW FUNCTIONS ---
+
 
     function setupIntro() { UI.introTextContainer.innerHTML = `<p class="mb-4">${t('intro_1')}</p><p>${t('intro_2')}</p><p>${t('intro_3')}</p>`; }
     
@@ -2264,10 +2301,54 @@
         GameState.playerBackstory = Object.keys(backstories).includes(backstoryKey) ? backstoryKey : 'investigator';
         GameState.difficulty = Array.from(UI.difficultyBtns).find(b => b.classList.contains('button-primary'))?.dataset.difficulty || Difficulty.Normal; 
         
+        // Save player choices when starting a new game
+        savePlayerChoices();
+
         UI.startScreen.classList.add('hidden');
         UI.playerSetup.classList.add('hidden');
         UI.gameScreen.classList.remove('hidden'); 
         UI.gameScreen.classList.add('flex'); 
+        
+        // Initialize player stats based on backstory and difficulty
+        switch (GameState.playerBackstory) {
+            case 'psychologist':
+                if (GameState.difficulty === Difficulty.Easy) GameState.maxSanity += 25;
+                else if (GameState.difficulty === Difficulty.Normal) GameState.maxSanity += 15;
+                else if (GameState.difficulty === Difficulty.Hard) GameState.maxSanity += 5;
+                GameState.sanityLevel = GameState.maxSanity; // Apply max sanity increase
+                break;
+            case 'skeptic':
+                if (GameState.difficulty === Difficulty.Easy) GameState.awarenessLevel += 15;
+                else if (GameState.difficulty === Difficulty.Normal) GameState.awarenessLevel += 10;
+                break;
+            case 'cultist':
+                if (GameState.difficulty === Difficulty.Hard) GameState.sanityLevel -= 10;
+                break;
+        }
+
+        // Add starting items based on backstory and difficulty
+        switch (GameState.playerBackstory) {
+            case 'hacker':
+                if (GameState.difficulty === Difficulty.Easy) GameState.inventory.push(itemData['hacked data disk']);
+                else if (GameState.difficulty === Difficulty.Normal) GameState.inventory.push(itemData['data disk']);
+                break;
+            case 'survivor':
+                if (GameState.difficulty !== Difficulty.Hard) GameState.inventory.push(itemData['flashlight']);
+                break;
+            case 'corporate spy':
+                if (GameState.difficulty !== Difficulty.Hard) GameState.inventory.push(itemData['decryption device']);
+                break;
+            case 'medic':
+                if (GameState.difficulty === Difficulty.Easy) GameState.inventory.push(itemData['stimpack'], itemData['stimpack']);
+                else if (GameState.difficulty === Difficulty.Normal) GameState.inventory.push(itemData['stimpack']);
+                break;
+            case 'cultist':
+                GameState.inventory.push(itemData['effigy']); // Assuming 'effigy' is defined in itemData
+                break;
+            case 'janitor':
+                if (GameState.difficulty !== Difficulty.Hard) GameState.inventory.push(itemData['master keycard']); // Assuming 'master keycard' is defined in itemData
+                break;
+        }
 
         UI.gameOutput.innerHTML = ''; 
         buildDialogueTree(GameState.chatbotTone);
@@ -2360,7 +2441,7 @@
             case 'technician': return t(`ability_technician_${difficulty.toLowerCase()}`);
             case 'survivor': return difficulty !== Difficulty.Hard ? t('ability_survivor_with_item') : t('ability_survivor');
             case 'skeptic': return difficulty === Difficulty.Easy ? t('ability_skeptic_easy') : t('ability_skeptic_normal');
-            case 'corporate_spy': return difficulty !== Difficulty.Hard ? t('ability_spy_with_item') : t('ability_spy');
+            case 'corporate spy': return difficulty !== Difficulty.Hard ? t('ability_spy_with_item') : t('ability_spy');
             case 'medic': return t(`ability_medic_${difficulty.toLowerCase()}`);
             case 'cultist': return difficulty === Difficulty.Hard ? t('ability_cultist_hard') : t('ability_cultist');
             case 'janitor': return difficulty !== Difficulty.Hard ? t('ability_janitor') : t('ability_janitor_hard');
@@ -2808,6 +2889,9 @@
     // --- EVENT LISTENERS & INITIALIZATION ---
     window.addEventListener('beforeunload', saveStateToSession);
     window.addEventListener('DOMContentLoaded', () => {
+        // Load player choices first to pre-populate the setup screen
+        loadPlayerChoices();
+
         UI.playerInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') { 
                 const input = UI.playerInput.value.trim(); 
@@ -2871,11 +2955,10 @@
         setupButtonClick(UI.mapToggleBtn, toggleMapFullscreen);
         setupButtonClick(UI.mapLayersBtn, () => { showGuidance("Map layer functionality is not yet implemented."); });
         
-        setupButtonClick(UI.langEnBtn, setLanguage, 'en');
-        setupButtonClick(UI.langSvBtn, setLanguage, 'sv');
-        
         const setupLangEnBtn = UI.setupLangButtons.children[0];
         const setupLangSvBtn = UI.setupLangButtons.children[1];
+        setupButtonClick(UI.langEnBtn, setLanguage, 'en');
+        setupButtonClick(UI.langSvBtn, setLanguage, 'sv');
         setupButtonClick(setupLangEnBtn, setLanguage, 'en');
         setupButtonClick(setupLangSvBtn, setLanguage, 'sv');
 
@@ -2903,7 +2986,8 @@
             if (screenStateData) {
                 try {
                     const startState = JSON.parse(screenStateData);
-                    setLanguage(startState.language || 'en'); 
+                    // Language is already set by loadPlayerChoices, no need to re-set here
+                    // setLanguage(startState.language || 'en'); 
 
                     if (startState.isPlayerSetupVisible) {
                         UI.startScreen.classList.add('hidden');
@@ -2928,7 +3012,8 @@
 
         if (!restored) {
             resetGameState();
-            setLanguage('en');
+            // Language is already set by loadPlayerChoices, no need to re-set here
+            // setLanguage('en'); 
             setTimeout(() => {
                 const playerLayout = roomLayout[GameState.currentRoom];
                 if(playerLayout && UI.mapCanvas.offsetWidth > 0 && UI.mapCanvas.offsetHeight > 0) {
