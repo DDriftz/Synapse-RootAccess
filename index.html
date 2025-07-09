@@ -132,10 +132,10 @@
         @keyframes glitch-anim {
           0% { transform: translate(0); clip-path: inset(45% 0 50% 0); } 5% { transform: translate(2px, -3px); clip-path: inset(25% 0 35% 0); } 10% { transform: translate(-2px, 3px); clip-path: inset(60% 0 10% 0); } 15% { transform: translate(0); clip-path: inset(90% 0 5% 0); } 20% { clip-path: inset(40% 0 45% 0); } 25% { transform: translate(3px, 2px); clip-path: inset(20% 0 70% 0); } 30% { transform: translate(-3px, -2px); clip-path: inset(85% 0 5% 0); } 35% { clip-path: inset(15% 0 80% 0); } 40% { transform: translate(0); clip-path: inset(55% 0 25% 0); } 45% { clip-path: inset(30% 0 55% 0); } 50% { transform: translate(2px, 3px); clip-path: inset(70% 0 5% 0); } 55% { transform: translate(-2px, -3px); clip-path: inset(10% 0 85% 0); } 60% { clip-path: inset(75% 0 15% 0); } 65% { transform: translate(0); clip-path: inset(5% 0 90% 0); } 70% { clip-path: inset(65% 0 20% 0); } 75% { transform: translate(3px, -2px); clip-path: inset(45% 0 50% 0); } 80% { transform: translate(-3px, 2px); clip-path: inset(25% 0 65% 0); } 85% { clip-path: inset(95% 0 2% 0); } 90% { transform: translate(0); clip-path: inset(30% 0 60% 0); } 95% { clip-path: inset(5% 0 75% 0); } 100% { transform: translate(2px, 2px); clip-path: inset(80% 0 10% 0); }
         }
-        button {
+        .button {
             background-color: var(--main-color-faded); border: 1px solid var(--main-color-border); color: #fff; padding: 0.5rem 1rem; border-radius: 0.375rem; transition: all 0.2s; cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent; text-shadow: 0 0 3px var(--main-color-shadow);
         }
-        button:hover, .button:active { background-color: rgba(0,255,65,0.3); box-shadow: 0 0 10px rgba(0,255,65,0.5); }
+        .button:hover, .button:active { background-color: rgba(0,255,65,0.3); box-shadow: 0 0 10px rgba(0,255,65,0.5); }
         .button:active { transform: translateY(1px) scale(0.98); }
         .btn-glow {
             font-family: 'VT323', monospace;
@@ -657,112 +657,222 @@
     };
     
     // --- ENDINGS & ACHIEVEMENTS DATA ---
-    // 80 Achievements: 40 endings, 15 challenge, 15 secret, 10 general/early-game
-
-    // --- Endings (40, one per ending) ---
-    const endings = {
-        // 10 Good Backstory-Specific Endings
-        'good_backstory_investigator': { title_key: 'ending_title_good_backstory_investigator', desc_key: 'ending_desc_good_backstory_investigator', check: () => GameState.playerBackstory === 'investigator' && GameState.flags.goodBackstoryInvestigator },
-        'good_backstory_hacker': { title_key: 'ending_title_good_backstory_hacker', desc_key: 'ending_desc_good_backstory_hacker', check: () => GameState.playerBackstory === 'hacker' && GameState.flags.goodBackStoryHacker },
-        'good_backstory_psychologist': { title_key: 'ending_title_good_backstory_psychologist', desc_key: 'ending_desc_good_backstory_psychologist', check: () => GameState.playerBackstory === 'psychologist' && GameState.flags.goodBackStoryPsychologist },
-        'good_backstory_technician': { title_key: 'ending_title_good_backstory_technician', desc_key: 'ending_desc_good_backstory_technician', check: () => GameState.playerBackstory === 'technician' && GameState.flags.goodBackStoryTechnician },
-        'good_backstory_survivor': { title_key: 'ending_title_good_backstory_survivor', desc_key: 'ending_desc_good_backstory_survivor', check: () => GameState.playerBackstory === 'survivor' && GameState.flags.goodBackStorySurvivor },
-        'good_backstory_skeptic': { title_key: 'ending_title_good_backstory_skeptic', desc_key: 'ending_desc_good_backstory_skeptic', check: () => GameState.playerBackstory === 'skeptic' && GameState.flags.goodBackStorySkeptic },
-        'good_backstory_corporate_spy': { title_key: 'ending_title_good_backstory_corporate_spy', desc_key: 'ending_desc_good_backstory_corporate_spy', check: () => GameState.playerBackstory === 'corporate spy' && GameState.flags.goodBackStoryCorporateSpy },
-        'good_backstory_medic': { title_key: 'ending_title_good_backstory_medic', desc_key: 'ending_desc_good_backstory_medic', check: () => GameState.playerBackstory === 'medic' && GameState.flags.goodBackStoryMedic },
-        'good_backstory_cultist': { title_key: 'ending_title_good_backstory_cultist', desc_key: 'ending_desc_good_backstory_cultist', check: () => GameState.playerBackstory === 'cultist' && GameState.flags.goodBackStoryCultist },
-        'good_backstory_janitor': { title_key: 'ending_title_good_backstory_janitor', desc_key: 'ending_desc_good_backstory_janitor', check: () => GameState.playerBackstory === 'janitor' && GameState.flags.goodBackStoryJanitor },
-
-        // 10 Generic Good Endings
-        'good_generic_1': { title_key: 'ending_title_good_generic_1', desc_key: 'ending_desc_good_generic_1', check: () => GameState.sanityLevel > 80 && GameState.awarenessLevel < 20 && GameState.flags.goodGeneric1 },
-        'good_generic_2': { title_key: 'ending_title_good_generic_2', desc_key: 'ending_desc_good_generic_2', check: () => GameState.sanityLevel > 75 && GameState.turnCount < 50 && GameState.flags.goodGeneric2 },
-        'good_generic_3': { title_key: 'ending_title_good_generic_3', desc_key: 'ending_desc_good_generic_3', check: () => GameState.flags.goodGeneric3 },
-        'good_generic_4': { title_key: 'ending_title_good_generic_4', desc_key: 'ending_desc_good_generic_4', check: () => GameState.flags.goodGeneric4 },
-        'good_generic_5': { title_key: 'ending_title_good_generic_5', desc_key: 'ending_desc_good_generic_5', check: () => GameState.flags.goodGeneric5 },
-        'good_generic_6': { title_key: 'ending_title_good_generic_6', desc_key: 'ending_desc_good_generic_6', check: () => GameState.flags.goodGeneric6 },
-        'good_generic_7': { title_key: 'ending_title_good_generic_7', desc_key: 'ending_desc_good_generic_7', check: () => GameState.flags.goodGeneric7 },
-        'good_generic_8': { title_key: 'ending_title_good_generic_8', desc_key: 'ending_desc_good_generic_8', check: () => GameState.flags.goodGeneric8 },
-        'good_generic_9': { title_key: 'ending_title_good_generic_9', desc_key: 'ending_desc_good_generic_9', check: () => GameState.flags.goodGeneric9 },
-        'good_generic_10': { title_key: 'ending_title_good_generic_10', desc_key: 'ending_desc_good_generic_10', check: () => GameState.flags.goodGeneric10 },
-
-        // 10 Bad Backstory-Specific Endings
-        'bad_backstory_investigator': { title_key: 'ending_title_bad_backstory_investigator', desc_key: 'ending_desc_bad_backstory_investigator', check: () => GameState.playerBackstory === 'investigator' && GameState.flags.badBackStoryInvestigator },
-        'bad_backstory_hacker': { title_key: 'ending_title_bad_backstory_hacker', desc_key: 'ending_desc_bad_backstory_hacker', check: () => GameState.playerBackstory === 'hacker' && GameState.flags.badBackStoryHacker },
-        'bad_backstory_psychologist': { title_key: 'ending_title_bad_backstory_psychologist', desc_key: 'ending_desc_bad_backstory_psychologist', check: () => GameState.playerBackstory === 'psychologist' && GameState.flags.badBackStoryPsychologist },
-        'bad_backstory_technician': { title_key: 'ending_title_bad_backstory_technician', desc_key: 'ending_desc_bad_backstory_technician', check: () => GameState.playerBackstory === 'technician' && GameState.flags.badBackStoryTechnician },
-        'bad_backstory_survivor': { title_key: 'ending_title_bad_backstory_survivor', desc_key: 'ending_desc_bad_backstory_survivor', check: () => GameState.playerBackstory === 'survivor' && GameState.flags.badBackStorySurvivor },
-        'bad_backstory_skeptic': { title_key: 'ending_title_bad_backstory_skeptic', desc_key: 'ending_desc_bad_backstory_skeptic', check: () => GameState.playerBackstory === 'skeptic' && GameState.flags.badBackStorySkeptic },
-        'bad_backstory_corporate_spy': { title_key: 'ending_title_bad_backstory_corporate_spy', desc_key: 'ending_desc_bad_backstory_corporate_spy', check: () => GameState.playerBackstory === 'corporate spy' && GameState.flags.badBackStoryCorporateSpy },
-        'bad_backstory_medic': { title_key: 'ending_title_bad_backstory_medic', desc_key: 'ending_desc_bad_backstory_medic', check: () => GameState.playerBackstory === 'medic' && GameState.flags.badBackStoryMedic },
-        'bad_backstory_cultist': { title_key: 'ending_title_bad_backstory_cultist', desc_key: 'ending_desc_bad_backstory_cultist', check: () => GameState.playerBackstory === 'cultist' && GameState.flags.badBackStoryCultist },
-        'bad_backstory_janitor': { title_key: 'ending_title_bad_backstory_janitor', desc_key: 'ending_desc_bad_backstory_janitor', check: () => GameState.playerBackstory === 'janitor' && GameState.flags.badBackStoryJanitor },
-
-        // 10 Generic Bad Endings
-        'bad_generic_1': { title_key: 'ending_title_bad_generic_1', desc_key: 'ending_desc_bad_generic_1', check: () => GameState.sanityLevel < 30 && GameState.awarenessLevel > 70 && GameState.flags.badGeneric1 },
-        'bad_generic_2': { title_key: 'ending_title_bad_generic_2', desc_key: 'ending_desc_bad_generic_2', check: () => GameState.flags.badGeneric2 },
-        'bad_generic_3': { title_key: 'ending_title_bad_generic_3', desc_key: 'ending_desc_bad_generic_3', check: () => GameState.flags.badGeneric3 },
-        'bad_generic_4': { title_key: 'ending_title_bad_generic_4', desc_key: 'ending_desc_bad_generic_4', check: () => GameState.flags.badGeneric4 },
-        'bad_generic_5': { title_key: 'ending_title_bad_generic_5', desc_key: 'ending_desc_bad_generic_5', check: () => GameState.flags.badGeneric5 },
-        'bad_generic_6': { title_key: 'ending_title_bad_generic_6', desc_key: 'ending_desc_bad_generic_6', check: () => GameState.flags.badGeneric6 },
-        'bad_generic_7': { title_key: 'ending_title_bad_generic_7', desc_key: 'ending_desc_bad_generic_7', check: () => GameState.flags.badGeneric7 },
-        'bad_generic_8': { title_key: 'ending_title_bad_generic_8', desc_key: 'ending_desc_bad_generic_8', check: () => GameState.flags.badGeneric8 },
-        'bad_generic_9': { title_key: 'ending_title_bad_generic_9', desc_key: 'ending_desc_bad_generic_9', check: () => GameState.flags.badGeneric9 },
-        'bad_generic_10': { title_key: 'ending_title_bad_generic_10', desc_key: 'ending_desc_bad_generic_10', check: () => GameState.flags.badGeneric10 }
-    };
-
-    // --- ACHIEVEMENTS (80 total) ---
     const achievements = {
-        // --- General/Early-game (10) ---
         'first_step': { title_key: 'ach_first_step_title', req_key: 'ach_first_step_req', check: () => GameState.turnCount > 0 },
         'explorer': { title_key: 'ach_explorer_title', req_key: 'ach_explorer_req', check: () => GameState.visitedRooms.size >= 5 },
         'pack_rat': { title_key: 'ach_pack_rat_title', req_key: 'ach_pack_rat_req', check: () => GameState.inventory.reduce((sum, item) => sum + (item?.weight || 1), 0) >= MAX_INVENTORY_WEIGHT },
         'bookworm': { title_key: 'ach_bookworm_title', req_key: 'ach_bookworm_req', check: () => GameState.flags.readAllLogs },
-        'hacker_man': { title_key: 'ach_hacker_man_title', req_key: 'ach_hacker_man_req', check: () => GameState.playerBackstory === 'hacker' && GameState.flags.hackedTerminal },
-        'rested': { title_key: 'ach_rested_title', req_key: 'ach_rested_req', check: () => GameState.lastRestTurn > 0 },
-        'first_objective': { title_key: 'ach_first_objective_title', req_key: 'ach_first_objective_req', check: () => GameState.objectives.length > 0 },
-        'first_journal': { title_key: 'ach_first_journal_title', req_key: 'ach_first_journal_req', check: () => GameState.journalEntries.length > 0 },
-        'first_combine': { title_key: 'ach_first_combine_title', req_key: 'ach_first_combine_req', check: () => GameState.flags.firstCombine },
-        'first_secret': { title_key: 'ach_first_secret_title', req_key: 'ach_first_secret_req', check: () => GameState.flags.foundSecret },
+        'hacker_man': { title_key: 'ach_hacker_man_title', req_key: 'ach_hacker_man_req', check: () => GameState.playerBackstory === 'hacker' && GameState.flags.hackedTerminal }
+    };
 
-        // --- Challenge (15) ---
-        'speedrunner': { title_key: 'ach_speedrunner_title', req_key: 'ach_speedrunner_req', check: () => GameState.turnCount > 0 && GameState.turnCount <= 30 && GameState.flags.anyEnding },
-        'no_damage': { title_key: 'ach_no_damage_title', req_key: 'ach_no_damage_req', check: () => GameState.sanityLevel === GameState.maxSanity && GameState.flags.anyEnding },
-        'hoarder': { title_key: 'ach_hoarder_title', req_key: 'ach_hoarder_req', check: () => GameState.inventory.length === MAX_INVENTORY_WEIGHT },
-        'pacifist': { title_key: 'ach_pacifist_title', req_key: 'ach_pacifist_req', check: () => GameState.flags.pacifistEnding },
-        'true_survivor': { title_key: 'ach_true_survivor_title', req_key: 'ach_true_survivor_req', check: () => GameState.playerBackstory === 'survivor' && GameState.flags.anyEnding },
-        'all_logs': { title_key: 'ach_all_logs_title', req_key: 'ach_all_logs_req', check: () => GameState.flags.readAllLogs },
-        'all_rooms': { title_key: 'ach_all_rooms_title', req_key: 'ach_all_rooms_req', check: () => GameState.visitedRooms.size === Object.keys(rooms).length },
-        'no_items': { title_key: 'ach_no_items_title', req_key: 'ach_no_items_req', check: () => GameState.inventory.length === 0 && GameState.flags.anyEnding },
-        'max_awareness': { title_key: 'ach_max_awareness_title', req_key: 'ach_max_awareness_req', check: () => GameState.awarenessLevel >= 100 },
-        'min_sanity': { title_key: 'ach_min_sanity_title', req_key: 'ach_min_sanity_req', check: () => GameState.sanityLevel <= 0 },
-        'no_rest': { title_key: 'ach_no_rest_title', req_key: 'ach_no_rest_req', check: () => GameState.lastRestTurn === -10 && GameState.flags.anyEnding },
-        'all_objectives': { title_key: 'ach_all_objectives_title', req_key: 'ach_all_objectives_req', check: () => GameState.objectives.every(o => o.completed) && GameState.objectives.length > 0 },
-        'all_backstories': { title_key: 'ach_all_backstories_title', req_key: 'ach_all_backstories_req', check: () => GameState.flags.allBackstories },
-        'all_endings': { title_key: 'ach_all_endings_title', req_key: 'ach_all_endings_req', check: () => GameState.flags.allEndings },
-        'challenge_master': { title_key: 'ach_challenge_master_title', req_key: 'ach_challenge_master_req', check: () => GameState.flags.challengeMaster },
+    const endings = {
+        // 10 Good Backstory-Specific Endings
+        'good_backstory_investigator': {
+             title_key: 'ending_title_good_backstory_investigator',
+             desc_key: 'ending_desc_good_backstory_investigator',
+             check: () => GameState.playerBackstory === 'investigator' && GameState.flags.goodBackstoryInvestigator
+        },
+        'good_backstory_hacker': {
+             title_key: 'ending_title_good_backstory_hacker',
+             desc_key: 'ending_desc_good_backstory_hacker',
+             check: () => GameState.playerBackstory === 'hacker' && GameState.flags.goodBackstoryHacker
+        },
+        'good_backstory_psychologist': {
+             title_key: 'ending_title_good_backstory_psychologist',
+             desc_key: 'ending_desc_good_backstory_psychologist',
+             check: () => GameState.playerBackstory === 'psychologist' && GameState.flags.goodBackstoryPsychologist
+        },
+        'good_backstory_technician': {
+             title_key: 'ending_title_good_backstory_technician',
+             desc_key: 'ending_desc_good_backstory_technician',
+             check: () => GameState.playerBackstory === 'technician' && GameState.flags.goodBackstoryTechnician
+        },
+        'good_backstory_survivor': {
+             title_key: 'ending_title_good_backstory_survivor',
+             desc_key: 'ending_desc_good_backstory_survivor',
+             check: () => GameState.playerBackstory === 'survivor' && GameState.flags.goodBackstorySurvivor
+        },
+        'good_backstory_skeptic': {
+             title_key: 'ending_title_good_backstory_skeptic',
+             desc_key: 'ending_desc_good_backstory_skeptic',
+             check: () => GameState.playerBackstory === 'skeptic' && GameState.flags.goodBackstorySkeptic
+        },
+        'good_backstory_corporate_spy': {
+             title_key: 'ending_title_good_backstory_corporate_spy',
+             desc_key: 'ending_desc_good_backstory_corporate_spy',
+             check: () => GameState.playerBackstory === 'corporate spy' && GameState.flags.goodBackstoryCorporateSpy
+        },
+        'good_backstory_medic': {
+             title_key: 'ending_title_good_backstory_medic',
+             desc_key: 'ending_desc_good_backstory_medic',
+             check: () => GameState.playerBackstory === 'medic' && GameState.flags.goodBackstoryMedic
+        },
+        'good_backstory_cultist': {
+             title_key: 'ending_title_good_backstory_cultist',
+             desc_key: 'ending_desc_good_backstory_cultist',
+             check: () => GameState.playerBackstory === 'cultist' && GameState.flags.goodBackstoryCultist
+        },
+        'good_backstory_janitor': {
+             title_key: 'ending_title_good_backstory_janitor',
+             desc_key: 'ending_desc_good_backstory_janitor',
+             check: () => GameState.playerBackstory === 'janitor' && GameState.flags.goodBackstoryJanitor
+        },
 
-        // --- Secret (15) ---
-        'secret_1': { title_key: 'ach_secret_1_title', req_key: 'ach_secret_1_req', check: () => GameState.flags.secret1 },
-        'secret_2': { title_key: 'ach_secret_2_title', req_key: 'ach_secret_2_req', check: () => GameState.flags.secret2 },
-        'secret_3': { title_key: 'ach_secret_3_title', req_key: 'ach_secret_3_req', check: () => GameState.flags.secret3 },
-        'secret_4': { title_key: 'ach_secret_4_title', req_key: 'ach_secret_4_req', check: () => GameState.flags.secret4 },
-        'secret_5': { title_key: 'ach_secret_5_title', req_key: 'ach_secret_5_req', check: () => GameState.flags.secret5 },
-        'secret_6': { title_key: 'ach_secret_6_title', req_key: 'ach_secret_6_req', check: () => GameState.flags.secret6 },
-        'secret_7': { title_key: 'ach_secret_7_title', req_key: 'ach_secret_7_req', check: () => GameState.flags.secret7 },
-        'secret_8': { title_key: 'ach_secret_8_title', req_key: 'ach_secret_8_req', check: () => GameState.flags.secret8 },
-        'secret_9': { title_key: 'ach_secret_9_title', req_key: 'ach_secret_9_req', check: () => GameState.flags.secret9 },
-        'secret_10': { title_key: 'ach_secret_10_title', req_key: 'ach_secret_10_req', check: () => GameState.flags.secret10 },
-        'secret_11': { title_key: 'ach_secret_11_title', req_key: 'ach_secret_11_req', check: () => GameState.flags.secret11 },
-        'secret_12': { title_key: 'ach_secret_12_title', req_key: 'ach_secret_12_req', check: () => GameState.flags.secret12 },
-        'secret_13': { title_key: 'ach_secret_13_title', req_key: 'ach_secret_13_req', check: () => GameState.flags.secret13 },
-        'secret_14': { title_key: 'ach_secret_14_title', req_key: 'ach_secret_14_req', check: () => GameState.flags.secret14 },
-        'secret_15': { title_key: 'ach_secret_15_title', req_key: 'ach_secret_15_req', check: () => GameState.flags.secret15 },
+        // 10 Generic Good Endings
+        'good_generic_1': {
+             title_key: 'ending_title_good_generic_1',
+             desc_key: 'ending_desc_good_generic_1',
+             check: () => GameState.sanityLevel > 80 && GameState.awarenessLevel < 20 && GameState.flags.goodGeneric1
+        },
+        'good_generic_2': {
+             title_key: 'ending_title_good_generic_2',
+             desc_key: 'ending_desc_good_generic_2',
+             check: () => GameState.sanityLevel > 75 && GameState.turnCount < 50 && GameState.flags.goodGeneric2
+        },
+        'good_generic_3': {
+             title_key: 'ending_title_good_generic_3',
+             desc_key: 'ending_desc_good_generic_3',
+             check: () => GameState.flags.goodGeneric3
+        },
+        'good_generic_4': {
+             title_key: 'ending_title_good_generic_4',
+             desc_key: 'ending_desc_good_generic_4',
+             check: () => GameState.flags.goodGeneric4
+        },
+        'good_generic_5': {
+             title_key: 'ending_title_good_generic_5',
+             desc_key: 'ending_desc_good_generic_5',
+             check: () => GameState.flags.goodGeneric5
+        },
+        'good_generic_6': {
+             title_key: 'ending_title_good_generic_6',
+             desc_key: 'ending_desc_good_generic_6',
+             check: () => GameState.flags.goodGeneric6
+        },
+        'good_generic_7': {
+             title_key: 'ending_title_good_generic_7',
+             desc_key: 'ending_desc_good_generic_7',
+             check: () => GameState.flags.goodGeneric7
+        },
+        'good_generic_8': {
+             title_key: 'ending_title_good_generic_8',
+             desc_key: 'ending_desc_good_generic_8',
+             check: () => GameState.flags.goodGeneric8
+        },
+        'good_generic_9': {
+             title_key: 'ending_title_good_generic_9',
+             desc_key: 'ending_desc_good_generic_9',
+             check: () => GameState.flags.goodGeneric9
+        },
+        'good_generic_10': {
+             title_key: 'ending_title_good_generic_10',
+             desc_key: 'ending_desc_good_generic_10',
+             check: () => GameState.flags.goodGeneric10
+        },
 
-        // --- Endings (40, one per ending) ---
-        ...Object.fromEntries(Object.keys(endings).map((key, idx) => [
-            `ending_${key}`,
-            { title_key: `ending_title_${key}`, req_key: `ending_desc_${key}`, check: () => GameState.unlockedEndings && GameState.unlockedEndings[key] }
-        ]))
+        // 10 Bad Backstory-Specific Endings
+        'bad_backstory_investigator': {
+             title_key: 'ending_title_bad_backstory_investigator',
+             desc_key: 'ending_desc_bad_backstory_investigator',
+             check: () => GameState.playerBackstory === 'investigator' && GameState.flags.badBackstoryInvestigator
+        },
+        'bad_backstory_hacker': {
+             title_key: 'ending_title_bad_backstory_hacker',
+             desc_key: 'ending_desc_bad_backstory_hacker',
+             check: () => GameState.playerBackstory === 'hacker' && GameState.flags.badBackStoryHacker
+        },
+        'bad_backstory_psychologist': {
+             title_key: 'ending_title_bad_backstory_psychologist',
+             desc_key: 'ending_desc_bad_backstory_psychologist',
+             check: () => GameState.playerBackstory === 'psychologist' && GameState.flags.badBackstoryPsychologist
+        },
+        'bad_backstory_technician': {
+             title_key: 'ending_title_bad_backstory_technician',
+             desc_key: 'ending_desc_bad_backstory_technician',
+             check: () => GameState.playerBackstory === 'technician' && GameState.flags.badBackStoryTechnician
+        },
+        'bad_backstory_survivor': {
+             title_key: 'ending_title_bad_backstory_survivor',
+             desc_key: 'ending_desc_bad_backstory_survivor',
+             check: () => GameState.playerBackstory === 'survivor' && GameState.flags.badBackStorySurvivor
+        },
+        'bad_backstory_skeptic': {
+             title_key: 'ending_title_bad_backstory_skeptic',
+             desc_key: 'ending_desc_bad_backstory_skeptic',
+             check: () => GameState.playerBackstory === 'skeptic' && GameState.flags.badBackStorySkeptic
+        },
+        'bad_backstory_corporate_spy': {
+             title_key: 'ending_title_bad_backstory_corporate_spy',
+             desc_key: 'ending_desc_bad_backstory_corporate_spy',
+             check: () => GameState.playerBackstory === 'corporate spy' && GameState.flags.badBackStoryCorporateSpy
+        },
+        'bad_backstory_medic': {
+             title_key: 'ending_title_bad_backstory_medic',
+             desc_key: 'ending_desc_bad_backstory_medic',
+             check: () => GameState.playerBackstory === 'medic' && GameState.flags.badBackStoryMedic
+        },
+        'bad_backstory_cultist': {
+             title_key: 'ending_title_bad_backstory_cultist',
+             desc_key: 'ending_desc_bad_backstory_cultist',
+             check: () => GameState.playerBackstory === 'cultist' && GameState.flags.badBackStoryCultist
+        },
+        'bad_backstory_janitor': {
+             title_key: 'ending_title_bad_backstory_janitor',
+             desc_key: 'ending_desc_bad_backstory_janitor',
+             check: () => GameState.playerBackstory === 'janitor' && GameState.flags.badBackStoryJanitor
+        },
+
+        // 10 Generic Bad Endings
+        'bad_generic_1': {
+             title_key: 'ending_title_bad_generic_1',
+             desc_key: 'ending_desc_bad_generic_1',
+             check: () => GameState.sanityLevel < 30 && GameState.awarenessLevel > 70 && GameState.flags.badGeneric1
+        },
+        'bad_generic_2': {
+             title_key: 'ending_title_bad_generic_2',
+             desc_key: 'ending_desc_bad_generic_2',
+             check: () => GameState.flags.badGeneric2
+        },
+        'bad_generic_3': {
+             title_key: 'ending_title_bad_generic_3',
+             desc_key: 'ending_desc_bad_generic_3',
+             check: () => GameState.flags.badGeneric3
+        },
+        'bad_generic_4': {
+             title_key: 'ending_title_bad_generic_4',
+             desc_key: 'ending_desc_bad_generic_4',
+             check: () => GameState.flags.badGeneric4
+        },
+        'bad_generic_5': {
+             title_key: 'ending_title_bad_generic_5',
+             desc_key: 'ending_desc_bad_generic_5',
+             check: () => GameState.flags.badGeneric5
+        },
+        'bad_generic_6': {
+             title_key: 'ending_title_bad_generic_6',
+             desc_key: 'ending_desc_bad_generic_6',
+             check: () => GameState.flags.badGeneric6
+        },
+        'bad_generic_7': {
+             title_key: 'ending_title_bad_generic_7',
+             desc_key: 'ending_desc_bad_generic_7',
+             check: () => GameState.flags.badGeneric7
+        },
+        'bad_generic_8': {
+             title_key: 'ending_title_bad_generic_8',
+             desc_key: 'ending_desc_bad_generic_8',
+             check: () => GameState.flags.badGeneric8
+        },
+        'bad_generic_9': {
+             title_key: 'ending_title_bad_generic_9',
+             desc_key: 'ending_desc_bad_generic_9',
+             check: () => GameState.flags.badGeneric9
+        },
+        'bad_generic_10': {
+             title_key: 'ending_title_bad_generic_10',
+             desc_key: 'ending_desc_bad_generic_10',
+             check: () => GameState.flags.badGeneric10
+        }
     };
 
     // --- LANGUAGE FUNCTIONS ---
@@ -1829,7 +1939,7 @@
             ${endingsHtml}
             ${achievementsHtml}
         </div>
-        <button class="close-modal-btn button mt-6">${t('close_btn')}</button>`; 
+        <button class="close-modal-btn button mt-6">${t('close_btn')}</button>`;
         showModal(progressionText, true);
     }
 
