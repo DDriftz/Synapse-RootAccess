@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Open index.html in browser",
+			"command": "start index.html",
+			"group": "test"
+		}
+	]
+}
