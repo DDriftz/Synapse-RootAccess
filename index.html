@@ -657,12 +657,60 @@
     };
     
     // --- ENDINGS & ACHIEVEMENTS DATA ---
+    // 80 Achievements: 40 endings, 15 challenge, 15 secret, 10 general/early-game
     const achievements = {
+        // --- General/Early-game (10) ---
         'first_step': { title_key: 'ach_first_step_title', req_key: 'ach_first_step_req', check: () => GameState.turnCount > 0 },
         'explorer': { title_key: 'ach_explorer_title', req_key: 'ach_explorer_req', check: () => GameState.visitedRooms.size >= 5 },
         'pack_rat': { title_key: 'ach_pack_rat_title', req_key: 'ach_pack_rat_req', check: () => GameState.inventory.reduce((sum, item) => sum + (item?.weight || 1), 0) >= MAX_INVENTORY_WEIGHT },
         'bookworm': { title_key: 'ach_bookworm_title', req_key: 'ach_bookworm_req', check: () => GameState.flags.readAllLogs },
-        'hacker_man': { title_key: 'ach_hacker_man_title', req_key: 'ach_hacker_man_req', check: () => GameState.playerBackstory === 'hacker' && GameState.flags.hackedTerminal }
+        'hacker_man': { title_key: 'ach_hacker_man_title', req_key: 'ach_hacker_man_req', check: () => GameState.playerBackstory === 'hacker' && GameState.flags.hackedTerminal },
+        'rested': { title_key: 'ach_rested_title', req_key: 'ach_rested_req', check: () => GameState.lastRestTurn > 0 },
+        'first_objective': { title_key: 'ach_first_objective_title', req_key: 'ach_first_objective_req', check: () => GameState.objectives.length > 0 },
+        'first_journal': { title_key: 'ach_first_journal_title', req_key: 'ach_first_journal_req', check: () => GameState.journalEntries.length > 0 },
+        'first_combine': { title_key: 'ach_first_combine_title', req_key: 'ach_first_combine_req', check: () => GameState.flags.firstCombine },
+        'first_secret': { title_key: 'ach_first_secret_title', req_key: 'ach_first_secret_req', check: () => GameState.flags.foundSecret },
+
+        // --- Challenge (15) ---
+        'speedrunner': { title_key: 'ach_speedrunner_title', req_key: 'ach_speedrunner_req', check: () => GameState.turnCount > 0 && GameState.turnCount <= 30 && GameState.flags.anyEnding },
+        'no_damage': { title_key: 'ach_no_damage_title', req_key: 'ach_no_damage_req', check: () => GameState.sanityLevel === GameState.maxSanity && GameState.flags.anyEnding },
+        'hoarder': { title_key: 'ach_hoarder_title', req_key: 'ach_hoarder_req', check: () => GameState.inventory.length === MAX_INVENTORY_WEIGHT },
+        'pacifist': { title_key: 'ach_pacifist_title', req_key: 'ach_pacifist_req', check: () => GameState.flags.pacifistEnding },
+        'true_survivor': { title_key: 'ach_true_survivor_title', req_key: 'ach_true_survivor_req', check: () => GameState.playerBackstory === 'survivor' && GameState.flags.anyEnding },
+        'all_logs': { title_key: 'ach_all_logs_title', req_key: 'ach_all_logs_req', check: () => GameState.flags.readAllLogs },
+        'all_rooms': { title_key: 'ach_all_rooms_title', req_key: 'ach_all_rooms_req', check: () => GameState.visitedRooms.size === Object.keys(rooms).length },
+        'no_items': { title_key: 'ach_no_items_title', req_key: 'ach_no_items_req', check: () => GameState.inventory.length === 0 && GameState.flags.anyEnding },
+        'max_awareness': { title_key: 'ach_max_awareness_title', req_key: 'ach_max_awareness_req', check: () => GameState.awarenessLevel >= 100 },
+        'min_sanity': { title_key: 'ach_min_sanity_title', req_key: 'ach_min_sanity_req', check: () => GameState.sanityLevel <= 0 },
+        'no_rest': { title_key: 'ach_no_rest_title', req_key: 'ach_no_rest_req', check: () => GameState.lastRestTurn === -10 && GameState.flags.anyEnding },
+        'all_objectives': { title_key: 'ach_all_objectives_title', req_key: 'ach_all_objectives_req', check: () => GameState.objectives.every(o => o.completed) && GameState.objectives.length > 0 },
+        'all_backstories': { title_key: 'ach_all_backstories_title', req_key: 'ach_all_backstories_req', check: () => GameState.flags.allBackstories },
+        'all_endings': { title_key: 'ach_all_endings_title', req_key: 'ach_all_endings_req', check: () => GameState.flags.allEndings },
+        'challenge_master': { title_key: 'ach_challenge_master_title', req_key: 'ach_challenge_master_req', check: () => GameState.flags.challengeMaster },
+
+        // --- Secret (15) ---
+        'secret_1': { title_key: 'ach_secret_1_title', req_key: 'ach_secret_1_req', check: () => GameState.flags.secret1 },
+        'secret_2': { title_key: 'ach_secret_2_title', req_key: 'ach_secret_2_req', check: () => GameState.flags.secret2 },
+        'secret_3': { title_key: 'ach_secret_3_title', req_key: 'ach_secret_3_req', check: () => GameState.flags.secret3 },
+        'secret_4': { title_key: 'ach_secret_4_title', req_key: 'ach_secret_4_req', check: () => GameState.flags.secret4 },
+        'secret_5': { title_key: 'ach_secret_5_title', req_key: 'ach_secret_5_req', check: () => GameState.flags.secret5 },
+        'secret_6': { title_key: 'ach_secret_6_title', req_key: 'ach_secret_6_req', check: () => GameState.flags.secret6 },
+        'secret_7': { title_key: 'ach_secret_7_title', req_key: 'ach_secret_7_req', check: () => GameState.flags.secret7 },
+        'secret_8': { title_key: 'ach_secret_8_title', req_key: 'ach_secret_8_req', check: () => GameState.flags.secret8 },
+        'secret_9': { title_key: 'ach_secret_9_title', req_key: 'ach_secret_9_req', check: () => GameState.flags.secret9 },
+        'secret_10': { title_key: 'ach_secret_10_title', req_key: 'ach_secret_10_req', check: () => GameState.flags.secret10 },
+        'secret_11': { title_key: 'ach_secret_11_title', req_key: 'ach_secret_11_req', check: () => GameState.flags.secret11 },
+        'secret_12': { title_key: 'ach_secret_12_title', req_key: 'ach_secret_12_req', check: () => GameState.flags.secret12 },
+        'secret_13': { title_key: 'ach_secret_13_title', req_key: 'ach_secret_13_req', check: () => GameState.flags.secret13 },
+        'secret_14': { title_key: 'ach_secret_14_title', req_key: 'ach_secret_14_req', check: () => GameState.flags.secret14 },
+        'secret_15': { title_key: 'ach_secret_15_title', req_key: 'ach_secret_15_req', check: () => GameState.flags.secret15 },
+
+        // --- Endings (40, one per ending) ---
+        // These should match the keys in the endings object
+        ...Object.fromEntries(Object.keys(endings).map((key, idx) => [
+            `ending_${key}`,
+            { title_key: `ending_title_${key}`, req_key: `ending_desc_${key}`, check: () => GameState.unlockedEndings && GameState.unlockedEndings[key] }
+        ]))
     };
 
     const endings = {
