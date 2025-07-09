@@ -2382,17 +2382,28 @@
     function showAchievementsModal() {
         let content = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('achievements_title')}</h2>
                        <div class="modal-scroll flex-grow p-2 text-left">`;
-        
+
         const unlockedAchievementsObj = JSON.parse(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY) || '{}');
         const unlockedAchievements = Object.keys(unlockedAchievementsObj);
+        const totalAchievements = Object.keys(achievements).length;
+        const unlockedCount = unlockedAchievements.length;
+        const lockedAchievementsCount = totalAchievements - unlockedCount;
+
+        // Progress summary
+        content += `<div class="mb-4 text-sm text-cyan-300">Unlocked: <span class="font-bold">${unlockedCount}</span> / <span class="font-bold">${totalAchievements}</span> achievements (${lockedAchievementsCount} remaining)</div>`;
 
         content += `<h3 class="text-lg font-bold mb-2 text-white">${t('unlocked_achievements')}</h3>`;
         if (unlockedAchievements.length > 0) {
             content += `<ul class="list-disc pl-5 space-y-2">`;
             unlockedAchievements.forEach(id => {
                 const ach = achievements[id];
-                if (ach) { // Check if achievement exists to prevent errors
-                    content += `<li class="text-green-300"><strong>${t(ach.title_key)}:</strong> <span class="text-gray-300">${t(ach.req_key)}</span></li>`;
+                if (ach) {
+                    // Show how to achieve it if unlocked, with extra hints if available
+                    let hintHtml = '';
+                    if (ach.hint) {
+                        hintHtml = `<div class='text-xs text-yellow-300 mt-1'>Hint: ${t(ach.hint)}</div>`;
+                    }
+                    content += `<li class="text-green-300"><strong>${t(ach.title_key)}</strong>: <span class="text-gray-300">${t(ach.req_key)}</span><div class="text-xs text-cyan-200 mt-1">How to unlock: ${ach.how_to_unlock ? t(ach.how_to_unlock) : t(ach.req_key)}</div>${hintHtml}</li>`;
                 }
             });
             content += `</ul>`;
@@ -2402,14 +2413,14 @@
 
         content += `<h3 class="text-lg font-bold mt-4 mb-2 text-white">${t('locked_achievement')}</h3>`;
         content += `<ul class="list-disc pl-5 space-y-2">`;
-        let lockedCount = 0;
+        let lockedAchievementsListed = 0;
         for (const id in achievements) {
             if (!unlockedAchievements.includes(id)) {
-                lockedCount++;
+                lockedAchievementsListed++;
                 content += `<li class="text-gray-500"><strong>????:</strong> <span class="text-gray-600 italic">Undiscovered</span></li>`;
             }
         }
-         if (lockedCount === 0) {
+         if (lockedAchievementsListed === 0) {
             content += `<p class="text-green-400">All achievements unlocked!</p>`;
         }
         content += `</ul>`;
@@ -2428,9 +2439,30 @@
     function showEndingsModal() {
         let content = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('endings_title')}</h2>
                        <div class="modal-scroll flex-grow p-2 text-left">`;
-        
+
         const unlockedEndings = GameState.unlockedEndings || {};
         const unlockedKeys = Object.keys(unlockedEndings);
+        const totalEndings = Object.keys(endings).length;
+        const unlockedCount = unlockedKeys.length;
+        const lockedCount = totalEndings - unlockedCount;
+
+        // Count general and backstory-specific endings
+        let generalTotal = 0, generalUnlocked = 0, backstoryTotal = 0, backstoryUnlocked = 0;
+        for (const key in endings) {
+            if (endings[key].isBackstorySpecific) {
+                backstoryTotal++;
+                if (unlockedEndings[key]) backstoryUnlocked++;
+            } else {
+                generalTotal++;
+                if (unlockedEndings[key]) generalUnlocked++;
+            }
+        }
+
+        content += `<div class="mb-4 text-sm text-cyan-300">
+            General endings: <span class="font-bold">${generalUnlocked}</span> / <span class="font-bold">${generalTotal}</span>
+            &nbsp;|&nbsp; Backstory-specific endings: <span class="font-bold">${backstoryUnlocked}</span> / <span class="font-bold">${backstoryTotal}</span>
+            <br>Unlocked: <span class="font-bold">${unlockedCount}</span> / <span class="font-bold">${totalEndings}</span> endings (${lockedCount} remaining)
+        </div>`;
 
         content += `<h3 class="text-lg font-bold mb-2 text-white">${t('unlocked_endings')}</h3>`;
 
@@ -2439,10 +2471,12 @@
             unlockedKeys.forEach(key => {
                 const ending = endings[key];
                 if (ending) {
-                    content += `<li class="text-green-300">
-                        <strong>${t(ending.title_key)}:</strong>
-                        <p class="text-gray-300 text-sm">${t(ending.desc_key)}</p>
-                    </li>`;
+                    // Show how to achieve it if unlocked, with extra hints if available
+                    let hintHtml = '';
+                    if (ending.hint) {
+                        hintHtml = `<div class='text-xs text-yellow-300 mt-1'>Hint: ${t(ending.hint)}</div>`;
+                    }
+                    content += `<li class="text-green-300"><strong>${t(ending.title_key)}</strong>: <span class="text-gray-300">${t(ending.desc_key)}</span><div class="text-xs text-cyan-200 mt-1">How to unlock: ${ending.how_to_unlock ? t(ending.how_to_unlock) : t(ending.desc_key)}</div>${hintHtml}</li>`;
                 }
             });
             content += `</ul>`;
@@ -2450,12 +2484,10 @@
              content += `<p class="text-gray-400">${t('no_endings')}</p>`;
         }
 
-        const lockedCount = Object.keys(endings).length - unlockedKeys.length;
         if (lockedCount > 0) {
             content += `<h3 class="text-lg font-bold mt-4 mb-2 text-white">Locked Endings</h3>`;
             content += `<p class="text-gray-500">${lockedCount} ending(s) remain undiscovered.</p>`;
         }
-
 
         content += `</div><button class="close-modal-btn button mt-6">${t('back_btn')}</button>`;
         showModal(content, true);
