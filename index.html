@@ -1009,113 +1009,66 @@
     };
     
     // --- ENDINGS & ACHIEVEMENTS DATA ---
-    // 40 Ending Achievements (one per ending)
-    const achievements = {
-        // Ending achievements (auto-generated, one per ending)
-        ...Object.fromEntries(Object.keys(endings || {}).map(key => [
-            `ending_${key}`,
-            { title_key: `ach_ending_${key}_title`, req_key: `ach_ending_${key}_req`, check: () => GameState.unlockedEndings && GameState.unlockedEndings[key] }
-        ])),
-
-        // 10 General/Early-game achievements
-        'first_step': { title_key: 'ach_first_step_title', req_key: 'ach_first_step_req', check: () => GameState.turnCount > 0 },
-        'explorer': { title_key: 'ach_explorer_title', req_key: 'ach_explorer_req', check: () => GameState.visitedRooms.size >= 5 },
-        'pack_rat': { title_key: 'ach_pack_rat_title', req_key: 'ach_pack_rat_req', check: () => GameState.inventory.reduce((sum, item) => sum + (item?.weight || 1), 0) >= MAX_INVENTORY_WEIGHT },
-        'bookworm': { title_key: 'ach_bookworm_title', req_key: 'ach_bookworm_req', check: () => GameState.flags.readAllLogs },
-        'hacker_man': { title_key: 'ach_hacker_man_title', req_key: 'ach_hacker_man_req', check: () => GameState.playerBackstory === 'hacker' && GameState.flags.hackedTerminal },
-        'quick_learner': { title_key: 'ach_quick_learner_title', req_key: 'ach_quick_learner_req', check: () => GameState.turnCount <= 10 && GameState.visitedRooms.size >= 3 },
-        'first_blood': { title_key: 'ach_first_blood_title', req_key: 'ach_first_blood_req', check: () => GameState.flags.firstCombat },
-        'first_puzzle': { title_key: 'ach_first_puzzle_title', req_key: 'ach_first_puzzle_req', check: () => GameState.flags.firstPuzzle },
-        'first_secret': { title_key: 'ach_first_secret_title', req_key: 'ach_first_secret_req', check: () => GameState.flags.firstSecret },
-        'first_death': { title_key: 'ach_first_death_title', req_key: 'ach_first_death_req', check: () => GameState.flags.firstDeath },
-        'first_save': { title_key: 'ach_first_save_title', req_key: 'ach_first_save_req', check: () => GameState.flags.firstSave },
-
-        // 15 Challenge achievements
-        'speedrunner': { title_key: 'ach_speedrunner_title', req_key: 'ach_speedrunner_req', check: () => GameState.turnCount < 30 && Object.keys(GameState.unlockedEndings || {}).length > 0 },
-        'ironman': { title_key: 'ach_ironman_title', req_key: 'ach_ironman_req', check: () => GameState.flags.noDeath && Object.keys(GameState.unlockedEndings || {}).length > 0 },
-        'minimalist': { title_key: 'ach_minimalist_title', req_key: 'ach_minimalist_req', check: () => GameState.inventory.length <= 2 && Object.keys(GameState.unlockedEndings || {}).length > 0 },
-        'pacifist': { title_key: 'ach_pacifist_title', req_key: 'ach_pacifist_req', check: () => GameState.flags.noCombat && Object.keys(GameState.unlockedEndings || {}).length > 0 },
-        'hoarder': { title_key: 'ach_hoarder_title', req_key: 'ach_hoarder_req', check: () => GameState.inventory.length >= 15 },
-        'all_endings': { title_key: 'ach_all_endings_title', req_key: 'ach_all_endings_req', check: () => Object.keys(GameState.unlockedEndings || {}).length === Object.keys(endings || {}).length },
-        'all_achievements': { title_key: 'ach_all_achievements_title', req_key: 'ach_all_achievements_req', check: () => Object.keys(GameState.achievements || {}).length === 80 },
-        'no_items': { title_key: 'ach_no_items_title', req_key: 'ach_no_items_req', check: () => GameState.inventory.length === 0 && Object.keys(GameState.unlockedEndings || {}).length > 0 },
-        'max_stats': { title_key: 'ach_max_stats_title', req_key: 'ach_max_stats_req', check: () => GameState.sanityLevel === GameState.maxSanity && GameState.awarenessLevel === 100 },
-        'no_saves': { title_key: 'ach_no_saves_title', req_key: 'ach_no_saves_req', check: () => GameState.flags.noSave && Object.keys(GameState.unlockedEndings || {}).length > 0 },
-        'hardcore': { title_key: 'ach_hardcore_title', req_key: 'ach_hardcore_req', check: () => GameState.difficulty === Difficulty.Hard && Object.keys(GameState.unlockedEndings || {}).length > 0 },
-        'easy_mode': { title_key: 'ach_easy_mode_title', req_key: 'ach_easy_mode_req', check: () => GameState.difficulty === Difficulty.Easy && Object.keys(GameState.unlockedEndings || {}).length > 0 },
-        'all_challenges': { title_key: 'ach_all_challenges_title', req_key: 'ach_all_challenges_req', check: () => [
-            'speedrunner','ironman','minimalist','pacifist','hoarder','all_endings','all_achievements','no_items','max_stats','no_saves','hardcore','easy_mode'
-        ].every(id => GameState.achievements.includes(id)) },
-        'challenge_master': { title_key: 'ach_challenge_master_title', req_key: 'ach_challenge_master_req', check: () => GameState.achievements.filter(id => id.startsWith('ach_') && id.includes('challenge')).length >= 10 },
-
-        // 15 Secret achievements
-        'secret_1': { title_key: 'ach_secret_1_title', req_key: 'ach_secret_1_req', check: () => GameState.flags.secret1 },
-        'secret_2': { title_key: 'ach_secret_2_title', req_key: 'ach_secret_2_req', check: () => GameState.flags.secret2 },
-        'secret_3': { title_key: 'ach_secret_3_title', req_key: 'ach_secret_3_req', check: () => GameState.flags.secret3 },
-        'secret_4': { title_key: 'ach_secret_4_title', req_key: 'ach_secret_4_req', check: () => GameState.flags.secret4 },
-        'secret_5': { title_key: 'ach_secret_5_title', req_key: 'ach_secret_5_req', check: () => GameState.flags.secret5 },
-        'secret_6': { title_key: 'ach_secret_6_title', req_key: 'ach_secret_6_req', check: () => GameState.flags.secret6 },
-        'secret_7': { title_key: 'ach_secret_7_title', req_key: 'ach_secret_7_req', check: () => GameState.flags.secret7 },
-        'secret_8': { title_key: 'ach_secret_8_title', req_key: 'ach_secret_8_req', check: () => GameState.flags.secret8 },
-        'secret_9': { title_key: 'ach_secret_9_title', req_key: 'ach_secret_9_req', check: () => GameState.flags.secret9 },
-        'secret_10': { title_key: 'ach_secret_10_title', req_key: 'ach_secret_10_req', check: () => GameState.flags.secret10 },
-        'secret_11': { title_key: 'ach_secret_11_title', req_key: 'ach_secret_11_req', check: () => GameState.flags.secret11 },
-        'secret_12': { title_key: 'ach_secret_12_title', req_key: 'ach_secret_12_req', check: () => GameState.flags.secret12 },
-        'secret_13': { title_key: 'ach_secret_13_title', req_key: 'ach_secret_13_req', check: () => GameState.flags.secret13 },
-        'secret_14': { title_key: 'ach_secret_14_title', req_key: 'ach_secret_14_req', check: () => GameState.flags.secret14 },
-        'secret_15': { title_key: 'ach_secret_15_title', req_key: 'ach_secret_15_req', check: () => GameState.flags.secret15 }
-    };
-
     const endings = {
         // 10 Good Backstory-Specific Endings
         'good_backstory_investigator': {
              title_key: 'ending_title_good_backstory_investigator',
              desc_key: 'ending_desc_good_backstory_investigator',
+             isBackstorySpecific: true,
              check: () => GameState.playerBackstory === 'investigator' && GameState.flags.goodBackstoryInvestigator
         },
         'good_backstory_hacker': {
              title_key: 'ending_title_good_backstory_hacker',
              desc_key: 'ending_desc_good_backstory_hacker',
+             isBackstorySpecific: true,
              check: () => GameState.playerBackstory === 'hacker' && GameState.flags.goodBackstoryHacker
         },
         'good_backstory_psychologist': {
              title_key: 'ending_title_good_backstory_psychologist',
              desc_key: 'ending_desc_good_backstory_psychologist',
+             isBackstorySpecific: true,
              check: () => GameState.playerBackstory === 'psychologist' && GameState.flags.goodBackstoryPsychologist
         },
         'good_backstory_technician': {
              title_key: 'ending_title_good_backstory_technician',
              desc_key: 'ending_desc_good_backstory_technician',
+             isBackstorySpecific: true,
              check: () => GameState.playerBackstory === 'technician' && GameState.flags.goodBackstoryTechnician
         },
         'good_backstory_survivor': {
              title_key: 'ending_title_good_backstory_survivor',
              desc_key: 'ending_desc_good_backstory_survivor',
+             isBackstorySpecific: true,
              check: () => GameState.playerBackstory === 'survivor' && GameState.flags.goodBackstorySurvivor
         },
         'good_backstory_skeptic': {
              title_key: 'ending_title_good_backstory_skeptic',
              desc_key: 'ending_desc_good_backstory_skeptic',
+             isBackstorySpecific: true,
              check: () => GameState.playerBackstory === 'skeptic' && GameState.flags.goodBackstorySkeptic
         },
         'good_backstory_corporate_spy': {
              title_key: 'ending_title_good_backstory_corporate_spy',
              desc_key: 'ending_desc_good_backstory_corporate_spy',
+             isBackstorySpecific: true,
              check: () => GameState.playerBackstory === 'corporate spy' && GameState.flags.goodBackstoryCorporateSpy
         },
         'good_backstory_medic': {
              title_key: 'ending_title_good_backstory_medic',
              desc_key: 'ending_desc_good_backstory_medic',
+             isBackstorySpecific: true,
              check: () => GameState.playerBackstory === 'medic' && GameState.flags.goodBackstoryMedic
         },
         'good_backstory_cultist': {
              title_key: 'ending_title_good_backstory_cultist',
              desc_key: 'ending_desc_good_backstory_cultist',
+             isBackstorySpecific: true,
              check: () => GameState.playerBackstory === 'cultist' && GameState.flags.goodBackstoryCultist
         },
         'good_backstory_janitor': {
              title_key: 'ending_title_good_backstory_janitor',
              desc_key: 'ending_desc_good_backstory_janitor',
+             isBackstorySpecific: true,
              check: () => GameState.playerBackstory === 'janitor' && GameState.flags.goodBackstoryJanitor
         },
 
@@ -1175,52 +1128,62 @@
         'bad_backstory_investigator': {
              title_key: 'ending_title_bad_backstory_investigator',
              desc_key: 'ending_desc_bad_backstory_investigator',
+             isBackstorySpecific: true,
              check: () => GameState.playerBackstory === 'investigator' && GameState.flags.badBackstoryInvestigator
         },
         'bad_backstory_hacker': {
              title_key: 'ending_title_bad_backstory_hacker',
              desc_key: 'ending_desc_bad_backstory_hacker',
-             check: () => GameState.playerBackstory === 'hacker' && GameState.flags.badBackStoryHacker
+             isBackstorySpecific: true,
+             check: () => GameState.playerBackstory === 'hacker' && GameState.flags.badBackstoryHacker
         },
         'bad_backstory_psychologist': {
              title_key: 'ending_title_bad_backstory_psychologist',
              desc_key: 'ending_desc_bad_backstory_psychologist',
+             isBackstorySpecific: true,
              check: () => GameState.playerBackstory === 'psychologist' && GameState.flags.badBackstoryPsychologist
         },
         'bad_backstory_technician': {
              title_key: 'ending_title_bad_backstory_technician',
              desc_key: 'ending_desc_bad_backstory_technician',
-             check: () => GameState.playerBackstory === 'technician' && GameState.flags.badBackStoryTechnician
+             isBackstorySpecific: true,
+             check: () => GameState.playerBackstory === 'technician' && GameState.flags.badBackstoryTechnician
         },
         'bad_backstory_survivor': {
              title_key: 'ending_title_bad_backstory_survivor',
              desc_key: 'ending_desc_bad_backstory_survivor',
-             check: () => GameState.playerBackstory === 'survivor' && GameState.flags.badBackStorySurvivor
+             isBackstorySpecific: true,
+             check: () => GameState.playerBackstory === 'survivor' && GameState.flags.badBackstorySurvivor
         },
         'bad_backstory_skeptic': {
              title_key: 'ending_title_bad_backstory_skeptic',
              desc_key: 'ending_desc_bad_backstory_skeptic',
-             check: () => GameState.playerBackstory === 'skeptic' && GameState.flags.badBackStorySkeptic
+             isBackstorySpecific: true,
+             check: () => GameState.playerBackstory === 'skeptic' && GameState.flags.badBackstorySkeptic
         },
         'bad_backstory_corporate_spy': {
              title_key: 'ending_title_bad_backstory_corporate_spy',
              desc_key: 'ending_desc_bad_backstory_corporate_spy',
-             check: () => GameState.playerBackstory === 'corporate spy' && GameState.flags.badBackStoryCorporateSpy
+             isBackstorySpecific: true,
+             check: () => GameState.playerBackstory === 'corporate spy' && GameState.flags.badBackstoryCorporateSpy
         },
         'bad_backstory_medic': {
              title_key: 'ending_title_bad_backstory_medic',
              desc_key: 'ending_desc_bad_backstory_medic',
-             check: () => GameState.playerBackstory === 'medic' && GameState.flags.badBackStoryMedic
+             isBackstorySpecific: true,
+             check: () => GameState.playerBackstory === 'medic' && GameState.flags.badBackstoryMedic
         },
         'bad_backstory_cultist': {
              title_key: 'ending_title_bad_backstory_cultist',
              desc_key: 'ending_desc_bad_backstory_cultist',
-             check: () => GameState.playerBackstory === 'cultist' && GameState.flags.badBackStoryCultist
+             isBackstorySpecific: true,
+             check: () => GameState.playerBackstory === 'cultist' && GameState.flags.badBackstoryCultist
         },
         'bad_backstory_janitor': {
              title_key: 'ending_title_bad_backstory_janitor',
              desc_key: 'ending_desc_bad_backstory_janitor',
-             check: () => GameState.playerBackstory === 'janitor' && GameState.flags.badBackStoryJanitor
+             isBackstorySpecific: true,
+             check: () => GameState.playerBackstory === 'janitor' && GameState.flags.badBackstoryJanitor
         },
 
         // 10 Generic Bad Endings
@@ -1274,6 +1237,63 @@
              desc_key: 'ending_desc_bad_generic_10',
              check: () => GameState.flags.badGeneric10
         }
+    };
+
+    // 40 Ending Achievements (one per ending)
+    const achievements = {
+        // Ending achievements (auto-generated, one per ending)
+        ...Object.fromEntries(Object.keys(endings || {}).map(key => [
+            `ending_${key}`,
+            { title_key: `ach_ending_${key}_title`, req_key: `ach_ending_${key}_req`, check: () => GameState.unlockedEndings && GameState.unlockedEndings[key] }
+        ])),
+
+        // 10 General/Early-game achievements
+        'first_step': { title_key: 'ach_first_step_title', req_key: 'ach_first_step_req', check: () => GameState.turnCount > 0 },
+        'explorer': { title_key: 'ach_explorer_title', req_key: 'ach_explorer_req', check: () => GameState.visitedRooms.size >= 5 },
+        'pack_rat': { title_key: 'ach_pack_rat_title', req_key: 'ach_pack_rat_req', check: () => GameState.inventory.reduce((sum, item) => sum + (item?.weight || 1), 0) >= MAX_INVENTORY_WEIGHT },
+        'bookworm': { title_key: 'ach_bookworm_title', req_key: 'ach_bookworm_req', check: () => GameState.flags.readAllLogs },
+        'hacker_man': { title_key: 'ach_hacker_man_title', req_key: 'ach_hacker_man_req', check: () => GameState.playerBackstory === 'hacker' && GameState.flags.hackedTerminal },
+        'quick_learner': { title_key: 'ach_quick_learner_title', req_key: 'ach_quick_learner_req', check: () => GameState.turnCount <= 10 && GameState.visitedRooms.size >= 3 },
+        'first_blood': { title_key: 'ach_first_blood_title', req_key: 'ach_first_blood_req', check: () => GameState.flags.firstCombat },
+        'first_puzzle': { title_key: 'ach_first_puzzle_title', req_key: 'ach_first_puzzle_req', check: () => GameState.flags.firstPuzzle },
+        'first_secret': { title_key: 'ach_first_secret_title', req_key: 'ach_first_secret_req', check: () => GameState.flags.firstSecret },
+        'first_death': { title_key: 'ach_first_death_title', req_key: 'ach_first_death_req', check: () => GameState.flags.firstDeath },
+        'first_save': { title_key: 'ach_first_save_title', req_key: 'ach_first_save_req', check: () => GameState.flags.firstSave },
+
+        // 15 Challenge achievements
+        'speedrunner': { title_key: 'ach_speedrunner_title', req_key: 'ach_speedrunner_req', check: () => GameState.turnCount < 30 && Object.keys(GameState.unlockedEndings || {}).length > 0 },
+        'ironman': { title_key: 'ach_ironman_title', req_key: 'ach_ironman_req', check: () => GameState.flags.noDeath && Object.keys(GameState.unlockedEndings || {}).length > 0 },
+        'minimalist': { title_key: 'ach_minimalist_title', req_key: 'ach_minimalist_req', check: () => GameState.inventory.length <= 2 && Object.keys(GameState.unlockedEndings || {}).length > 0 },
+        'pacifist': { title_key: 'ach_pacifist_title', req_key: 'ach_pacifist_req', check: () => GameState.flags.noCombat && Object.keys(GameState.unlockedEndings || {}).length > 0 },
+        'hoarder': { title_key: 'ach_hoarder_title', req_key: 'ach_hoarder_req', check: () => GameState.inventory.length >= 15 },
+        'all_endings': { title_key: 'ach_all_endings_title', req_key: 'ach_all_endings_req', check: () => Object.keys(GameState.unlockedEndings || {}).length === Object.keys(endings || {}).length },
+        'all_achievements': { title_key: 'ach_all_achievements_title', req_key: 'ach_all_achievements_req', check: () => Object.keys(GameState.achievements || {}).length === 80 },
+        'no_items': { title_key: 'ach_no_items_title', req_key: 'ach_no_items_req', check: () => GameState.inventory.length === 0 && Object.keys(GameState.unlockedEndings || {}).length > 0 },
+        'max_stats': { title_key: 'ach_max_stats_title', req_key: 'ach_max_stats_req', check: () => GameState.sanityLevel === GameState.maxSanity && GameState.awarenessLevel === 100 },
+        'no_saves': { title_key: 'ach_no_saves_title', req_key: 'ach_no_saves_req', check: () => GameState.flags.noSave && Object.keys(GameState.unlockedEndings || {}).length > 0 },
+        'hardcore': { title_key: 'ach_hardcore_title', req_key: 'ach_hardcore_req', check: () => GameState.difficulty === Difficulty.Hard && Object.keys(GameState.unlockedEndings || {}).length > 0 },
+        'easy_mode': { title_key: 'ach_easy_mode_title', req_key: 'ach_easy_mode_req', check: () => GameState.difficulty === Difficulty.Easy && Object.keys(GameState.unlockedEndings || {}).length > 0 },
+        'all_challenges': { title_key: 'ach_all_challenges_title', req_key: 'ach_all_challenges_req', check: () => [
+            'speedrunner','ironman','minimalist','pacifist','hoarder','all_endings','all_achievements','no_items','max_stats','no_saves','hardcore','easy_mode'
+        ].every(id => GameState.achievements.includes(id)) },
+        'challenge_master': { title_key: 'ach_challenge_master_title', req_key: 'ach_challenge_master_req', check: () => GameState.achievements.filter(id => id.startsWith('ach_') && id.includes('challenge')).length >= 10 },
+
+        // 15 Secret achievements
+        'secret_1': { title_key: 'ach_secret_1_title', req_key: 'ach_secret_1_req', check: () => GameState.flags.secret1 },
+        'secret_2': { title_key: 'ach_secret_2_title', req_key: 'ach_secret_2_req', check: () => GameState.flags.secret2 },
+        'secret_3': { title_key: 'ach_secret_3_title', req_key: 'ach_secret_3_req', check: () => GameState.flags.secret3 },
+        'secret_4': { title_key: 'ach_secret_4_title', req_key: 'ach_secret_4_req', check: () => GameState.flags.secret4 },
+        'secret_5': { title_key: 'ach_secret_5_title', req_key: 'ach_secret_5_req', check: () => GameState.flags.secret5 },
+        'secret_6': { title_key: 'ach_secret_6_title', req_key: 'ach_secret_6_req', check: () => GameState.flags.secret6 },
+        'secret_7': { title_key: 'ach_secret_7_title', req_key: 'ach_secret_7_req', check: () => GameState.flags.secret7 },
+        'secret_8': { title_key: 'ach_secret_8_title', req_key: 'ach_secret_8_req', check: () => GameState.flags.secret8 },
+        'secret_9': { title_key: 'ach_secret_9_title', req_key: 'ach_secret_9_req', check: () => GameState.flags.secret9 },
+        'secret_10': { title_key: 'ach_secret_10_title', req_key: 'ach_secret_10_req', check: () => GameState.flags.secret10 },
+        'secret_11': { title_key: 'ach_secret_11_title', req_key: 'ach_secret_11_req', check: () => GameState.flags.secret11 },
+        'secret_12': { title_key: 'ach_secret_12_title', req_key: 'ach_secret_12_req', check: () => GameState.flags.secret12 },
+        'secret_13': { title_key: 'ach_secret_13_title', req_key: 'ach_secret_13_req', check: () => GameState.flags.secret13 },
+        'secret_14': { title_key: 'ach_secret_14_title', req_key: 'ach_secret_14_req', check: () => GameState.flags.secret14 },
+        'secret_15': { title_key: 'ach_secret_15_title', req_key: 'ach_secret_15_req', check: () => GameState.flags.secret15 }
     };
 
     // --- LANGUAGE FUNCTIONS ---
@@ -1828,7 +1848,7 @@
         const itemInRoom = room.objects.find(obj => obj.toLowerCase() === itemName.toLowerCase());
         if (!itemInRoom) {
             typeWriter(UI.gameOutput, t('take_fail_exists', {item: itemName}), '#ff474c');
-            return;
+ return;
         }
         if (!takeableItems.has(itemInRoom)) {
             typeWriter(UI.gameOutput, t('take_fail_takeable', {item: itemName}), '#ff474c');
@@ -2399,11 +2419,7 @@
                 const ach = achievements[id];
                 if (ach) {
                     // Show how to achieve it if unlocked, with extra hints if available
-                    let hintHtml = '';
-                    if (ach.hint) {
-                        hintHtml = `<div class='text-xs text-yellow-300 mt-1'>Hint: ${t(ach.hint)}</div>`;
-                    }
-                    content += `<li class="text-green-300"><strong>${t(ach.title_key)}</strong>: <span class="text-gray-300">${t(ach.req_key)}</span><div class="text-xs text-cyan-200 mt-1">How to unlock: ${ach.how_to_unlock ? t(ach.how_to_unlock) : t(ach.req_key)}</div>${hintHtml}</li>`;
+                    content += `<li class="text-green-300"><strong>${t(ach.title_key)}</strong>: <span class="text-gray-300">${t(ach.req_key)}</span></li>`;
                 }
             });
             content += `</ul>`;
@@ -2472,11 +2488,7 @@
                 const ending = endings[key];
                 if (ending) {
                     // Show how to achieve it if unlocked, with extra hints if available
-                    let hintHtml = '';
-                    if (ending.hint) {
-                        hintHtml = `<div class='text-xs text-yellow-300 mt-1'>Hint: ${t(ending.hint)}</div>`;
-                    }
-                    content += `<li class=\"text-green-300\"><strong>${t(ending.title_key)}</strong>: <span class=\"text-gray-300\">${t(ending.desc_key)}</span><div class=\"text-xs text-cyan-200 mt-1\">How to unlock: ${ending.how_to_unlock ? t(ending.how_to_unlock) : t(ending.desc_key)}</div>${hintHtml}</li>`;
+                    content += `<li class="text-green-300"><strong>${t(ending.title_key)}</strong>: <span class="text-gray-300">${t(ending.desc_key)}</span></li>`;
                 }
             });
             content += `</ul>`;
@@ -2851,7 +2863,7 @@
 
         GameState.achievements.push(id);
         const ach = achievements[id];
-        playSound('achievement');
+        playSound('itemPickup');
         typeWriter(UI.gameOutput, `[${t('achievement_unlocked')}] ${t(ach.title_key)}`, '#FFD700');
 
         const unlockedAchievements = JSON.parse(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY) || '{}');
@@ -2995,6 +3007,11 @@
                 renderRoom();
                 updateUI();
                 renderDialogueOptions();
+                return true;
+                return true;
+                return true;
+                return true;
+                return true;
                 return true;
             }
         } catch (e) {
