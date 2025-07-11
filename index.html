@@ -91,31 +91,33 @@
             position: relative;
         }
         
-        /* Main green text layer */
         .title-slasher {
             font-family: 'Creepster', cursive;
-            color: #2d5a2d; /* Medium dark green base color */
+            color: var(--main-color);
             letter-spacing: 0.2em;
             position: relative;
             z-index: 3;
-            /* Strong text shadow for better visibility and readability */
-            text-shadow: 
-                0 0 8px #00ff41,
-                0 0 16px #39FF14,
-                0 0 24px #00ff41,
-                1px 1px 2px rgba(0, 0, 0, 0.8),
-                -1px -1px 2px rgba(0, 0, 0, 0.8);
-            /* Clean baseline appearance with better contrast */
-            filter: brightness(1.3) contrast(1.4);
-            overflow: visible;
-            /* Dark purple aura around the title border */
-            box-shadow: 
-                0 0 20px rgba(75, 0, 130, 0.9),
-                0 0 40px rgba(75, 0, 130, 0.7),
-                0 0 60px rgba(75, 0, 130, 0.5),
-                0 0 80px rgba(75, 0, 130, 0.3),
-                0 0 100px rgba(75, 0, 130, 0.1),
-                inset 0 0 10px rgba(75, 0, 130, 0.4);
+        }
+
+        /* Blood drip effect for title - similar to buttons */
+        .title-slasher::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            color: transparent;
+            z-index: 4;
+            filter: drop-shadow(0 0 3px #ff0000) drop-shadow(0 0 8px #d40000);
+            animation: title-drip-anim 8s infinite ease-out;
+            font-family: inherit;
+            font-size: inherit;
+            letter-spacing: inherit;
+            font-weight: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Light glitching effect inside letters - no movement, just color shifts */
@@ -140,39 +142,7 @@
             opacity: 0;
         }
 
-        /* Realistic blood drip animation covering parts of letters */
-        .title-slasher::after {
-            content: attr(data-text);
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            color: transparent;
-            z-index: 4;
-            background: linear-gradient(180deg, 
-                #660000 0%, 
-                #CC0000 15%, 
-                #990000 30%, 
-                #AA0000 45%, 
-                #880000 60%, 
-                transparent 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            animation: realistic-blood-drip 8s infinite ease-in-out;
-            opacity: 0;
-            filter: blur(0.3px);
-            mask: linear-gradient(180deg, 
-                transparent 0%, 
-                black 10%, 
-                black 30%, 
-                transparent 80%);
-            -webkit-mask: linear-gradient(180deg, 
-                transparent 0%, 
-                black 10%, 
-                black 30%, 
-                transparent 80%);
-        }
+
 
         /* Subtle inner glitch - only color changes, no movement */
         @keyframes subtle-inner-glitch {
@@ -203,57 +173,7 @@
             }
         }
 
-        /* Realistic blood drip animation similar to the video */
-        @keyframes realistic-blood-drip {
-            0%, 70%, 100% { 
-                opacity: 0;
-                transform: translateY(0px) scaleY(1);
-                mask-position: 0% 0%;
-                -webkit-mask-position: 0% 0%;
-            }
-            5% { 
-                opacity: 0.7;
-                transform: translateY(2px) scaleY(1.05);
-                mask-position: 0% 5%;
-                -webkit-mask-position: 0% 5%;
-            }
-            15% { 
-                opacity: 0.9;
-                transform: translateY(8px) scaleY(1.2);
-                mask-position: 0% 15%;
-                -webkit-mask-position: 0% 15%;
-            }
-            25% { 
-                opacity: 1;
-                transform: translateY(15px) scaleY(1.4);
-                mask-position: 0% 25%;
-                -webkit-mask-position: 0% 25%;
-            }
-            35% { 
-                opacity: 0.95;
-                transform: translateY(25px) scaleY(1.7);
-                mask-position: 0% 35%;
-                -webkit-mask-position: 0% 35%;
-            }
-            45% { 
-                opacity: 0.8;
-                transform: translateY(40px) scaleY(2.2);
-                mask-position: 0% 50%;
-                -webkit-mask-position: 0% 50%;
-            }
-            55% { 
-                opacity: 0.6;
-                transform: translateY(60px) scaleY(3);
-                mask-position: 0% 70%;
-                -webkit-mask-position: 0% 70%;
-            }
-            65% { 
-                opacity: 0.3;
-                transform: translateY(90px) scaleY(4);
-                mask-position: 0% 90%;
-                -webkit-mask-position: 0% 90%;
-            }
-        }
+
 
         /* Enhanced visibility and readability */
         .title-slasher:hover {
@@ -272,23 +192,9 @@
             animation-delay: 1s; /* Slight delay for subtitle */
         }
         
-        #game-subtitle::before {
-            animation-delay: 3s; /* Delayed inner glitch effect */
-            animation-duration: 2.5s; /* Slightly faster for subtitle */
-        }
-        
+        /* Delay the blood drip effect for subtitle */
         #game-subtitle::after {
-            animation-delay: 4s; /* Delayed blood drip effect */
-            animation-duration: 9s; /* Longer duration for subtitle blood */
-        }
-        
-        /* Different blood droplet timing for subtitle */
-        #game-subtitle + * .title-wrapper::before {
-            animation-delay: 6s;
-        }
-        
-        #game-subtitle + * .title-wrapper::after {
-            animation-delay: 7.5s;
+            animation-delay: 3s; /* Staggered blood drip timing */
         }
         
         .btn-drip { position: relative; z-index: 1; }
@@ -307,6 +213,40 @@
             50% { text-shadow: 1px 1px 0px #600, 0 0 2px #d00, 0px 10px 5px #400, -2px 15px 6px #300; opacity: 1; }
             90% { text-shadow: 1px 1px 0px rgba(102,0,0,0.2), 0 0 2px rgba(221,0,0,0.5), 0px 18px 10px rgba(68,0,0,0.1), -2px 22px 12px rgba(51,0,0,0.05); opacity: 0.8; }
             100% { text-shadow: 1px 1px 0px transparent, 0 0 2px transparent, 0px 20px 15px transparent, -2px 25px 15px transparent; opacity: 0; }
+        }
+
+        /* Title blood drip animation - longer and more dramatic than buttons */
+        @keyframes title-drip-anim {
+            0%, 10% { 
+                text-shadow: 2px 2px 0px #600, 0 0 4px #d00, 0px 0px 0px #400; 
+                opacity: 1; 
+            }
+            30% { 
+                text-shadow: 2px 2px 0px #600, 0 0 4px #d00, 0px 8px 4px #400, -3px 12px 5px #300; 
+                opacity: 1; 
+            }
+            60% { 
+                text-shadow: 2px 2px 0px #600, 0 0 4px #d00, 0px 20px 8px #400, -3px 25px 10px #300, 2px 30px 6px #200; 
+                opacity: 0.9; 
+            }
+            85% { 
+                text-shadow: 
+                    1px 1px 0px rgba(102,0,0,0.3), 
+                    0 0 3px rgba(221,0,0,0.6), 
+                    0px 35px 15px rgba(68,0,0,0.2), 
+                    -3px 40px 18px rgba(51,0,0,0.1), 
+                    2px 45px 12px rgba(34,0,0,0.05); 
+                opacity: 0.7; 
+            }
+            100% { 
+                text-shadow: 
+                    1px 1px 0px transparent, 
+                    0 0 2px transparent, 
+                    0px 50px 25px transparent, 
+                    -3px 55px 30px transparent, 
+                    2px 60px 20px transparent; 
+                opacity: 0; 
+            }
         }
 
         .input-caret {
@@ -353,6 +293,7 @@
         .modal-scroll { overflow-y: auto; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
         #start-screen, #player-setup {
             background-image: url('Icon.png');
             background-size: cover;
@@ -4721,9 +4662,15 @@
             e.preventDefault();
             deferredPrompt = e;
             
-            // Don't show install prompt if already installed or dismissed this session
+            // Only show install prompt on small mobile devices (phones, not tablets/desktop)
+            const isMobile = /Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isSmallScreen = window.innerWidth <= 640 && window.innerHeight <= 896; // Typical phone dimensions
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            
+            // Don't show install prompt if already installed, dismissed this session, or not on small mobile
             if (!window.matchMedia('(display-mode: standalone)').matches && 
-                !sessionStorage.getItem('installPromptDismissed')) {
+                !sessionStorage.getItem('installPromptDismissed') &&
+                isMobile && isSmallScreen && isTouchDevice) {
                 installPrompt.classList.add('show');
             }
         });
