@@ -123,6 +123,12 @@
             100% { text-shadow: 1px 1px 0px transparent, 2px 2px 0px transparent, 3px 3px 0px transparent, 0 0 5px transparent, 0px 45px 30px transparent, -5px 55px 30px transparent, 5px 60px 30px transparent; opacity: 0; }
         }
         
+        /* Subtitle specific styling */
+        #game-subtitle::before {
+            animation-delay: 0.5s; /* Slightly delayed drip effect */
+            animation-duration: 4s; /* Slightly longer duration */
+        }
+        
         .btn-drip { position: relative; z-index: 1; }
         .btn-drip::before {
             content: attr(data-text);
@@ -334,6 +340,10 @@
                 font-size: clamp(2rem, 8vw, 4rem);
             }
             
+            #game-subtitle {
+                font-size: clamp(1rem, 4vw, 2rem);
+            }
+            
             #app-container {
                 padding: 0.5rem;
                 gap: 0.5rem;
@@ -473,6 +483,10 @@
             .title-slasher {
                 font-size: clamp(1.5rem, 6vw, 3rem);
             }
+            
+            #game-subtitle {
+                font-size: clamp(0.8rem, 3vw, 1.5rem);
+            }
         }
 
         /* High DPI displays */
@@ -545,6 +559,10 @@
                 animation: none;
             }
             
+            #game-subtitle::before {
+                animation: none;
+            }
+            
             .flicker {
                 animation: none;
             }
@@ -609,7 +627,8 @@
                 <!-- Main content flex-grow -->
                 <div class="flex-grow flex flex-col items-center justify-center text-center px-4 w-full">
                     <div class="title-wrapper -mt-16 sm:-mt-20">
-                        <h1 id="game-title" data-text="SYNAPSE" class="text-7xl md:text-9xl font-bold title-slasher mb-4">SYNAPSE</h1>
+                        <h1 id="game-title" data-text="SYNAPSE" class="text-7xl md:text-9xl font-bold title-slasher mb-2">SYNAPSE</h1>
+                        <h2 id="game-subtitle" data-text="ROOT ACCESS" class="text-2xl md:text-4xl font-bold title-slasher opacity-80 -mt-2">ROOT ACCESS</h2>
                     </div>
                     <div id="intro-text-container" class="max-w-4xl text-sm md:text-base text-white mt-8 sm:mt-12"></div>
                     <div id="start-options" class="mt-10 flex flex-wrap justify-center gap-4">
