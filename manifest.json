@@ -1,0 +1,23 @@
+{
+  "name": "SYNAPSE - AI Horror Game",
+  "short_name": "SYNAPSE",
+  "description": "An immersive AI chatbot horror game with psychological elements",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0d0d0d",
+  "theme_color": "#00ff41",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "Icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment"],
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "./",
+  "prefer_related_applications": false
+}
