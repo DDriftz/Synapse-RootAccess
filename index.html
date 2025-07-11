@@ -985,14 +985,7 @@
             'ending_title_good_generic_3': 'Victory', 'ending_desc_good_generic_3': 'Against all odds, you defeated the malevolent forces and restored peace.',
             'ending_title_good_generic_4': 'Freedom', 'ending_desc_good_generic_4': 'The trapped souls were finally freed from their digital prison.',
             'ending_title_good_generic_5': 'Salvation', 'ending_desc_good_generic_5': 'Your actions saved not just yourself, but everyone affected by the project.',
-            // Achievements
-            'ach_first_step_title': 'First Step', 'ach_first_step_req': 'Take your first action.',
-            'ach_explorer_title': 'Explorer', 'ach_explorer_req': 'Visit 5 different rooms.',
-            'ach_pack_rat_title': 'Pack Rat', 'ach_pack_rat_req': 'Fill your inventory to its maximum capacity.',
-            'ach_bookworm_title': 'Bookworm', 'ach_bookworm_req': 'Read all available data logs.',
-            'ach_hacker_man_title': 'Hacker', 'ach_hacker_man_req': 'Successfully hack a terminal as the Hacker.'
-            ,
-            // --- ACHIEVEMENTS (ENGLISH TRANSLATIONS, EXPANDED) ---
+            // --- ACHIEVEMENTS (ENGLISH TRANSLATIONS) ---
             // General/Early-game
             'ach_first_step_title': 'First Step',
             'ach_first_step_req': 'Take your first action.',
@@ -1908,7 +1901,27 @@
                 colorblindMode: false,
                 glitchEffect: true,
                 font: 'Space Mono',
-                theme: 'green'
+                theme: 'green',
+                // Accessibility settings
+                textSize: 'normal',
+                highContrast: false,
+                screenReader: false,
+                textToSpeech: false,
+                ttsVoice: 'default',
+                ttsSpeed: 1.0,
+                ttsPitch: 1.0,
+                dyslexiaFont: false,
+                letterSpacing: 'normal',
+                lineSpacing: 'normal',
+                readingRuler: false,
+                simplifiedLanguage: false,
+                keyboardNavigation: true,
+                voiceCommands: false,
+                onScreenCommands: false,
+                adjustableTimers: false,
+                audioDescriptions: false,
+                comprehensiveAudioCues: false,
+                focusIndicator: true
             };
         }
     }
@@ -2364,7 +2377,6 @@
                 typeWriter(UI.gameOutput, 'Question 1: ' + question.q, '#cccccc');
                 typeWriter(UI.gameOutput, 'Options: ' + question.options.join(', '), '#cccccc');
                 break;
-                break;
         }
     }
     
@@ -2676,7 +2688,7 @@
         }
         
         // Create clickable objects
-        const objectRegex = new RegExp('\\\\b(' + Object.keys(itemData).map(escapeRegExp).join('|') + ')\\\\b', 'gi');
+        const objectRegex = new RegExp('\\b(' + Object.keys(itemData).map(escapeRegExp).join('|') + ')\\b', 'gi');
         let finalHTML = processedText.replace(objectRegex, function(match) { 
             return '<span class="clickable-object" data-object-name="' + match + '">' + match + '</span>'; 
         });
@@ -3946,10 +3958,19 @@
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
         gameLoop();
         
+        console.log("Starting game initialization...");
         typeWriter(UI.gameOutput, t('initializing'), '#cccccc').then(() => { 
+            console.log("Initializing text complete, showing guidance...");
             showGuidance(t('initial_hint'));
-            displayChatbotResponse(GameState.dialogue.currentNode.message_key).then(() => { renderRoom(); updateUI(); renderDialogueOptions(); }); 
-        }); 
+            console.log("Displaying chatbot response...");
+            displayChatbotResponse(GameState.dialogue.currentNode.message_key).then(() => { 
+                console.log("Chatbot response complete, rendering room...");
+                renderRoom(); 
+                updateUI(); 
+                renderDialogueOptions(); 
+                console.log("Game initialization complete!");
+            }).catch(e => console.error("Error in displayChatbotResponse:", e)); 
+        }).catch(e => console.error("Error in typeWriter:", e)); 
     }
     
     function checkEndings() {
