@@ -198,13 +198,6 @@
         }
         
         .btn-drip { position: relative; z-index: 1; }
-        /* Enhanced blood drip CSS for all buttons without data-text attributes */
-        .btn-drip:not([data-text])::before {
-            content: attr(data-text);
-            /* If no data-text, use the button's text content instead */
-        }
-        
-        /* Alternative implementation for buttons without data-text - use JS to add it */
         .btn-drip::before {
             content: attr(data-text);
             position: absolute; left: 0; top: 0; width: 100%; height: 100%;
@@ -214,8 +207,6 @@
             font-family: inherit; font-size: inherit; letter-spacing: inherit;
             display: flex; align-items: center; justify-content: center; padding: inherit;
         }
-
-        /* For buttons that don't have data-text, we'll use JavaScript to add it */
 
         @keyframes button-drip-anim {
             0% { text-shadow: 1px 1px 0px #600, 0 0 2px #d00, 0px 0px 0px #400; opacity: 1; }
@@ -2481,7 +2472,8 @@
         itemData = {
                     'keycard': { name: 'keycard', weight: 1, type: ItemType.Key, hintType: 'take', description: { en: 'A standard issue keycard. Seems to grant access to secure areas.', sv: 'Ett standard-nyckelkort. Verkar ge tillgång till säkra områden.' } },
                     'power cell': { name: 'power cell', weight: 2, type: ItemType.Puzzle, hintType: 'take', description: { en: 'A heavy, glowing power cell. It hums with latent energy.', sv: 'En tung, glödande kraftcell. Den surrar av latent energi.' } },
-                    'stimpack': { name: 'stimpack', weight: 1, type: ItemType.Consumable, hintType: 'take', description: { en: 'A disposable syringe filled with a calming, neuro-stabilizing agent.', sv: 'En engångsspruta fylld med ett lugnande, neuro-stabiliserande medel.' } },                'data disk': { name: 'data disk', weight: 1, type: ItemType.Log, hintType: 'take', description: { en: 'A small data disk labeled "PROJECT LOGS". It appears to be encrypted.', sv: 'En liten datadisk märkt "PROJEKTLOGGAR". Den verkar vara krypterad.' } },
+                    'stimpack': { name: 'stimpack', weight: 1, type: ItemType.Consumable, hintType: 'take', description: { en: 'A disposable syringe filled with a calming, neuro-stabilizing agent.', sv: 'En engångsspruta fylld med ett lugnande, neuro-stabiliserande medel.' } },
+                    'data disk': { name: 'data disk', weight: 1, type: ItemType.Log, hintType: 'take', description: { en: 'A small data disk labeled "PROJECT LOGS". It appears to be encrypted.', sv: 'En liten datadisk märkt "PROJEKTLOGGAR". Den verkar vara krypterad.' } },
                 'flashlight': { name: 'flashlight', weight: 1, type: ItemType.Tool, hintType: 'take', description: { en: 'A sturdy, industrial flashlight. Its beam cuts through the darkness.', sv: 'En robust, industriell ficklampa. Dess ljus skär genom mörkret.' } },
                 'terminal': { name: 'terminal', weight: 99, type: ItemType.Puzzle, hintType: 'examine', description: { en: 'The monitor displays cascading green code. It seems to be monitoring the facility\'s status.', sv: 'Skärmen visar kaskader av grön kod. Den verkar övervaka anläggningens status.' } },
                 'core console': { name: 'core console', weight: 99, type: ItemType.Puzzle, hintType: 'examine', description: { en: 'The main console for the AI Core. A large socket is empty, labeled "Auxiliary Power".', sv: 'Huvudkonsolen för AI-kärnan. En stor sockel är tom, märkt "Hjälpkraft".' } },
