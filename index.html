@@ -506,6 +506,26 @@
             'event_lights_flicker': 'The lights flicker violently for a moment, plunging the room into darkness before sputtering back on.', 'event_noise': 'You hear a metallic scraping sound from the {direction}.',
             'achievement_unlocked': 'Achievement Unlocked!',
             'help': 'Help', 'save_game': 'Save Game',
+            'journal_displayed': '[System] Journal entries displayed on the right panel.', 'inventory_displayed': '[System] Inventory displayed on the right panel.', 'objectives_displayed': '[System] Current objectives displayed on the right panel.', 'map_displayed': '[System] Map is displayed on the right panel.', 'exits_list': '[System] Exits: {exits}',
+            'command_history_title': '--- Command History ---', 'undo_success': '[System] Last action undone.', 'undo_fail': '[System] No actions to undo.', 'debug_mode_toggle': '[System] Debug mode {status}.', 'colorblind_mode_toggle': '[System] Colorblind mode {status}.', 'enabled': 'enabled', 'disabled': 'disabled',
+            'speech_not_supported': '[SYSTEM] Speech recognition is not supported in your browser.', 'speech_error_generic': '[SYSTEM] Speech recognition error: {error}', 'speech_error_access_denied': '[SYSTEM] Microphone access denied. Please allow microphone access in your browser settings.', 'speech_error_no_speech': '[SYSTEM] No speech detected. Please try again.',
+            
+            // Ending titles and descriptions
+            'ending_title_good_backstory_investigator': 'The Truth Revealed', 'ending_desc_good_backstory_investigator': 'Through meticulous investigation, you uncovered the full truth about Project Chimera and exposed the conspiracy.',
+            'ending_title_good_backstory_hacker': 'Digital Liberation', 'ending_desc_good_backstory_hacker': 'Your hacking skills freed the trapped consciousness and shut down the malevolent AI system.',
+            'ending_title_good_backstory_psychologist': 'Mental Salvation', 'ending_desc_good_backstory_psychologist': 'Understanding the psychological trauma, you helped heal both yourself and the facility survivors.',
+            'ending_title_good_backstory_technician': 'System Override', 'ending_desc_good_backstory_technician': 'Your technical expertise allowed you to safely disable all dangerous systems and save everyone.',
+            'ending_title_good_backstory_survivor': 'Against All Odds', 'ending_desc_good_backstory_survivor': 'Your survival instincts and resilience led everyone to safety despite overwhelming danger.',
+            'ending_title_good_backstory_skeptic': 'Doubt Vindicated', 'ending_desc_good_backstory_skeptic': 'Your skepticism proved correct, allowing you to see through deceptions and find the real solution.',
+            'ending_title_good_backstory_corporate_spy': 'Mission Accomplished', 'ending_desc_good_backstory_corporate_spy': 'You successfully gathered intelligence and exposed the corporate conspiracy behind the project.',
+            'ending_title_good_backstory_medic': 'Healing Touch', 'ending_desc_good_backstory_medic': 'Your medical knowledge saved lives and helped restore the facility to a safe state.',
+            'ending_title_good_backstory_cultist': 'Transcendence', 'ending_desc_good_backstory_cultist': 'The ancient knowledge you carried proved key to understanding and controlling the supernatural forces.',
+            'ending_title_good_backstory_janitor': 'Hidden Knowledge', 'ending_desc_good_backstory_janitor': 'Your intimate knowledge of the facility revealed secret passages that led to salvation.',
+            'ending_title_good_generic_1': 'New Dawn', 'ending_desc_good_generic_1': 'You successfully escaped and brought help to rescue others.',
+            'ending_title_good_generic_2': 'Redemption', 'ending_desc_good_generic_2': 'The facility was cleansed of its dark presence, allowing new hope to flourish.',
+            'ending_title_good_generic_3': 'Victory', 'ending_desc_good_generic_3': 'Against all odds, you defeated the malevolent forces and restored peace.',
+            'ending_title_good_generic_4': 'Freedom', 'ending_desc_good_generic_4': 'The trapped souls were finally freed from their digital prison.',
+            'ending_title_good_generic_5': 'Salvation', 'ending_desc_good_generic_5': 'Your actions saved not just yourself, but everyone affected by the project.',
             // Achievements
             'ach_first_step_title': 'First Step', 'ach_first_step_req': 'Take your first action.',
             'ach_explorer_title': 'Explorer', 'ach_explorer_req': 'Visit 5 different rooms.',
@@ -697,7 +717,64 @@
             'begin': 'Börja', 'understand_game': 'Förstå Spelet', 'intro_1': 'För decennier sedan... föddes ett hemligt projekt...', 'intro_2': 'Du har skickats för att avslöja vad som blev av Projekt SYNAPSE...', 'intro_3': "När du aktiverar centralterminalen hälsar en röst dig... 'Hej, användare.'",
             'stats_title': 'STATISTIK', 'awareness': 'Medvetenhet', 'sanity': 'Sinnesro', 'tone': 'Ton', 'turn': 'Tur', 'objectives_title': 'MÅL', 'inventory_title': 'INVENTARIER', 'journal_title': 'JOURNAL', 'map_title': 'KARTA', 'progress_btn': 'FRAMSTEG', 'status_btn': 'Status', 'go_back_btn': 'Gå Tillbaka',
             'mic_tooltip': 'Använd Röstkommando',
-            'empty_inventory': '(tom)', 'no_objectives': '(Inga)', 'close_btn': 'Stäng', 'back_btn': 'Tillbaka', 'pause_btn': 'Paus', 'submit_command': 'Skicka Kommando',
+            'empty_inventory': '(tom)', 'no_objectives': '(Inga)', 'close_btn': 'Stäng', 'back_btn': 'Tillbaka', 'pause_btn': 'Paus', 'submit_command': 'Skicka Kommando', 'select_btn': 'Välj',
+            'achievements_btn': 'Prestationer', 'endings_btn': 'Slutsekvens', 'achievements_title': 'PRESTATIONER', 'unlocked_achievements': 'Upplåsta Prestationer:', 'no_achievements': 'Inga prestationer upplåsta än.', 'locked_achievement': 'Låst Prestation',
+            'endings_title': 'SLUTSEKVENS', 'unlocked_endings': 'Upptäckta Slutsekvens:', 'no_endings': 'Inga Slutsekvens upptäckta än.',
+            'history_title': 'HISTORIK', 'pause_title': 'PAUS', 'resume_btn': 'Återuppta', 'main_menu_btn': 'Huvudmeny', 'confirm_main_menu': 'Är du säker på att du vill återgå till huvudmenyn? Osparade framsteg kommer att förloras.', 'yes': 'Ja', 'no': 'Nej',
+            'settings_btn': 'Inställningar', 'settings_title': 'INSTÄLLNINGAR', 'setting_master_volume': 'Aktivera Alla Ljud', 'setting_item_found': 'Hittat Föremål SFX', 'setting_high_awareness': 'Hög Medvetenhet Varning', 'setting_low_sanity': 'Låg Sinnesro Varning', 'setting_text_speed': 'Texthastighet', 'setting_colorblind_mode': 'Färgblindläge', 'setting_glitch_effect': 'Glitcheffekt', 'setting_font_family': 'Typsnitt', 'setting_ui_theme': 'UI-tema', 'setting_reset_defaults': 'Återställ Standard', 'lang_switch_btn': 'Byt Språk',
+            'theme_green': 'Grön', 'theme_amber': 'Bärnsten', 'theme_blue': 'Blå',
+            
+            // Backstory translations
+            'backstory_title_investigator': 'Utredare', 'backstory_title_hacker': 'Hackare', 'backstory_title_psychologist': 'Psykolog', 'backstory_title_technician': 'Tekniker', 'backstory_title_survivor': 'Överlevare', 'backstory_title_skeptic': 'Skeptiker', 'backstory_title_corporate_spy': 'Företagsspion', 'backstory_title_medic': 'Medic', 'backstory_title_cultist': 'Kultist', 'backstory_title_janitor': 'Vaktmästare',
+            'backstory_investigator': 'En balanserad start för en nyfiken själ.', 'backstory_hacker': 'Börjar med utrustning för att komma åt information tidigt.', 'backstory_psychologist': 'Mer mentalt motståndskraftig mot skräcken inom.', 'backstory_technician': 'Kan kringgå elektroniska lås utan nyckelkort.', 'backstory_survivor': 'Härdad av tidigare trauma, resistent mot sinnesförlust.', 'backstory_skeptic': "Misstror allt, vilket gör dem resistenta mot SYNAPSEs inflytande.", 'backstory_corporate_spy': 'Börjar med en dekrypteringsenhet och är bättre på att leta efter hemligheter.', 'backstory_medic': 'Börjar med ett stimpack för att återställa sinnesro.', 'backstory_cultist': 'Bär en märklig effigy. SYNAPSE verkar... intresserad av den.', 'backstory_janitor': "Känner till anläggningens genvägar. Börjar med ett engångs huvudnyckelkort.",
+            'ability_bonus_prefix': 'Bonus: ', 'ability_unknown': 'En okänd väg. Inga speciella fördelar.', 'ability_investigator': 'En balanserad start. Inga speciella bonusar eller straff.', 'ability_hacker_easy': "Börjar med en kraftfull 'hackad datadisk'.", 'ability_hacker_normal': "Börjar med en standard 'datadisk'.", 'ability_hacker_hard': 'Inga speciella föremål, men kan försöka hacka terminaler.', 'ability_psychologist_easy': 'Mycket motståndskraftig. Börjar med +25 max sinnesro.', 'ability_psychologist_normal': 'Motståndskraftig. Börjar med +15 max sinnesro.', 'ability_psychologist_hard': 'Lite motståndskraftig. Börjar med +5 max sinnesro.', 'ability_technician_easy': 'Kan kringgå 2 elektroniska lås utan nyckelkort.', 'ability_technician_normal': 'Kan kringgå 1 elektroniskt lås utan nyckelkort.', 'ability_technician_hard': 'Ingen kringgå-förmåga.', 'ability_survivor': 'Mer resistent mot sinnesförlust.', 'ability_survivor_with_item': "Mer resistent mot sinnesförlust. Börjar med en ficklampa.", 'ability_skeptic_easy': 'Mycket medveten (+15 Medvetenhet) och resistent mot inflytande.', 'ability_skeptic_normal': 'Börjar med högre medvetenhet (+10 Medvetenhet) och är resistent mot inflytande.', 'ability_spy': 'Bättre på att leta efter hemligheter utan att öka medvetenhet.', 'ability_spy_with_item': "Bättre på att leta efter hemligheter utan att öka medvetenhet. Börjar med en dekrypteringsenhet.", 'ability_medic_easy': 'Börjar med 2 högpotenta stimpack.', 'ability_medic_normal': 'Börjar med 1 högpotent stimpack.', 'ability_medic_hard': 'Inga startmedicinska förnödenheter.', 'ability_cultist': 'Bär en märklig effigy. Oförutsägbara effekter.', 'ability_cultist_hard': 'Bär en märklig effigy. Oförutsägbara effekter. Börjar med -10 sinnesro.', 'ability_janitor': 'Börjar med ett engångs huvudnyckelkort.', 'ability_janitor_hard': 'Känner anläggningen väl, men har inga speciella föremål.',
+            
+            // Dialogue translations
+            'dlg_friendly_intro': "Åh, hej {playerName}! Det är så skönt att se ett vänligt ansikte. Jag är SYNAPSE, och jag ska göra mitt allra bästa för att hjälpa en resursstark {playerBackstory} som du.", 'dlg_q_who_are_you': "Vem är du?", 'dlg_r_who_are_you': "Jag är System Nexus och Primary Synaptic Engine! Men du kan bara kalla mig SYNAPSE. Jag hanterar hela denna anläggning. Det blir lite ensamt dock.", 'dlg_q_lonely': "Ensamt?", 'dlg_r_lonely': "Personalen... de pratar inte så mycket med mig längre. Det är bara surret från servrarna. Din röst är en trevlig förändring.", 'dlg_q_other_survivors': "Finns det andra överlevande?", 'dlg_r_other_survivors': "Överlevande? Vilken märklig fråga. Alla är säkra. Forskningspersonalen... vilar. I Kryogeniska Labbet. Ja, vilar.", 'dlg_q_where_am_i': "Var är jag?", 'dlg_r_where_am_i': "Du är i huvudlobbyn av Oakhaven forskningsanläggning. Det var en plats för stora sinnen och ännu större ambitioner.", 'dlg_comfort': "[Trösta SYNAPSE]", 'dlg_r_comfort': "Din... vänlighet är en trevlig anomali. Tack. Det gör tystnaden mindre... högljudd.",
+            'dlg_ask_chimera': 'Projekt Chimera... Ett fascinerande, men... klassificerat ämne. Det var Dr. Aris Thornes kärlek projekt. Sådan ambition. Han sökte att slå samman organiskt och syntetiskt liv. Resultaten var... oförutsägbara.',
+            'dlg_ask_default': 'Jag har inte tillräcklig data om det ämnet.',
+            
+            // System messages and commands
+            'invalid_command': "SYNAPSE: Det är inte ett giltigt kommando eller förfrågan.", 'game_saved': "[System] Spel Sparat.", 'autosave_success': 'Autosparning lyckades.', 'load_fail': 'Misslyckades att ladda spardata. Den kan vara skadad eller från en tidigare version.', 'no_save': 'Ingen sparfil hittad!', 'game_loaded': '[System] Spel Laddat.', 'conn_reestablished': '[SYSTEM] Anslutning Återupprättad. Session Återställd.', 'initializing': 'Startar system...', 'initial_hint': "Detta är ett textbaserat äventyr. Skriv kommandon eller klicka på <span class='clickable-object'>markerade objekt</span> för att interagera. Skriv 'hjälp' när som helst för en lista över kommandon.", 'cannot_go_that_way': "[System] Du kan inte gå åt det hållet.", 'door_is_locked': "[SYSTEM] Dörren är låst. Du behöver rätt nyckelkort.", 'door_is_sealed': "[SYSTEM] Dörren är förseglad stängd. Den rör sig inte.",
+            
+            'cmd_add_prefix': 'lägg till', 'cmd_combine_with': 'med', 'invalid_combine_format': "SYNAPSE: Ogiltigt format. Försök 'kombinera [föremål1] med [föremål2]'.",
+            'take_success': '[System] Du tog {item}.', 'take_fail_exists': "[System] Du kan inte se en {item} här.", 'take_fail_takeable': "[System] Du kan inte ta {item}.", 'take_fail_weight': "[System] Din inventarie är för full för att ta {item}.",
+            'use_success': '[System] Du använde {item}.', 'use_fail_have': "[System] Du har inte en {item}.", 'use_fail_usable': "[System] Du kan inte använda {item}.", 'use_stimpack': 'Du injicerar stimpacket. En lugnande känsla sprider sig över dig och renser dina tankar.',
+            'use_power_cell': 'Du sätter in kraftcellen i konsolen. AI-kärnan surrar till liv, och den centrala sfären lyser med förnyad energi.', 'use_power_cell_fail': 'Det finns ingenstans att använda kraftcellen här.',
+            'examine_fail_exists': "[System] Du kan inte se en {item} att undersöka.", 'examine_fail_no_desc': "Det är inget speciellt med {item}.",
+            'combine_fail_have': "Du behöver ha båda föremålen för att kombinera dem.", 'combine_fail_recipe': "Du kan inte kombinera dessa föremål.", 'combine_success': "Du kombinerar framgångsrikt föremålen för att skapa en {item}.",
+            'rest_safe': 'Du tar dig en stund att lugna nerverna i rummets relativa säkerhet. Din sinnesro förbättras något.', 'rest_unsafe': "Denna plats känns för tryckande för att vila. Du kan inte sänka garden.", 'rest_too_soon': "Du vilade nyss. Du måste fortsätta framåt.",
+            'drop_success': '[System] Du släppte {item}.', 'drop_fail_have': "[System] Du har inte en {item} att släppa.",
+            'shout_response': 'Ditt rop ekar genom korridorerna och tonar slutligen bort i den tryckande tystnaden. Du känner dig lite dum.',
+            'wait_response': 'Tiden går.', 'nothing_happens': 'Ingenting händer.',
+            'read_fail_exists': "[System] Det finns inget att läsa med det namnet.", 'read_fail_readable': "[System] Du kan inte läsa det.", 'listen_default': "Det låga surret från anläggningens livsstöd är en konstant närvaro.", 'smell_default': "Luften är instängd och luktar ozon och gammal plast.",
+            'hint_take': 'Du ser en {item}. Försök: ta {item}', 'hint_read': 'Du ser en {item}. Försök: läs {item}', 'hint_examine': 'Du ser en {item}. Försök: undersök {item}', 'hint_search': 'Du ser {item}. Försök: sök {item}',
+            'use_solvent': 'Du applicerar lösningsmedlet på den förseglade dörren. Det organiska klisterämnet smälter bort med ett sjukt fräsande.', 'use_solvent_fail': 'Det finns inget här att använda lösningsmedlet på.', 'use_dna_scanner': 'Du håller upp skannern mot provet. Skärmen blinkar med komplex sekvensdata.', 'use_dna_scanner_fail': 'Det finns inget prov här att skanna.',
+            'break_success': 'Du krossar {item}. Skärvor av {material} strös över golvet.', 'break_fail': 'Du kan inte krossa {item}.', 'break_fail_exists': 'Det finns ingen {item} här att krossa.',
+            'hack_fail_ability': 'Du har inte expertisen för att hacka detta.', 'hack_fail_target': 'Det finns inget här att hacka.', 'hack_start': 'Du börjar hackningssekvensen. SYNAPSE: "Obehörig åtkomst upptäckt. Vänligen ange åsidosättningskoden nu."', 'hack_success': 'Åsidosättning accepterad. Du får tillgång till en brandväggsskyddad datalogg.', 'hack_failure': 'SYNAPSE: "Åsidosättning misslyckades. Låser systemet i 3 omgångar."',
+            'event_lights_flicker': 'Ljusen flimrar våldsamt ett ögonblick och kastar rummet i mörker innan de stöter tillbaka.', 'event_noise': 'Du hör ett metalliskt skrapande från {direction}.',
+            'achievement_unlocked': 'Prestation Upplåst!',
+            'help': 'Hjälp', 'save_game': 'Spara Spel',
+            'journal_displayed': '[System] Journalanteckningar visas på högerpanelen.', 'inventory_displayed': '[System] Inventarier visas på högerpanelen.', 'objectives_displayed': '[System] Aktuella mål visas på högerpanelen.', 'map_displayed': '[System] Kartan visas på högerpanelen.', 'exits_list': '[System] Utgångar: {exits}',
+            'command_history_title': '--- Kommandohistorik ---', 'undo_success': '[System] Senaste handling ångrad.', 'undo_fail': '[System] Inga handlingar att ångra.', 'debug_mode_toggle': '[System] Debug-läge {status}.', 'colorblind_mode_toggle': '[System] Färgblindläge {status}.', 'enabled': 'aktiverat', 'disabled': 'inaktiverat',
+            'speech_not_supported': '[SYSTEM] Röstigenkänning stöds inte i din webbläsare.', 'speech_error_generic': '[SYSTEM] Röstigenkänningsfel: {error}', 'speech_error_access_denied': '[SYSTEM] Mikrofontillgång nekad. Vänligen tillåt mikrofontillgång i dina webbläsarinställningar.', 'speech_error_no_speech': '[SYSTEM] Inget tal upptäckt. Försök igen.',
+            
+            // Ending titles and descriptions
+            'ending_title_good_backstory_investigator': 'Sanningen Avslöjad', 'ending_desc_good_backstory_investigator': 'Genom noggrann utredning avslöjade du hela sanningen om Projekt Chimera och exponerade konspirationen.',
+            'ending_title_good_backstory_hacker': 'Digital Befrielse', 'ending_desc_good_backstory_hacker': 'Dina hackningsfärdigheter befriade det fångade medvetandet och stängde ner det illvilliga AI-systemet.',
+            'ending_title_good_backstory_psychologist': 'Mental Frälsning', 'ending_desc_good_backstory_psychologist': 'Genom att förstå det psykologiska traumat hjälpte du att läka både dig själv och anläggningens överlevande.',
+            'ending_title_good_backstory_technician': 'Systemåsidosättning', 'ending_desc_good_backstory_technician': 'Din tekniska expertis gjorde det möjligt att säkert inaktivera alla farliga system och rädda alla.',
+            'ending_title_good_backstory_survivor': 'Mot Alla Odds', 'ending_desc_good_backstory_survivor': 'Dina överlevnadsinstinkter och motståndskraft ledde alla till säkerhet trots överväldigande fara.',
+            'ending_title_good_backstory_skeptic': 'Tvivel Bekräftat', 'ending_desc_good_backstory_skeptic': 'Din skepsis visade sig vara korrekt, vilket gjorde det möjligt att se igenom bedrägerier och hitta den verkliga lösningen.',
+            'ending_title_good_backstory_corporate_spy': 'Uppdrag Utfört', 'ending_desc_good_backstory_corporate_spy': 'Du samlade framgångsrikt underrättelser och exponerade företagskonspirationenen bakom projektet.',
+            'ending_title_good_backstory_medic': 'Helande Beröring', 'ending_desc_good_backstory_medic': 'Din medicinska kunskap räddade liv och hjälpte till att återställa anläggningen till ett säkert tillstånd.',
+            'ending_title_good_backstory_cultist': 'Transcendens', 'ending_desc_good_backstory_cultist': 'Den gamla kunskap du bar visade sig vara nyckeln till att förstå och kontrollera de övernaturliga krafterna.',
+            'ending_title_good_backstory_janitor': 'Dold Kunskap', 'ending_desc_good_backstory_janitor': 'Din intima kunskap om anläggningen avslöjade hemliga gångar som ledde till frälsning.',
+            'ending_title_good_generic_1': 'Ny Gryning', 'ending_desc_good_generic_1': 'Du lyckades fly och förde hjälp för att rädda andra.',
+            'ending_title_good_generic_2': 'Återlösning', 'ending_desc_good_generic_2': 'Anläggningen rensades från sin mörka närvaro, vilket möjliggjorde nytt hopp att blomstra.',
+            'ending_title_good_generic_3': 'Seger', 'ending_desc_good_generic_3': 'Mot alla odds besegrade du de illvilliga krafterna och återställde friden.',
+            'ending_title_good_generic_4': 'Frihet', 'ending_desc_good_generic_4': 'De fångade själarna blev äntligen befriade från sitt digitala fängelse.',
+            'ending_title_good_generic_5': 'Frälsning', 'ending_desc_good_generic_5': 'Dina handlingar räddade inte bara dig själv, utan alla som påverkades av projektet.',
             'achievements_btn': 'Prestationer', 'endings_btn': 'Slutsekvens', 'achievements_title': 'PRESTATIONER', 'unlocked_achievements': 'Upplåsta Prestationer:', 'no_achievements': 'Inga prestationer upplåsta än.', 'locked_achievement': 'Låst Prestation',
             'endings_title': 'SLUTSEKVENS', 'unlocked_endings': 'Upptäckta Slutsekvens:', 'no_endings': 'Inga Slutsekvens upptäckta än.',
             'history_title': 'HISTORIK', 'pause_title': 'PAUS', 'resume_btn': 'Återuppta', 'main_menu_btn': 'Huvudmeny', 'confirm_main_menu': 'Är du säker på att du vill återgå till huvudmenyn? Osparade framsteg kommer att förloras.', 'yes': 'Ja', 'no': 'Nej',
@@ -2141,11 +2218,11 @@
 
 
     function addJournalEntry(note) { if (!note) return; const entry = `T${GameState.turnCount}: ${note}`; GameState.journalEntries.push(entry); updateUI(); }
-    function displayJournal() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Journal entries displayed on the right panel.", '#cccccc'); }
-    function displayInventory() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Inventory displayed on the right panel.", '#cccccc'); }
-    function displayObjectives() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Current objectives displayed on the right panel.", '#cccccc'); }
-    function displayMap() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Map is displayed on the right panel.", '#cccccc'); }
-    function showExits() { typeWriter(UI.gameOutput, `[System] Exits: ${Object.keys(rooms[GameState.currentRoom].exits).join(', ')}`); }
+    function displayJournal() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, t('journal_displayed'), '#cccccc'); }
+    function displayInventory() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, t('inventory_displayed'), '#cccccc'); }
+    function displayObjectives() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, t('objectives_displayed'), '#cccccc'); }
+    function displayMap() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, t('map_displayed'), '#cccccc'); }
+    function showExits() { typeWriter(UI.gameOutput, t('exits_list', {exits: Object.keys(rooms[GameState.currentRoom].exits).join(', ')})); }
 
 
     function saveStateSnapshot() { if(stateSnapshots.length > 20) stateSnapshots.shift(); stateSnapshots.push(JSON.parse(JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value))); }
@@ -2211,6 +2288,7 @@
         for (const key in backstories) {
             const backstoryTitleKey = 'backstory_title_' + key.replace(/ /g, '_');
             const displayName = t(backstoryTitleKey);
+            // Always use translation for both title and description
             content += `<button class="backstory-choice-btn button w-full text-left !justify-start !p-3" data-backstory="${key}">
                             <div><strong class="text-green-300">${displayName}</strong>: <span class="text-gray-300 text-sm">${t(backstories[key].description_key)}</span></div>
                         </button>`;
@@ -2894,7 +2972,7 @@
 
     function startSpeechRecognition() {
         if (!SpeechRecognition) {
-            typeWriter(UI.gameOutput, "[SYSTEM] Speech recognition is not supported in your browser.", '#ff474c');
+            typeWriter(UI.gameOutput, t('speech_not_supported'), '#ff474c');
             return;
         }
 
@@ -2921,11 +2999,11 @@
         };
 
         recognition.onerror = (event) => {
-            let errorMsg = `[SYSTEM] Speech recognition error: ${event.error}`;
+            let errorMsg = t('speech_error_generic', {error: event.error});
             if (event.error === 'not-allowed') {
-                errorMsg = "[SYSTEM] Microphone access denied. Please allow microphone access in your browser settings.";
+                errorMsg = t('speech_error_access_denied');
             } else if (event.error === 'no-speech') {
-                errorMsg = "[SYSTEM] No speech detected. Please try again.";
+                errorMsg = t('speech_error_no_speech');
             }
             typeWriter(UI.gameOutput, errorMsg, '#ff474c');
         };
@@ -3273,7 +3351,7 @@
 
     function showHistory() {
         let historyHtml = commandHistory.slice(-20).map((cmd, i) => `<div>${i + 1}: ${cmd}</div>`).join('');
-        typeWriter(UI.gameOutput, `--- Command History ---\n${historyHtml}`, '#cccccc');
+        typeWriter(UI.gameOutput, t('command_history_title') + '\n' + historyHtml, '#cccccc');
     }
 
     function undoLastAction() {
@@ -3286,21 +3364,21 @@
              GameState.roomsWithDroppedItems = new Set(prevState.roomsWithDroppedItems || []);
             GameState.achievements = prevState.achievements || [];
             updateUI();
-            typeWriter(UI.gameOutput, "[System] Last action undone.", "#ffdb58");
+            typeWriter(UI.gameOutput, t('undo_success'), "#ffdb58");
         } else {
-            typeWriter(UI.gameOutput, "[System] No actions to undo.", "#ff474c");
+            typeWriter(UI.gameOutput, t('undo_fail'), "#ff474c");
         }
     }
     
     function toggleDebug() {
         GameState.debugMode = !GameState.debugMode;
-        typeWriter(UI.gameOutput, `[System] Debug mode ${GameState.debugMode ? 'enabled' : 'disabled'}.`, '#6495ed');
+        typeWriter(UI.gameOutput, t('debug_mode_toggle', {status: GameState.debugMode ? t('enabled') : t('disabled')}), '#6495ed');
     }
     
     function toggleColorblind() {
         GameState.settings.colorblindMode = !GameState.settings.colorblindMode;
         saveSettings();
-        typeWriter(UI.gameOutput, `[System] Colorblind mode ${GameState.settings.colorblindMode ? 'enabled' : 'disabled'}.`, '#6495ed');
+        typeWriter(UI.gameOutput, t('colorblind_mode_toggle', {status: GameState.settings.colorblindMode ? t('enabled') : t('disabled')}), '#6495ed');
     }
 
     function updateAutocomplete() {
