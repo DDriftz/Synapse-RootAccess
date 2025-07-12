@@ -723,6 +723,73 @@
                 gap: 0.75rem;
             }
         }
+
+        /* Accessibility CSS Classes */
+        .focus-indicators button:focus,
+        .focus-indicators input:focus,
+        .focus-indicators textarea:focus,
+        .focus-indicators select:focus,
+        .focus-indicators [tabindex]:focus {
+            outline: 3px solid var(--main-color) !important;
+            outline-offset: 2px !important;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 0 4px var(--main-color-faded) !important;
+        }
+
+        .high-contrast {
+            filter: contrast(150%) brightness(120%);
+        }
+
+        .high-contrast button,
+        .high-contrast input,
+        .high-contrast textarea {
+            border: 2px solid #FFFF00 !important;
+            background-color: #000000 !important;
+            color: #FFFFFF !important;
+        }
+
+        .reading-ruler {
+            position: relative;
+        }
+
+        .reading-ruler::before {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--main-color), transparent);
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.7;
+        }
+
+        .keyboard-navigation *:focus {
+            outline: 2px solid var(--main-color);
+            outline-offset: 2px;
+        }
+
+        .voice-commands .mic-button {
+            animation: pulse 2s infinite;
+        }
+
+        .onscreen-commands::after {
+            content: 'Voice/Touch commands available';
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--main-color);
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
     </style>
 </head>
 <body class="bg-black flex items-center justify-center min-h-screen">
@@ -2071,6 +2138,29 @@
         // Accessibility: Reading ruler
         document.body.classList.toggle('reading-ruler', GameState.settings.readingRuler);
 
+        // Accessibility: Keyboard navigation
+        if (GameState.settings.keyboardNavigation) {
+            document.body.classList.add('keyboard-navigation');
+            // Enable tab indices for interactive elements
+            document.querySelectorAll('button, input, textarea, select').forEach(el => {
+                if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+            });
+        } else {
+            document.body.classList.remove('keyboard-navigation');
+        }
+
+        // Accessibility: Voice commands and on-screen commands
+        document.body.classList.toggle('voice-commands', GameState.settings.voiceCommands);
+        document.body.classList.toggle('onscreen-commands', GameState.settings.onScreenCommands);
+        
+        // Create or remove on-screen command interface
+        if (GameState.settings.onScreenCommands) {
+            createOnScreenCommands();
+        } else {
+            const existing = document.getElementById('onscreen-command-panel');
+            if (existing) existing.remove();
+        }
+
         // Other settings
         document.body.classList.toggle('crt-effect', GameState.settings.glitchEffect);
         updateUI();
@@ -2730,18 +2820,37 @@
         console.log('Audio description:', description);
     }
 
-    // Text-to-speech function
+    // Text-to-Speech function for accessibility
     function speakText(text) {
-        if (!GameState.settings || !GameState.settings.textToSpeech || !window.speechSynthesis) return;
+        if (!GameState.settings.ttsEnabled || !window.speechSynthesis) return;
         
         // Cancel any ongoing speech
         window.speechSynthesis.cancel();
         
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.8;
-        utterance.pitch = 1;
-        utterance.volume = 0.7;
+        // Clean text for TTS (remove HTML tags and special characters)
+        const cleanText = text
+            .replace(/<[^>]*>/g, '') // Remove HTML tags
+            .replace(/\[.*?\]/g, '') // Remove [System] and similar brackets
+            .replace(/&[^;]+;/g, ' ') // Remove HTML entities
+            .replace(/\s+/g, ' ') // Normalize whitespace
+            .trim();
         
+        if (!cleanText) return;
+        
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        
+        // Apply TTS settings
+        utterance.rate = GameState.settings.ttsSpeed || 1.0;
+        utterance.pitch = GameState.settings.ttsPitch || 1.0;
+        
+        // Set voice if available
+        const voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0 && GameState.settings.ttsVoice !== 'default') {
+            const selectedVoice = voices.find(voice => voice.name === GameState.settings.ttsVoice);
+            if (selectedVoice) utterance.voice = selectedVoice;
+        }
+        
+        // Speak the text
         window.speechSynthesis.speak(utterance);
     }
 
@@ -2862,6 +2971,12 @@
         const room = rooms[GameState.currentRoom]; if (!room) return;
         GameState.visitedRooms.add(GameState.currentRoom);
         
+        // Provide audio description for room entry
+        provideAudioDescription('room_enter', { 
+            roomName: room.name, 
+            description: room.descriptions[0] 
+        });
+        
         let description = room.descriptions[0];
         if (room.states?.lightsOut) {
             description = "The room is eerily dark, with only emergency lights casting long, distorted shadows. The main lights are out.";
@@ -2875,6 +2990,13 @@
         let roomHtml = `<div class="mt-2"><p class='text-cyan-400 font-bold'>--- ${room.name} ---</p><p>${description}</p><p class='text-yellow-300 mt-1'>${objectsInRoom}</p><p class='text-green-300 mt-1'>Exits: ${Object.keys(room.exits).join(", ")}</p></div>`;
         
         await typeWriter(UI.gameOutput, roomHtml, 'var(--main-color)', 0);
+
+        // Audio description for items found
+        if (room.objects.length > 0) {
+            room.objects.forEach(obj => {
+                provideAudioDescription('item_found', { itemName: obj });
+            });
+        }
 
         for (const objName of room.objects) {
             const item = itemData[objName];
@@ -2959,21 +3081,26 @@
         const itemInRoom = room.objects.find(obj => obj.toLowerCase() === itemName.toLowerCase());
         if (!itemInRoom) {
             typeWriter(UI.gameOutput, t('take_fail_exists', {item: itemName}), '#ff474c');
- return;
+            playAccessibilityAudioCue('command_failure');
+            return;
         }
         if (!takeableItems.has(itemInRoom)) {
             typeWriter(UI.gameOutput, t('take_fail_takeable', {item: itemName}), '#ff474c');
+            playAccessibilityAudioCue('command_failure');
             return;
         }
         const item = itemData[itemInRoom];
         const currentWeight = GameState.inventory.reduce((sum, i) => sum + i.weight, 0);
         if (currentWeight + item.weight > MAX_INVENTORY_WEIGHT) {
             typeWriter(UI.gameOutput, t('take_fail_weight', {item: itemName}), '#ff474c');
+            playAccessibilityAudioCue('command_failure');
             return;
         }
         GameState.inventory.push(item);
         room.objects = room.objects.filter(obj => obj.toLowerCase() !== itemName.toLowerCase());
         playSound('itemPickup');
+        playAccessibilityAudioCue('item_interaction');
+        provideAudioDescription('inventory_change', { action: 'Added', itemName: itemName });
         typeWriter(UI.gameOutput, t('take_success', {item: itemName}), '#cccccc');
     }
 
@@ -3945,6 +4072,21 @@
         setupToggle('setting-colorblind', GameState.settings, 'colorblindMode');
         setupToggle('setting-crt', GameState.settings, 'glitchEffect');
 
+        // Accessibility toggles
+        setupToggle('setting-high-contrast', GameState.settings, 'highContrast');
+        setupToggle('setting-screen-reader', GameState.settings, 'screenReader');
+        setupToggle('setting-tts', GameState.settings, 'ttsEnabled');
+        setupToggle('setting-audio-desc', GameState.settings, 'audioDescriptions');
+        setupToggle('setting-audio-cues', GameState.settings, 'comprehensiveAudioCues');
+        setupToggle('setting-dyslexia-font', GameState.settings, 'dyslexiaFont');
+        setupToggle('setting-reading-ruler', GameState.settings, 'readingRuler');
+        setupToggle('setting-simple-lang', GameState.settings, 'simplifiedLanguage');
+        setupToggle('setting-keyboard-nav', GameState.settings, 'keyboardNavigation');
+        setupToggle('setting-voice-commands', GameState.settings, 'voiceCommands');
+        setupToggle('setting-onscreen-commands', GameState.settings, 'onScreenCommands');
+        setupToggle('setting-adjustable-timers', GameState.settings, 'adjustableTimers');
+        setupToggle('setting-focus-indicators', GameState.settings, 'focusIndicator');
+
         const setupButtonGroup = (buttons, key, valueMap) => {
             buttons.forEach(id => {
                 const btn = document.getElementById(id);
@@ -3964,6 +4106,11 @@
         setupButtonGroup(['theme-green', 'theme-amber', 'theme-blue'], 'theme', {'theme-green': 'green', 'theme-amber': 'amber', 'theme-blue': 'blue'});
         setupButtonGroup(['font-space', 'font-courier'], 'font', {'font-space': 'Space Mono', 'font-courier': 'Courier Prime'});
 
+        // Accessibility button groups
+        setupButtonGroup(['textsize-normal', 'textsize-large', 'textsize-extra'], 'textSize', {'textsize-normal': 'normal', 'textsize-large': 'large', 'textsize-extra': 'extra-large'});
+        setupButtonGroup(['letter-normal', 'letter-wide', 'letter-extra'], 'letterSpacing', {'letter-normal': 'normal', 'letter-wide': 'wide', 'letter-extra': 'extra-wide'});
+        setupButtonGroup(['line-normal', 'line-wide', 'line-extra'], 'lineSpacing', {'line-normal': 'normal', 'line-wide': 'wide', 'line-extra': 'extra-wide'});
+
         const resetBtn = document.getElementById('reset-settings-btn');
         if(resetBtn) {
             resetBtn.onclick = () => {
@@ -3973,7 +4120,27 @@
                     colorblindMode: false,
                     glitchEffect: true,
                     font: 'Space Mono',
-                    theme: 'green'
+                    theme: 'green',
+                    // Accessibility settings
+                    textSize: 'normal',
+                    highContrast: false,
+                    screenReader: false,
+                    ttsEnabled: false,
+                    ttsVoice: 'default',
+                    ttsSpeed: 1.0,
+                    ttsPitch: 1.0,
+                    dyslexiaFont: false,
+                    letterSpacing: 'normal',
+                    lineSpacing: 'normal',
+                    readingRuler: false,
+                    simplifiedLanguage: false,
+                    keyboardNavigation: true,
+                    voiceCommands: false,
+                    onScreenCommands: false,
+                    adjustableTimers: false,
+                    audioDescriptions: false,
+                    comprehensiveAudioCues: false,
+                    focusIndicator: true
                 };
                 saveSettings();
                 applySettings();
