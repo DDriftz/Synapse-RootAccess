@@ -4382,14 +4382,143 @@
         const canvas = document.getElementById('background-canvas');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        let width, height, particles = [];
-        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+        let width, height, tentacles = [];
+        
+        function resize() { 
+            width = canvas.width = window.innerWidth; 
+            height = canvas.height = window.innerHeight; 
+        }
         window.addEventListener('resize', resize);
         resize();
-        class Particle { constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.size = Math.random() * 0.4 + 0.1; this.speedX = (Math.random() * 0.5 - 0.25); this.speedY = (Math.random() * 0.5 - 0.25); } update() { this.x += this.speedX; this.y += this.speedY; if (this.size > 0.1) this.size -= 0.001; if(this.x < 0 || this.x > width) this.speedX *= -1; if(this.y < 0 || this.y > height) this.speedY *= -1; } draw() { ctx.fillStyle = 'var(--main-color)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); } }
-        function initParticles() { particles = []; for(let i=0; i<100; i++) particles.push(new Particle()); }
-        function animateParticles() { ctx.clearRect(0,0,width,height); for(let i=0; i<particles.length; i++) { particles[i].update(); particles[i].draw(); if(particles[i].size <= 0.1) { particles.splice(i, 1); i--; particles.push(new Particle()); } } requestAnimationFrame(animateParticles); }
-        initParticles(); animateParticles();
+        
+        class Tentacle {
+            constructor() {
+                this.segments = [];
+                this.segmentCount = Math.random() * 15 + 10; // 10-25 segments
+                this.baseX = Math.random() * width;
+                this.baseY = height + Math.random() * 100; // Start below screen
+                this.angle = Math.random() * Math.PI * 2;
+                this.speed = Math.random() * 0.02 + 0.005;
+                this.amplitude = Math.random() * 50 + 30;
+                this.frequency = Math.random() * 0.02 + 0.01;
+                this.time = Math.random() * 1000;
+                this.opacity = Math.random() * 0.3 + 0.1;
+                this.thickness = Math.random() * 8 + 4;
+                
+                // Initialize segments
+                for(let i = 0; i < this.segmentCount; i++) {
+                    this.segments.push({
+                        x: this.baseX,
+                        y: this.baseY - i * 20,
+                        targetX: this.baseX,
+                        targetY: this.baseY - i * 20
+                    });
+                }
+            }
+            
+            update() {
+                this.time += this.speed;
+                
+                // Update each segment to follow the previous one with wave motion
+                for(let i = 0; i < this.segments.length; i++) {
+                    const segment = this.segments[i];
+                    
+                    if(i === 0) {
+                        // Base segment follows sinusoidal motion
+                        segment.targetX = this.baseX + Math.sin(this.time * this.frequency) * this.amplitude;
+                        segment.targetY = this.baseY + Math.cos(this.time * this.frequency * 0.7) * 20;
+                    } else {
+                        // Each segment follows the previous one with some delay and wave motion
+                        const prev = this.segments[i - 1];
+                        const waveOffset = Math.sin(this.time * this.frequency + i * 0.3) * 15;
+                        segment.targetX = prev.x + waveOffset;
+                        segment.targetY = prev.y - 25 + Math.cos(this.time * this.frequency + i * 0.2) * 10;
+                    }
+                    
+                    // Smooth movement
+                    segment.x += (segment.targetX - segment.x) * 0.1;
+                    segment.y += (segment.targetY - segment.y) * 0.1;
+                }
+                
+                // Reset if tentacle goes too far off screen
+                if(this.baseY < -200 || this.baseX < -100 || this.baseX > width + 100) {
+                    this.baseX = Math.random() * width;
+                    this.baseY = height + Math.random() * 100;
+                    this.time = 0;
+                }
+            }
+            
+            draw() {
+                if(this.segments.length < 2) return;
+                
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                
+                // Draw tentacle body with gradient
+                ctx.beginPath();
+                ctx.moveTo(this.segments[0].x, this.segments[0].y);
+                
+                // Create smooth curve through all segments
+                for(let i = 1; i < this.segments.length - 1; i++) {
+                    const current = this.segments[i];
+                    const next = this.segments[i + 1];
+                    const midX = (current.x + next.x) / 2;
+                    const midY = (current.y + next.y) / 2;
+                    ctx.quadraticCurveTo(current.x, current.y, midX, midY);
+                }
+                
+                // Final segment
+                if(this.segments.length > 1) {
+                    const last = this.segments[this.segments.length - 1];
+                    ctx.lineTo(last.x, last.y);
+                }
+                
+                // Create red gradient that matches title colors
+                const gradient = ctx.createLinearGradient(
+                    this.segments[0].x, this.segments[0].y,
+                    this.segments[this.segments.length - 1].x, this.segments[this.segments.length - 1].y
+                );
+                gradient.addColorStop(0, '#600'); // Dark red base
+                gradient.addColorStop(0.3, '#d00'); // Medium red
+                gradient.addColorStop(0.6, '#ff0000'); // Bright red
+                gradient.addColorStop(1, 'rgba(255, 0, 0, 0)'); // Fade to transparent
+                
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = this.thickness;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+                
+                // Add subtle glow effect
+                ctx.shadowColor = '#ff0000';
+                ctx.shadowBlur = 10;
+                ctx.stroke();
+                
+                ctx.restore();
+            }
+        }
+        
+        function initTentacles() { 
+            tentacles = []; 
+            const tentacleCount = Math.floor(width / 150) + 3; // Responsive tentacle count
+            for(let i = 0; i < tentacleCount; i++) {
+                tentacles.push(new Tentacle()); 
+            }
+        }
+        
+        function animateTentacles() { 
+            ctx.clearRect(0, 0, width, height); 
+            
+            for(let i = 0; i < tentacles.length; i++) { 
+                tentacles[i].update(); 
+                tentacles[i].draw(); 
+            } 
+            
+            requestAnimationFrame(animateTentacles); 
+        }
+        
+        initTentacles(); 
+        animateTentacles();
     }
     
     function getMapBounds() {
