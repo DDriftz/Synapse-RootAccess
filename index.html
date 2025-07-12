@@ -99,6 +99,35 @@
             90% { text-shadow: 1px 1px 0px rgba(170,0,0,0.2), 2px 2px 0px rgba(136,0,0,0.2), 3px 3px 0px rgba(102,0,0,0.2), 0 0 5px rgba(221,0,0,0.5), 0px 40px 20px rgba(85,0,0,0.1), -5px 50px 22px rgba(68,0,0,0.05), 5px 55px 22px rgba(51,0,0,0.05); opacity: 0.8; }
             100% { text-shadow: 1px 1px 0px transparent, 2px 2px 0px transparent, 3px 3px 0px transparent, 0 0 5px transparent, 0px 45px 30px transparent, -5px 55px 30px transparent, 5px 60px 30px transparent; opacity: 0; }
         }
+
+        /* Subtitle glow effect */
+        .subtitle-glow {
+            text-shadow: 
+                0 0 5px #ff0000,
+                0 0 10px #ff0000,
+                0 0 15px #ff0000,
+                0 0 20px #ff0000;
+            animation: subtitle-pulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes subtitle-pulse {
+            0% { 
+                text-shadow: 
+                    0 0 5px #ff0000,
+                    0 0 10px #ff0000,
+                    0 0 15px #ff0000,
+                    0 0 20px #ff0000;
+                opacity: 0.8;
+            }
+            100% { 
+                text-shadow: 
+                    0 0 2px #ff0000,
+                    0 0 5px #ff0000,
+                    0 0 8px #ff0000,
+                    0 0 12px #ff0000;
+                opacity: 1;
+            }
+        }
         
         .btn-drip { position: relative; z-index: 1; }
         .btn-drip::before {
@@ -359,7 +388,8 @@
                 <!-- Main content flex-grow -->
                 <div class="flex-grow flex flex-col items-center justify-center text-center px-4 w-full">
                     <div class="title-wrapper -mt-16 sm:-mt-20">
-                        <h1 id="game-title" data-text="SYNAPSE" class="text-7xl md:text-9xl font-bold title-slasher mb-4">SYNAPSE</h1>
+                        <h1 id="game-title" data-text="SYNAPSE" class="text-7xl md:text-9xl font-bold title-slasher mb-2">SYNAPSE</h1>
+                        <h2 class="text-2xl md:text-3xl font-mono text-red-500 tracking-wider subtitle-glow -mt-2 mb-4">ROOT ACCESS DENIED</h2>
                     </div>
                     <div id="intro-text-container" class="max-w-4xl text-sm md:text-base text-white mt-8 sm:mt-12"></div>
                     <div id="start-options" class="mt-10 flex flex-wrap justify-center gap-4">
