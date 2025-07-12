@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>SYNAPSE</title>
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png">
+    <link rel="manifest" href="./manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -279,6 +280,65 @@
         }
         .flicker {
             animation: light-flicker 0.2s infinite;
+        }
+        
+        /* Accessibility CSS Classes */
+        .high-contrast {
+            --main-color: #ffffff !important;
+            --main-color-faded: rgba(255,255,255,0.2) !important;
+            --main-color-border: rgba(255,255,255,0.9) !important;
+            --main-color-shadow: rgba(255,255,255,0.7) !important;
+            --main-color-glow: rgba(255,255,255,0.8) !important;
+        }
+        .high-contrast * {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+        }
+        .large-text {
+            font-size: 1.2em !important;
+        }
+        .large-text * {
+            font-size: inherit !important;
+        }
+        .reduced-motion * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+        .focus-indicators *:focus {
+            outline: 3px solid var(--main-color) !important;
+            outline-offset: 2px !important;
+        }
+        #on-screen-commands {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.9);
+            border: 2px solid var(--main-color);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            max-width: 300px;
+            z-index: 1000;
+        }
+        #on-screen-commands h4 {
+            color: var(--main-color);
+            margin-bottom: 5px;
+        }
+        #on-screen-commands button {
+            display: block;
+            width: 100%;
+            margin: 2px 0;
+            padding: 5px;
+            background: var(--main-color-faded);
+            border: 1px solid var(--main-color);
+            color: var(--main-color);
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        #on-screen-commands button:hover {
+            background: var(--main-color);
+            color: #000;
         }
     </style>
 </head>
@@ -1311,7 +1371,16 @@
                 colorblindMode: false,
                 glitchEffect: true,
                 font: 'Space Mono',
-                theme: 'green'
+                theme: 'green',
+                // Accessibility settings
+                highContrast: false,
+                largeText: false,
+                screenReader: false,
+                reducedMotion: false,
+                audioDescriptions: false,
+                keyboardNavigation: false,
+                focusIndicators: false,
+                readingSupport: false
             };
             const loaded = settings ? JSON.parse(settings) : defaults;
             return {...defaults, ...loaded, sound: {...defaults.sound, ...(loaded.sound || {})}};
@@ -1323,7 +1392,16 @@
                 colorblindMode: false,
                 glitchEffect: true,
                 font: 'Space Mono',
-                theme: 'green'
+                theme: 'green',
+                // Accessibility settings
+                highContrast: false,
+                largeText: false,
+                screenReader: false,
+                reducedMotion: false,
+                audioDescriptions: false,
+                keyboardNavigation: false,
+                focusIndicators: false,
+                readingSupport: false
             };
         }
     }
@@ -1374,7 +1452,77 @@
 
         document.body.style.fontFamily = `'${GameState.settings.font}', monospace`;
         document.body.classList.toggle('crt-effect', GameState.settings.glitchEffect);
+        
+        // Apply accessibility settings
+        document.body.classList.toggle('high-contrast', GameState.settings.highContrast);
+        document.body.classList.toggle('large-text', GameState.settings.largeText);
+        document.body.classList.toggle('reduced-motion', GameState.settings.reducedMotion);
+        document.body.classList.toggle('focus-indicators', GameState.settings.focusIndicators);
+        
+        // Update text-to-speech and screen reader support
+        if (GameState.settings.screenReader) {
+            document.body.setAttribute('aria-live', 'polite');
+        } else {
+            document.body.removeAttribute('aria-live');
+        }
+        
+        // Create on-screen commands for reading support
+        if (GameState.settings.readingSupport && !document.getElementById('on-screen-commands')) {
+            createOnScreenCommands();
+        } else if (!GameState.settings.readingSupport && document.getElementById('on-screen-commands')) {
+            document.getElementById('on-screen-commands').remove();
+        }
+        
         updateUI();
+    }
+
+    function createOnScreenCommands() {
+        if (document.getElementById('on-screen-commands')) return;
+        
+        const commandsDiv = document.createElement('div');
+        commandsDiv.id = 'on-screen-commands';
+        commandsDiv.innerHTML = `
+            <h4>Quick Commands</h4>
+            <button onclick="UI.playerInput.value='look around'; UI.playerInput.focus();">Look Around</button>
+            <button onclick="UI.playerInput.value='inventory'; UI.playerInput.focus();">Inventory</button>
+            <button onclick="UI.playerInput.value='objectives'; UI.playerInput.focus();">Objectives</button>
+            <button onclick="UI.playerInput.value='help'; UI.playerInput.focus();">Help</button>
+            <button onclick="UI.playerInput.value='save'; UI.playerInput.focus();">Save Game</button>
+            <button onclick="hideCommands()" style="background: rgba(255,0,0,0.3); border-color: #ff0000;">Hide</button>
+        `;
+        
+        document.body.appendChild(commandsDiv);
+        
+        // Add speech synthesis for audio descriptions
+        if (GameState.settings.audioDescriptions && 'speechSynthesis' in window) {
+            const speech = new SpeechSynthesisUtterance("On-screen command buttons are now available.");
+            speechSynthesis.speak(speech);
+        }
+    }
+
+    function hideCommands() {
+        const commandsDiv = document.getElementById('on-screen-commands');
+        if (commandsDiv) {
+            commandsDiv.remove();
+            GameState.settings.readingSupport = false;
+            saveSettings();
+        }
+    }
+
+    function speakText(text, options = {}) {
+        if (!GameState.settings.audioDescriptions || !('speechSynthesis' in window)) return;
+        
+        // Clean HTML tags from text
+        const cleanText = text.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, ' ');
+        
+        if (cleanText.trim().length === 0) return;
+        
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.rate = options.rate || 1;
+        utterance.pitch = options.pitch || 1;
+        utterance.volume = options.volume || 0.8;
+        
+        speechSynthesis.speak(utterance);
     }
 
 
@@ -1682,6 +1830,12 @@
                 } else {
                     p.innerHTML = processedText; // Set the final HTML with clickable spans
                     element.scrollTop = element.scrollHeight;
+                    
+                    // Add TTS support for screen readers
+                    if (GameState.settings.screenReader || GameState.settings.audioDescriptions) {
+                        speakText(text);
+                    }
+                    
                     resolve();
                 }
             }
@@ -2578,6 +2732,73 @@
                 <span data-lang="setting_low_sanity">${t('setting_low_sanity')}</span>
                 <label class="toggle-switch">
                     <input type="checkbox" id="setting-sanity" ${settings.sound.sanity ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <hr class="border-gray-700 my-4">
+            <h3 class="text-lg text-cyan-400 mb-2">Accessibility Settings</h3>
+            
+            <div class="flex items-center justify-between">
+                <span>High Contrast Mode</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-high-contrast" ${settings.highContrast ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <span>Large Text</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-large-text" ${settings.largeText ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <span>Screen Reader Support</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-screen-reader" ${settings.screenReader ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <span>Reduced Motion</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-reduced-motion" ${settings.reducedMotion ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <span>Audio Descriptions</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-audio-descriptions" ${settings.audioDescriptions ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <span>Keyboard Navigation</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-keyboard-navigation" ${settings.keyboardNavigation ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <span>Focus Indicators</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-focus-indicators" ${settings.focusIndicators ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <span>Reading Support</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-reading-support" ${settings.readingSupport ? 'checked' : ''}>
                     <span class="slider"></span>
                 </label>
             </div>
