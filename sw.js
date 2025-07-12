@@ -1,10 +1,11 @@
-const CACHE_NAME = 'synapse-horror-v1.0.0';
+const CACHE_NAME = 'synapse-horror-v1.0.1';
 const urlsToCache = [
   './',
   './index.html',
   './Icon.png',
   './manifest.json',
-  'https://unpkg.com/tone@15.0.4/build/Tone.js'
+  'https://unpkg.com/tone@15.0.4/build/Tone.js',
+  'https://cdn.tailwindcss.com'
 ];
 
 // Install event - cache resources
