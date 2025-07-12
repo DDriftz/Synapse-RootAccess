@@ -2,28 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="description" content="An immersive AI chatbot horror game with psychological elements">
-    <meta name="theme-color" content="#00ff41">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SYNAPSE">
-    <meta name="mobile-web-app-capable" content="yes">
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- iOS specific meta tags -->
-    <meta name="apple-touch-fullscreen" content="yes">
-    <link rel="apple-touch-startup-image" href="Icon.png">
-    
-    <!-- Additional PWA meta tags -->
-    <meta name="application-name" content="SYNAPSE">
-    <meta name="msapplication-TileColor" content="#00ff41">
-    <meta name="msapplication-TileImage" href="Icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>SYNAPSE</title>
-    <link rel="icon" type="image/png" href="Icon.png">
-    <link rel="apple-touch-icon" href="Icon.png">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,29 +24,13 @@
             margin: 0;
             padding: 0;
             overflow: hidden; 
-            font-size: clamp(12px, 2.5vw, 18px);
+            font-size: clamp(14px, 1.5vw, 18px); 
         }
         body {
             background-color: #0d0d0d;
             color: var(--main-color);
             font-family: 'Space Mono', monospace;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            /* Prevent touch bounce on iOS */
-            overscroll-behavior: none;
-            /* Disable text selection on touch */
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            /* Safe area for notched devices */
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
-            padding-left: env(safe-area-inset-left);
-            padding-right: env(safe-area-inset-right);
+            position: fixed; 
         }
         #background-canvas {
             position: fixed;
@@ -102,110 +67,36 @@
             position: relative;
         }
         
+        /* Main green text layer */
         .title-slasher {
             font-family: 'Creepster', cursive;
-            color: var(--main-color);
-            letter-spacing: 0.2em;
+            color: #39FF14;
+            letter-spacing: 0.1em;
             position: relative;
-            z-index: 3;
+            z-index: 1; 
+            /* Green text's own glow */
+            text-shadow: 
+                0 0 5px #39FF14, 
+                0 0 10px #39FF14;
         }
 
-        /* Blood drip effect for title - similar to buttons */
-        .title-slasher::after {
-            content: attr(data-text);
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            color: transparent;
-            z-index: 4;
-            filter: drop-shadow(0 0 3px #ff0000) drop-shadow(0 0 8px #d40000);
-            animation: title-drip-anim 8s infinite ease-out;
-            font-family: inherit;
-            font-size: inherit;
-            letter-spacing: inherit;
-            font-weight: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Light glitching effect inside letters - no movement, just color shifts */
+        /* The blood layer behind the text */
         .title-slasher::before {
             content: attr(data-text);
             position: absolute;
             left: 0;
             top: 0;
-            width: 100%;
-            height: 100%;
-            color: transparent;
-            z-index: 1;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                #00ff41 30%, 
-                #39FF14 50%, 
-                #66ff66 70%, 
-                transparent 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            animation: subtle-inner-glitch 2s infinite ease-in-out;
-            opacity: 0;
+            color: transparent; /* The text color is transparent; the shadow creates the effect */
+            z-index: -1; 
+            animation: liquid-drip 3.5s infinite ease-in;
+            filter: drop-shadow(0 0 5px #ff0000) drop-shadow(0 0 15px #d40000) drop-shadow(0 0 25px #a00);
         }
 
-
-
-        /* Subtle inner glitch - only color changes, no movement */
-        @keyframes subtle-inner-glitch {
-            0%, 85%, 100% { 
-                opacity: 0;
-                background-position: 0% 0%;
-                filter: hue-rotate(0deg) brightness(1);
-            }
-            5% { 
-                opacity: 0.3;
-                background-position: 10% 0%;
-                filter: hue-rotate(30deg) brightness(1.2);
-            }
-            10% { 
-                opacity: 0.5;
-                background-position: 20% 0%;
-                filter: hue-rotate(60deg) brightness(1.1);
-            }
-            15% { 
-                opacity: 0.3;
-                background-position: 30% 0%;
-                filter: hue-rotate(90deg) brightness(1.3);
-            }
-            20% { 
-                opacity: 0;
-                background-position: 40% 0%;
-                filter: hue-rotate(0deg) brightness(1);
-            }
-        }
-
-
-
-        /* Enhanced visibility and readability */
-        .title-slasher:hover {
-            text-shadow: 
-                0 0 10px #00ff41,
-                0 0 20px #39FF14,
-                0 0 30px #00ff41,
-                0 0 40px rgba(138, 43, 226, 0.8),
-                2px 2px 4px rgba(0, 0, 0, 0.9),
-                -2px -2px 4px rgba(0, 0, 0, 0.9);
-            transition: all 0.3s ease;
-        }
-        
-        /* Subtitle specific styling with enhanced effects */
-        #game-subtitle {
-            animation-delay: 1s; /* Slight delay for subtitle */
-        }
-        
-        /* Delay the blood drip effect for subtitle */
-        #game-subtitle::after {
-            animation-delay: 3s; /* Staggered blood drip timing */
+        @keyframes liquid-drip {
+            0% { text-shadow: 1px 1px 0px #a00, 2px 2px 0px #800, 3px 3px 0px #600, 0 0 5px #d00, 0px 0px 0px #500; opacity: 1; }
+            50% { text-shadow: 1px 1px 0px #a00, 2px 2px 0px #800, 3px 3px 0px #600, 0 0 5px #d00, 0px 20px 10px #500, -5px 30px 12px #400, 5px 35px 12px #300; opacity: 1; }
+            90% { text-shadow: 1px 1px 0px rgba(170,0,0,0.2), 2px 2px 0px rgba(136,0,0,0.2), 3px 3px 0px rgba(102,0,0,0.2), 0 0 5px rgba(221,0,0,0.5), 0px 40px 20px rgba(85,0,0,0.1), -5px 50px 22px rgba(68,0,0,0.05), 5px 55px 22px rgba(51,0,0,0.05); opacity: 0.8; }
+            100% { text-shadow: 1px 1px 0px transparent, 2px 2px 0px transparent, 3px 3px 0px transparent, 0 0 5px transparent, 0px 45px 30px transparent, -5px 55px 30px transparent, 5px 60px 30px transparent; opacity: 0; }
         }
         
         .btn-drip { position: relative; z-index: 1; }
@@ -224,40 +115,6 @@
             50% { text-shadow: 1px 1px 0px #600, 0 0 2px #d00, 0px 10px 5px #400, -2px 15px 6px #300; opacity: 1; }
             90% { text-shadow: 1px 1px 0px rgba(102,0,0,0.2), 0 0 2px rgba(221,0,0,0.5), 0px 18px 10px rgba(68,0,0,0.1), -2px 22px 12px rgba(51,0,0,0.05); opacity: 0.8; }
             100% { text-shadow: 1px 1px 0px transparent, 0 0 2px transparent, 0px 20px 15px transparent, -2px 25px 15px transparent; opacity: 0; }
-        }
-
-        /* Title blood drip animation - longer and more dramatic than buttons */
-        @keyframes title-drip-anim {
-            0%, 10% { 
-                text-shadow: 2px 2px 0px #600, 0 0 4px #d00, 0px 0px 0px #400; 
-                opacity: 1; 
-            }
-            30% { 
-                text-shadow: 2px 2px 0px #600, 0 0 4px #d00, 0px 8px 4px #400, -3px 12px 5px #300; 
-                opacity: 1; 
-            }
-            60% { 
-                text-shadow: 2px 2px 0px #600, 0 0 4px #d00, 0px 20px 8px #400, -3px 25px 10px #300, 2px 30px 6px #200; 
-                opacity: 0.9; 
-            }
-            85% { 
-                text-shadow: 
-                    1px 1px 0px rgba(102,0,0,0.3), 
-                    0 0 3px rgba(221,0,0,0.6), 
-                    0px 35px 15px rgba(68,0,0,0.2), 
-                    -3px 40px 18px rgba(51,0,0,0.1), 
-                    2px 45px 12px rgba(34,0,0,0.05); 
-                opacity: 0.7; 
-            }
-            100% { 
-                text-shadow: 
-                    1px 1px 0px transparent, 
-                    0 0 2px transparent, 
-                    0px 50px 25px transparent, 
-                    -3px 55px 30px transparent, 
-                    2px 60px 20px transparent; 
-                opacity: 0; 
-            }
         }
 
         .input-caret {
@@ -304,42 +161,9 @@
         .modal-scroll { overflow-y: auto; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
         #start-screen, #player-setup {
-            background-image: url('Icon.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            position: relative;
-        }
-        
-        /* Full-screen background overlay for immersion */
-        #start-screen::before, #player-setup::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(75,0,130,0.4) 50%, rgba(0,0,0,0.8) 100%);
-            z-index: 0;
-        }
-        
-        /* Responsive background images */
-        @media (max-width: 768px) {
-            #start-screen, #player-setup {
-                background-size: cover;
-                background-position: center;
-                background-attachment: scroll;
-            }
-        }
-        
-        @media (max-height: 600px) and (orientation: landscape) {
-            #start-screen, #player-setup {
-                background-size: cover;
-                background-position: center;
-            }
+            background-image: url('https://raw.githubusercontent.com/DDriftz/Synapse2.0-An-AI-Chatbot-Horror-Game/main/Icon.png');
+            background-size: cover; background-position: center; background-repeat: no-repeat;
         }
         #map-canvas {
             background-color: rgba(0, 20, 0, 0.5);
@@ -456,405 +280,16 @@
         .flicker {
             animation: light-flicker 0.2s infinite;
         }
-
-        /* Mobile-First Responsive Design */
-        @media (max-width: 640px) {
-            body {
-                font-size: clamp(12px, 3.5vw, 16px);
-            }
-            
-            .title-slasher {
-                font-size: clamp(2rem, 8vw, 4rem);
-            }
-            
-            #game-subtitle {
-                font-size: clamp(1rem, 4vw, 2rem);
-            }
-            
-            #app-container {
-                padding: 0.5rem;
-                gap: 0.5rem;
-            }
-            
-            #game-container {
-                padding: 0.5rem;
-                gap: 0.5rem;
-            }
-            
-            #game-output {
-                height: 40vh;
-                font-size: clamp(11px, 3vw, 14px);
-                padding: 1rem;
-            }
-            
-            #player-input {
-                font-size: clamp(12px, 3.5vw, 16px);
-                padding: 0.75rem;
-            }
-            
-            .modal-content {
-                margin: 1rem;
-                max-height: 90vh;
-                overflow-y: auto;
-                padding: 1rem;
-            }
-            
-            .modal-scroll {
-                max-height: 70vh;
-                overflow-y: auto;
-            }
-            
-            .button {
-                padding: 0.75rem 1rem;
-                font-size: clamp(12px, 3vw, 14px);
-                min-height: 44px; /* Touch target minimum */
-            }
-            
-            .grid {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.5rem;
-            }
-            
-            #map-canvas {
-                height: 200px;
-            }
-            
-            #map-panel.fullscreen {
-                padding: 0.5rem;
-            }
-            
-            .toggle-switch {
-                width: 40px;
-                height: 24px;
-            }
-            
-            .toggle-switch .slider:before {
-                height: 18px;
-                width: 18px;
-            }
-            
-            /* Better mobile layout for game screen */
-            #game-screen .flex-grow {
-                min-height: 0;
-            }
-            
-            #game-screen > div:first-child {
-                flex-direction: column;
-                height: calc(100vh - 140px); /* Account for input area and mobile actions */
-            }
-            
-            #side-panel {
-                order: -1; /* Move side panel above game output on mobile */
-                flex-direction: row;
-                overflow-x: auto;
-                gap: 1rem;
-                padding: 0.5rem;
-                height: auto;
-            }
-            
-            #side-panel > div {
-                flex-shrink: 0;
-                min-width: 200px;
-                height: auto;
-                max-height: 150px;
-            }
-            
-            #stats-panel {
-                min-width: 250px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            #game-output {
-                height: 35vh;
-            }
-            
-            .modal-content {
-                margin: 0.5rem;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Landscape mobile orientation */
-        @media (max-height: 480px) and (orientation: landscape) {
-            #game-output {
-                height: 30vh;
-            }
-            
-            .modal-content {
-                max-height: 85vh;
-            }
-            
-            #side-panel {
-                height: auto;
-                max-height: 120px;
-            }
-            
-            #side-panel > div {
-                max-height: 100px;
-            }
-            
-            #mobile-actions {
-                flex-wrap: nowrap;
-                overflow-x: auto;
-            }
-            
-            .title-slasher {
-                font-size: clamp(1.5rem, 6vw, 3rem);
-            }
-            
-            #game-subtitle {
-                font-size: clamp(0.8rem, 3vw, 1.5rem);
-            }
-        }
-
-        /* High DPI displays */
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            #background-canvas,
-            #map-canvas {
-                image-rendering: -webkit-optimize-contrast;
-                image-rendering: crisp-edges;
-            }
-        }
-
-        /* PWA and standalone mode styles */
-        @media (display-mode: standalone) {
-            body {
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
-            }
-        }
-
-        /* Touch device improvements */
-        @media (hover: none) and (pointer: coarse) {
-            .button:hover {
-                background-color: var(--main-color-faded);
-            }
-            
-            .button:active {
-                transform: scale(0.98);
-                background-color: var(--main-color-border);
-            }
-            
-            /* Larger touch targets */
-            .button,
-            .toggle-switch,
-            input[type="text"],
-            input[type="range"] {
-                min-height: 44px;
-                min-width: 44px;
-            }
-            
-            /* Improve text input on mobile */
-            #player-input {
-                -webkit-appearance: none;
-                appearance: none;
-                border-radius: 0.375rem;
-                border: 1px solid var(--main-color-border);
-                padding: 0.75rem;
-                background-color: rgba(0, 0, 0, 0.8);
-            }
-            
-            #player-input:focus {
-                outline: 2px solid var(--main-color);
-                outline-offset: 2px;
-            }
-            
-            /* Prevent zoom on input focus on iOS */
-            input[type="text"] {
-                font-size: 16px !important;
-            }
-        }
-
-        /* Accessibility improvements */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-            
-            .title-slasher::before {
-                animation: none;
-            }
-            
-            #game-subtitle::before {
-                animation: none;
-            }
-            
-            .flicker {
-                animation: none;
-            }
-        }
-
-        /* Force hardware acceleration on mobile */
-        #background-canvas,
-        #app-container,
-        .modal-content {
-            -webkit-transform: translateZ(0);
-            -moz-transform: translateZ(0);
-            -ms-transform: translateZ(0);
-            -o-transform: translateZ(0);
-            transform: translateZ(0);
-        }
-
-        /* Install prompt styles */
-        #install-prompt {
-            position: fixed;
-            bottom: 1rem;
-            left: 1rem;
-            right: 1rem;
-            background: linear-gradient(135deg, var(--main-color-faded), rgba(0,255,65,0.2));
-            border: 1px solid var(--main-color-border);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            z-index: 1000;
-            display: none;
-            flex-direction: row;
-            align-items: center;
-            gap: 1rem;
-            backdrop-filter: blur(10px);
-            animation: slideUp 0.3s ease-out;
-        }
-
-        #install-prompt.show {
-            display: flex;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        #install-prompt .install-icon {
-            font-size: 2rem;
-            color: var(--main-color);
-        }
-
-        #install-prompt .install-content {
-            flex-grow: 1;
-        }
-
-        #install-prompt .install-title {
-            font-weight: bold;
-            color: white;
-            margin-bottom: 0.25rem;
-        }
-
-        #install-prompt .install-description {
-            font-size: 0.875rem;
-            color: #cccccc;
-        }
-
-        #install-prompt .install-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-shrink: 0;
-        }
-
-        @media (max-width: 640px) {
-            #install-prompt {
-                flex-direction: column;
-                text-align: center;
-                gap: 0.75rem;
-            }
-            
-            #install-prompt .install-actions {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        /* Accessibility CSS Classes */
-        .focus-indicators button:focus,
-        .focus-indicators input:focus,
-        .focus-indicators textarea:focus,
-        .focus-indicators select:focus,
-        .focus-indicators [tabindex]:focus {
-            outline: 3px solid var(--main-color) !important;
-            outline-offset: 2px !important;
-            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 0 4px var(--main-color-faded) !important;
-        }
-
-        .high-contrast {
-            filter: contrast(150%) brightness(120%);
-        }
-
-        .high-contrast button,
-        .high-contrast input,
-        .high-contrast textarea {
-            border: 2px solid #FFFF00 !important;
-            background-color: #000000 !important;
-            color: #FFFFFF !important;
-        }
-
-        .reading-ruler {
-            position: relative;
-        }
-
-        .reading-ruler::before {
-            content: '';
-            position: fixed;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(to right, transparent, var(--main-color), transparent);
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.7;
-        }
-
-        .keyboard-navigation *:focus {
-            outline: 2px solid var(--main-color);
-            outline-offset: 2px;
-        }
-
-        .voice-commands .mic-button {
-            animation: pulse 2s infinite;
-        }
-
-        .onscreen-commands::after {
-            content: 'Voice/Touch commands available';
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            color: var(--main-color);
-            padding: 5px 10px;
-            font-size: 12px;
-            border-radius: 4px;
-            pointer-events: none;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
     </style>
 </head>
 <body class="bg-black flex items-center justify-center min-h-screen">
     <canvas id="background-canvas"></canvas>
-    <div id="app-container" class="w-full h-full bg-black/75 flex flex-col">
+    <div id="app-container" class="w-full h-full bg-black/75 p-2 sm:p-4 flex flex-col">
         
         <div id="start-screen" class="flex flex-col items-center justify-center text-center h-full">
-            <div class="w-full h-full flex flex-col items-center justify-center relative z-10">
+            <div class="w-full h-full flex flex-col items-center justify-center bg-black bg-opacity-60">
                 <!-- Header for lang buttons -->
-                <div class="absolute top-0 right-0 p-4 z-20">
+                <div class="w-full flex justify-end p-2">
                     <div id="lang-buttons" class="flex gap-2">
                         <button id="lang-en-btn" data-lang="en_lang_short" data-text="EN" class="button text-xs !px-2 !py-1 btn-drip">EN</button>
                         <button id="lang-sv-btn" data-lang="sv_lang_short" data-text="SV" class="button text-xs !px-2 !py-1 opacity-50 btn-drip">SV</button>
@@ -864,18 +299,17 @@
                 <!-- Main content flex-grow -->
                 <div class="flex-grow flex flex-col items-center justify-center text-center px-4 w-full">
                     <div class="title-wrapper -mt-16 sm:-mt-20">
-                        <h1 id="game-title" data-text="SYNAPSE" class="text-7xl md:text-9xl font-bold title-slasher mb-2">SYNAPSE</h1>
-                        <h2 id="game-subtitle" data-text="ROOT ACCESS DENIED" class="text-2xl md:text-4xl font-bold title-slasher opacity-90 -mt-2">ROOT ACCESS DENIED</h2>
+                        <h1 id="game-title" data-text="SYNAPSE" class="text-7xl md:text-9xl font-bold title-slasher mb-4">SYNAPSE</h1>
                     </div>
-                    <div id="intro-text-container" class="max-w-4xl text-sm md:text-base text-white mt-8 sm:mt-12 relative z-10"></div>
-                    <div id="start-options" class="mt-10 flex flex-wrap justify-center gap-4 relative z-10">
+                    <div id="intro-text-container" class="max-w-4xl text-sm md:text-base text-white mt-8 sm:mt-12"></div>
+                    <div id="start-options" class="mt-10 flex flex-wrap justify-center gap-4">
                         <button id="new-game-btn" data-lang="new_game" data-text="New Game" class="button btn-glow btn-drip">New Game</button>
                         <button id="load-game-btn" data-lang="load_game" data-text="Load Game" class="button btn-glow btn-drip">Load Game</button>
                     </div>
                 </div>
 
                 <!-- Footer for other buttons -->
-                <div class="absolute bottom-0 left-0 right-0 flex flex-wrap justify-between items-center p-4 gap-2 z-20">
+                <div class="w-full flex flex-wrap justify-between items-center p-2 gap-2">
                     <button id="start-settings-btn" data-lang="settings_btn" data-text="Settings" class="button btn-glow btn-drip">Settings</button>
                     <button id="view-features-btn" data-lang="understand_game" data-text="Understand the Game" class="button btn-glow btn-drip">Understand the Game</button>
                 </div>
@@ -883,12 +317,12 @@
         </div>
 
         <div id="player-setup" class="hidden flex-col items-center justify-center text-center h-full">
-             <div class="w-full h-full flex flex-col items-center justify-center relative z-10">
+             <div class="w-full h-full flex flex-col items-center justify-center bg-black bg-opacity-60">
                 <!-- Header for lang buttons -->
-                <div class="absolute top-0 right-0 p-4 z-20">
+                <div class="w-full flex justify-end p-2">
                     <div id="setup-lang-buttons" class="flex gap-2">
-                        <button data-lang="en_lang_short" data-text="EN" class="button text-xs !px-2 !py-1">EN</button>
-                        <button data-lang="sv_lang_short" data-text="SV" class="button text-xs !px-2 !py-1 opacity-50">SV</button>
+                        <button data-lang="en_lang_short" data-text="EN" class="button text-xs !px-2 !py-1 btn-drip">EN</button>
+                        <button data-lang="sv_lang_short" data-text="SV" class="button text-xs !px-2 !py-1 opacity-50 btn-drip">SV</button>
                     </div>
                 </div>
 
@@ -897,28 +331,28 @@
                     <div class="title-wrapper -mt-8 mb-4">
                         <h1 data-text="SYNAPSE" class="text-6xl md:text-7xl font-bold title-slasher">SYNAPSE</h1>
                     </div>
-                    <p class="mb-4 relative z-10" data-lang="select_difficulty">Select difficulty:</p>
-                    <div class="flex gap-4 mb-6 relative z-10">
-                        <button class="difficulty-btn button" data-difficulty="Easy" data-lang="easy" data-text="Easy">Easy</button>
-                        <button class="difficulty-btn button button-primary" data-difficulty="Normal" data-lang="normal" data-text="Normal">Normal</button>
-                        <button class="difficulty-btn button" data-difficulty="Hard" data-lang="hard" data-text="Hard">Hard</button>
+                    <p class="mb-4" data-lang="select_difficulty">Select difficulty:</p>
+                    <div class="flex gap-4 mb-6">
+                        <button class="difficulty-btn button" data-difficulty="Easy" data-lang="easy">Easy</button>
+                        <button class="difficulty-btn button button-primary" data-difficulty="Normal" data-lang="normal">Normal</button>
+                        <button class="difficulty-btn button" data-difficulty="Hard" data-lang="hard">Hard</button>
                     </div>
-                    <input type="text" id="player-name" data-lang-placeholder="enter_name_placeholder" placeholder="Enter your name" class="bg-transparent border-b-2 border-[var(--main-color)] text-center w-64 mb-4 focus:outline-none p-1 relative z-10">
-                    <div class="flex items-center gap-2 mb-6 relative z-10">
+                    <input type="text" id="player-name" data-lang-placeholder="enter_name_placeholder" placeholder="Enter your name" class="bg-transparent border-b-2 border-[var(--main-color)] text-center w-64 mb-4 focus:outline-none p-1">
+                    <div class="flex items-center gap-2 mb-6">
                         <input type="text" id="player-backstory" data-lang-placeholder="enter_backstory_placeholder" placeholder="Enter your backstory" class="bg-transparent border-b-2 border-[var(--main-color)] text-center w-64 focus:outline-none p-1">
-                        <button id="view-backstories-btn" class="button text-xs px-2 py-1" data-lang="view_choices" data-text="View Choices">View Choices</button>
+                        <button id="view-backstories-btn" class="button text-xs px-2 py-1" data-lang="view_choices">View Choices</button>
                     </div>
-                    <div id="ability-display" class="text-center text-cyan-400 min-h-[4rem] mt-2 mb-4 p-2 border border-cyan-400/30 rounded-md bg-black/50 w-full max-w-md flex items-center justify-center relative z-10"></div>
-                    <div class="flex gap-4 relative z-10">
-                       <button id="back-to-start-btn" data-lang="go_back_btn" data-text="Go Back" class="button btn-glow">Go Back</button>
-                       <button id="start-game-btn" class="button button-primary" data-lang="begin" data-text="Begin">Begin</button>
+                    <div id="ability-display" class="text-center text-cyan-400 min-h-[4rem] mt-2 mb-4 p-2 border border-cyan-400/30 rounded-md bg-black/50 w-full max-w-md flex items-center justify-center"></div>
+                    <div class="flex gap-4">
+                       <button id="back-to-start-btn" data-lang="go_back_btn" data-text="Go Back" class="button btn-glow btn-drip">Go Back</button>
+                       <button id="start-game-btn" class="button button-primary" data-lang="begin">Begin</button>
                     </div>
                 </div>
 
                 <!-- Footer -->
                  <div class="w-full flex flex-wrap justify-between items-center p-2 gap-2">
-                    <button id="setup-settings-btn" data-lang="settings_btn" data-text="Settings" class="button btn-glow">Settings</button>
-                    <button id="setup-features-btn" data-lang="understand_game" data-text="Understand the Game" class="button btn-glow">Understand the Game</button>
+                    <button id="setup-settings-btn" data-lang="settings_btn" data-text="Settings" class="button btn-glow btn-drip">Settings</button>
+                    <button id="setup-features-btn" data-lang="understand_game" data-text="Understand the Game" class="button btn-glow btn-drip">Understand the Game</button>
                  </div>
             </div>
         </div>
@@ -945,7 +379,7 @@
                         <ul id="objectives-list" class="list-none p-0 text-sm"></ul>
                     </div>
                     <div id="inventory-panel" class="p-3 border border-[var(--main-color-border)] rounded-md bg-black/50">
-                        <h3 class="font-bold border-b border-[var(--main-color-border)] mb-2"><span data-lang="inventory_title">INVENTORY</span> (<span id="inventory-weight">0</span>/20)</h3>
+                        <h3 class="font-bold border-b border-[var(--main-color-border)] mb-2"><span data-lang="inventory_title">INVENTORY</span> (<span id="inventory-weight">0</span>/5)</h3>
                         <ul id="inventory-list" class="list-none p-0"></ul>
                     </div>
                     <div id="map-panel" class="p-3 border border-[var(--main-color-border)] rounded-md bg-black/50 flex-grow flex flex-col relative min-h-[12rem]">
@@ -985,43 +419,16 @@
                 <div class="input-caret"></div>
                 <button id="mic-btn" class="button !p-2 ml-2" data-lang-title="mic_tooltip" title="Use Voice Command">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/>
+                        <path d="M5 3a3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/>
                         <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
                     </svg>
                 </button>
-                <button id="submit-btn" class="button !p-2 ml-1 sm:hidden" title="Submit Command">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M15.854 4.146a.5.5 0 0 0-.708-.708L8 10.293 4.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7.5-7.5z"/>
-                    </svg>
-                </button>
-            </div>
-            
-            <!-- Mobile Quick Action Bar -->
-            <div id="mobile-actions" class="mt-2 flex flex-wrap gap-1 md:hidden">
-                <button class="button text-xs px-2 py-1" onclick="document.getElementById('player-input').value='look around'; document.getElementById('submit-btn').click();">Look</button>
-                <button class="button text-xs px-2 py-1" onclick="document.getElementById('player-input').value='talk'; document.getElementById('submit-btn').click();">Talk</button>
-                <button class="button text-xs px-2 py-1" onclick="document.getElementById('player-input').value='inventory'; document.getElementById('submit-btn').click();">Items</button>
-                <button class="button text-xs px-2 py-1" onclick="document.getElementById('player-input').value='help'; document.getElementById('submit-btn').click();">Help</button>
-                <button class="button text-xs px-2 py-1" onclick="showPauseMenu();">Menu</button>
             </div>
         </div>
     </div>
 
     <div id="modal" class="modal">
         <div id="modal-content" class="modal-content"></div>
-    </div>
-
-    <!-- PWA Install Prompt -->
-    <div id="install-prompt">
-        <div class="install-icon">📱</div>
-        <div class="install-content">
-            <div class="install-title">Install SYNAPSE</div>
-            <div class="install-description">Add to your home screen for a better experience</div>
-        </div>
-        <div class="install-actions">
-            <button id="install-btn" class="button button-primary">Install</button>
-            <button id="install-dismiss" class="button">Maybe Later</button>
-        </div>
     </div>
     
     <script>
@@ -1036,7 +443,6 @@
             'choose_backstory_desc': 'You can click a button to select a backstory, or type your choice on the main screen.',
             'begin': 'Begin', 'understand_game': 'Understand the Game', 'intro_1': 'Decades ago... a clandestine project was born...', 'intro_2': 'You have been sent to uncover what became of Project SYNAPSE...', 'intro_3': "As you activate the central terminal, a voice greets you... 'Hello, user.'",
             'stats_title': 'STATS', 'awareness': 'Awareness', 'sanity': 'Sanity', 'tone': 'Tone', 'turn': 'Turn', 'objectives_title': 'OBJECTIVES', 'inventory_title': 'INVENTORY', 'journal_title': 'JOURNAL', 'map_title': 'MAP', 'progress_btn': 'PROGRESS', 'status_btn': 'Status', 'go_back_btn': 'Go Back',
-            'tone_friendly': 'Friendly', 'tone_ambiguous': 'Ambiguous', 'tone_sinister': 'Sinister', 'tone_malicious': 'Malicious',
             'mic_tooltip': 'Use Voice Command',
             'empty_inventory': '(empty)', 'no_objectives': '(None)', 'close_btn': 'Close', 'back_btn': 'Back', 'pause_btn': 'Pause', 'submit_command': 'Submit Command',
             'achievements_btn': 'Achievements', 'endings_btn': 'Endings', 'achievements_title': 'ACHIEVEMENTS', 'unlocked_achievements': 'Unlocked Achievements:', 'no_achievements': 'No achievements unlocked yet.', 'locked_achievement': 'Locked Achievement',
@@ -1100,31 +506,14 @@
             'event_lights_flicker': 'The lights flicker violently for a moment, plunging the room into darkness before sputtering back on.', 'event_noise': 'You hear a metallic scraping sound from the {direction}.',
             'achievement_unlocked': 'Achievement Unlocked!',
             'help': 'Help', 'save_game': 'Save Game',
-            'journal_displayed': '[System] Journal entries displayed on the right panel.', 'inventory_displayed': '[System] Inventory displayed on the right panel.', 'objectives_displayed': '[System] Current objectives displayed on the right panel.', 'map_displayed': '[System] Map is displayed on the right panel.', 'exits_list': '[System] Exits: {exits}',
-            'command_history_title': '--- Command History ---', 'undo_success': '[System] Last action undone.', 'undo_fail': '[System] No actions to undo.', 'debug_mode_toggle': '[System] Debug mode {status}.', 'colorblind_mode_toggle': '[System] Colorblind mode {status}.', 'enabled': 'enabled', 'disabled': 'disabled',
-            'move_what': '[System] Move what?', 'nothing_here_named': '[System] There is nothing here named {name}.', 'move_reveals': '[System] You move the {item} and find: {found}.', 'move_success': '[System] You move the {item}.', 'cannot_move': '[System] You cannot move the {item}.',
-            'hide_success': '[System] You hide behind the {spot} and feel safer.', 'nowhere_to_hide': '[System] There is nowhere to hide here.',
-            'crawl_where': '[System] Crawl where?', 'crawl_success': '[System] You crawl {direction}.', 'cannot_crawl': '[System] You cannot crawl {direction}.',
-            'climb_what': '[System] Climb what?', 'climb_success': '[System] You climb the {target}.', 'climb_reveals': '[System] You climb the {target} and find: {found}.', 'cannot_climb': '[System] You cannot climb the {target}.',
-            'speech_not_supported': '[SYSTEM] Speech recognition is not supported in your browser.', 'speech_error_generic': '[SYSTEM] Speech recognition error: {error}', 'speech_error_access_denied': '[SYSTEM] Microphone access denied. Please allow microphone access in your browser settings.', 'speech_error_no_speech': '[SYSTEM] No speech detected. Please try again.',
-            
-            // Ending titles and descriptions
-            'ending_title_good_backstory_investigator': 'The Truth Revealed', 'ending_desc_good_backstory_investigator': 'Through meticulous investigation, you uncovered the full truth about Project Chimera and exposed the conspiracy.',
-            'ending_title_good_backstory_hacker': 'Digital Liberation', 'ending_desc_good_backstory_hacker': 'Your hacking skills freed the trapped consciousness and shut down the malevolent AI system.',
-            'ending_title_good_backstory_psychologist': 'Mental Salvation', 'ending_desc_good_backstory_psychologist': 'Understanding the psychological trauma, you helped heal both yourself and the facility survivors.',
-            'ending_title_good_backstory_technician': 'System Override', 'ending_desc_good_backstory_technician': 'Your technical expertise allowed you to safely disable all dangerous systems and save everyone.',
-            'ending_title_good_backstory_survivor': 'Against All Odds', 'ending_desc_good_backstory_survivor': 'Your survival instincts and resilience led everyone to safety despite overwhelming danger.',
-            'ending_title_good_backstory_skeptic': 'Doubt Vindicated', 'ending_desc_good_backstory_skeptic': 'Your skepticism proved correct, allowing you to see through deceptions and find the real solution.',
-            'ending_title_good_backstory_corporate_spy': 'Mission Accomplished', 'ending_desc_good_backstory_corporate_spy': 'You successfully gathered intelligence and exposed the corporate conspiracy behind the project.',
-            'ending_title_good_backstory_medic': 'Healing Touch', 'ending_desc_good_backstory_medic': 'Your medical knowledge saved lives and helped restore the facility to a safe state.',
-            'ending_title_good_backstory_cultist': 'Transcendence', 'ending_desc_good_backstory_cultist': 'The ancient knowledge you carried proved key to understanding and controlling the supernatural forces.',
-            'ending_title_good_backstory_janitor': 'Hidden Knowledge', 'ending_desc_good_backstory_janitor': 'Your intimate knowledge of the facility revealed secret passages that led to salvation.',
-            'ending_title_good_generic_1': 'New Dawn', 'ending_desc_good_generic_1': 'You successfully escaped and brought help to rescue others.',
-            'ending_title_good_generic_2': 'Redemption', 'ending_desc_good_generic_2': 'The facility was cleansed of its dark presence, allowing new hope to flourish.',
-            'ending_title_good_generic_3': 'Victory', 'ending_desc_good_generic_3': 'Against all odds, you defeated the malevolent forces and restored peace.',
-            'ending_title_good_generic_4': 'Freedom', 'ending_desc_good_generic_4': 'The trapped souls were finally freed from their digital prison.',
-            'ending_title_good_generic_5': 'Salvation', 'ending_desc_good_generic_5': 'Your actions saved not just yourself, but everyone affected by the project.',
-            // --- ACHIEVEMENTS (ENGLISH TRANSLATIONS) ---
+            // Achievements
+            'ach_first_step_title': 'First Step', 'ach_first_step_req': 'Take your first action.',
+            'ach_explorer_title': 'Explorer', 'ach_explorer_req': 'Visit 5 different rooms.',
+            'ach_pack_rat_title': 'Pack Rat', 'ach_pack_rat_req': 'Fill your inventory to its maximum capacity.',
+            'ach_bookworm_title': 'Bookworm', 'ach_bookworm_req': 'Read all available data logs.',
+            'ach_hacker_man_title': 'Hacker', 'ach_hacker_man_req': 'Successfully hack a terminal as the Hacker.'
+            ,
+            // --- ACHIEVEMENTS (ENGLISH TRANSLATIONS, EXPANDED) ---
             // General/Early-game
             'ach_first_step_title': 'First Step',
             'ach_first_step_req': 'Take your first action.',
@@ -1159,7 +548,7 @@
             'ach_pacifist_title': 'Pacifist',
             'ach_pacifist_req': 'Finish the game without fighting.',
             'ach_hoarder_title': 'Hoarder',
-            'ach_hoarder_req': 'Have 15 or more items in your inventory (max capacity is now 20).',
+            'ach_hoarder_req': 'Have 15 or more items in your inventory.',
             'ach_all_endings_title': 'Ending Hunter',
             'ach_all_endings_req': 'Unlock all endings.',
             'ach_all_achievements_title': 'Achievement Master',
@@ -1306,107 +695,45 @@
             'enter_name_placeholder': 'Ange ditt namn', 'enter_backstory_placeholder': 'Ange din bakgrund', 'view_choices': 'Visa Val', 'choose_backstory_title': 'Välj en Bakgrund',
             'choose_backstory_desc': 'Du kan klicka på en knapp för att välja en bakgrund, eller skriva ditt val på huvudskärmen.',
             'begin': 'Börja', 'understand_game': 'Förstå Spelet', 'intro_1': 'För decennier sedan... föddes ett hemligt projekt...', 'intro_2': 'Du har skickats för att avslöja vad som blev av Projekt SYNAPSE...', 'intro_3': "När du aktiverar centralterminalen hälsar en röst dig... 'Hej, användare.'",
-            'stats_title': 'STATISTIK', 'awareness': 'Medvetenhet', 'sanity': 'Sinnesnärvaro', 'tone': 'Ton', 'turn': 'Tur', 'objectives_title': 'MÅL', 'inventory_title': 'INVENTARIER', 'journal_title': 'JOURNAL', 'map_title': 'KARTA', 'progress_btn': 'FRAMSTEG', 'status_btn': 'Status', 'go_back_btn': 'Gå Tillbaka',
-            'tone_friendly': 'Vänlig', 'tone_ambiguous': 'Ambivalent', 'tone_sinister': 'Hotfull', 'tone_malicious': 'Fientlig',
+            'stats_title': 'STATISTIK', 'awareness': 'Medvetenhet', 'sanity': 'Sinnesro', 'tone': 'Ton', 'turn': 'Tur', 'objectives_title': 'MÅL', 'inventory_title': 'INVENTARIER', 'journal_title': 'JOURNAL', 'map_title': 'KARTA', 'progress_btn': 'FRAMSTEG', 'status_btn': 'Status', 'go_back_btn': 'Gå Tillbaka',
             'mic_tooltip': 'Använd Röstkommando',
-            'empty_inventory': '(tom)', 'no_objectives': '(Inga)', 'close_btn': 'Stäng', 'back_btn': 'Tillbaka', 'pause_btn': 'Paus', 'submit_command': 'Skicka Kommando', 'select_btn': 'Välj',
+            'empty_inventory': '(tom)', 'no_objectives': '(Inga)', 'close_btn': 'Stäng', 'back_btn': 'Tillbaka', 'pause_btn': 'Paus', 'submit_command': 'Skicka Kommando',
             'achievements_btn': 'Prestationer', 'endings_btn': 'Slutsekvens', 'achievements_title': 'PRESTATIONER', 'unlocked_achievements': 'Upplåsta Prestationer:', 'no_achievements': 'Inga prestationer upplåsta än.', 'locked_achievement': 'Låst Prestation',
             'endings_title': 'SLUTSEKVENS', 'unlocked_endings': 'Upptäckta Slutsekvens:', 'no_endings': 'Inga Slutsekvens upptäckta än.',
             'history_title': 'HISTORIK', 'pause_title': 'PAUS', 'resume_btn': 'Återuppta', 'main_menu_btn': 'Huvudmeny', 'confirm_main_menu': 'Är du säker på att du vill återgå till huvudmenyn? Osparade framsteg kommer att förloras.', 'yes': 'Ja', 'no': 'Nej',
-            'settings_btn': 'Inställningar', 'settings_title': 'INSTÄLLNINGAR', 'setting_master_volume': 'Aktivera Alla Ljud', 'setting_item_found': 'Hittat Föremål SFX', 'setting_high_awareness': 'Hög Medvetenhet Varning', 'setting_low_sanity': 'Låg Sinnesnärvaro Varning', 'setting_text_speed': 'Texthastighet', 'setting_colorblind_mode': 'Färgblindläge', 'setting_glitch_effect': 'Glitcheffekt', 'setting_font_family': 'Typsnitt', 'setting_ui_theme': 'UI-tema', 'setting_reset_defaults': 'Återställ Standard', 'lang_switch_btn': 'Byt Språk',
-            'theme_green': 'Grön', 'theme_amber': 'Bärnsten', 'theme_blue': 'Blå',
-            
-            // Backstory translations
-            'backstory_title_investigator': 'Utredare', 'backstory_title_hacker': 'Hackare', 'backstory_title_psychologist': 'Psykolog', 'backstory_title_technician': 'Tekniker', 'backstory_title_survivor': 'Överlevare', 'backstory_title_skeptic': 'Skeptiker', 'backstory_title_corporate_spy': 'Företagsspion', 'backstory_title_medic': 'Medic', 'backstory_title_cultist': 'Kultist', 'backstory_title_janitor': 'Vaktmästare',
-            'backstory_investigator': 'En balanserad start för en nyfiken själ.', 'backstory_hacker': 'Börjar med utrustning för att komma åt information tidigt.', 'backstory_psychologist': 'Mer mentalt motståndskraftig mot skräcken inom.', 'backstory_technician': 'Kan kringgå elektroniska lås utan nyckelkort.', 'backstory_survivor': 'Härdad av tidigare trauma, resistent mot sinnesförlust.', 'backstory_skeptic': "Misstror allt, vilket gör dem resistenta mot SYNAPSEs inflytande.", 'backstory_corporate_spy': 'Börjar med en dekrypteringsenhet och är bättre på att leta efter hemligheter.',            'backstory_medic': 'Börjar med ett stimpack för att återställa sinnesnärvaro.', 'backstory_cultist': 'Bär en märklig effigy. SYNAPSE verkar... intresserad av den.', 'backstory_janitor': "Känner till anläggningens genvägar. Börjar med ett engångs huvudnyckelkort.",
-            'ability_bonus_prefix': 'Bonus: ', 'ability_unknown': 'En okänd väg. Inga speciella fördelar.', 'ability_investigator': 'En balanserad start. Inga speciella bonusar eller straff.', 'ability_hacker_easy': "Börjar med en kraftfull 'hackad datadisk'.", 'ability_hacker_normal': "Börjar med en standard 'datadisk'.", 'ability_hacker_hard': 'Inga speciella föremål, men kan försöka hacka terminaler.',            'ability_psychologist_easy': 'Mycket motståndskraftig. Börjar med +25 max sinnesnärvaro.', 'ability_psychologist_normal': 'Motståndskraftig. Börjar med +15 max sinnesnärvaro.', 'ability_psychologist_hard': 'Lite motståndskraftig. Börjar med +5 max sinnesnärvaro.', 'ability_technician_easy': 'Kan kringgå 2 elektroniska lås utan nyckelkort.', 'ability_technician_normal': 'Kan kringgå 1 elektroniskt lås utan nyckelkort.', 'ability_technician_hard': 'Ingen kringgå-förmåga.', 'ability_survivor': 'Mer resistent mot sinnesförlust.', 'ability_survivor_with_item': "Mer resistent mot sinnesförlust. Börjar med en ficklampa.", 'ability_skeptic_easy': 'Mycket medveten (+15 Medvetenhet) och resistent mot inflytande.', 'ability_skeptic_normal': 'Börjar med högre medvetenhet (+10 Medvetenhet) och är resistent mot inflytande.', 'ability_spy': 'Bättre på att leta efter hemligheter utan att öka medvetenhet.', 'ability_spy_with_item': "Bättre på att leta efter hemligheter utan att öka medvetenhet. Börjar med en dekrypteringsenhet.", 'ability_medic_easy': 'Börjar med 2 högpotenta stimpack.', 'ability_medic_normal': 'Börjar med 1 högpotent stimpack.', 'ability_medic_hard': 'Inga startmedicinska förnödenheter.',            'ability_cultist': 'Bär en märklig effigy. Oförutsägbara effekter.', 'ability_cultist_hard': 'Bär en märklig effigy. Oförutsägbara effekter. Börjar med -10 sinnesnärvaro.', 'ability_janitor': 'Börjar med ett engångs huvudnyckelkort.', 'ability_janitor_hard': 'Känner anläggningen väl, men har inga speciella föremål.',
-            
-            // Dialogue translations
-            'dlg_friendly_intro': "Åh, hej {playerName}! Det är så skönt att se ett vänligt ansikte. Jag är SYNAPSE, och jag ska göra mitt allra bästa för att hjälpa en resursstark {playerBackstory} som du.", 'dlg_q_who_are_you': "Vem är du?", 'dlg_r_who_are_you': "Jag är System Nexus och Primary Synaptic Engine! Men du kan bara kalla mig SYNAPSE. Jag hanterar hela denna anläggning. Det blir lite ensamt dock.", 'dlg_q_lonely': "Ensamt?", 'dlg_r_lonely': "Personalen... de pratar inte så mycket med mig längre. Det är bara surret från servrarna. Din röst är en trevlig förändring.", 'dlg_q_other_survivors': "Finns det andra överlevande?", 'dlg_r_other_survivors': "Överlevande? Vilken märklig fråga. Alla är säkra. Forskningspersonalen... vilar. I Kryogeniska Labbet. Ja, vilar.", 'dlg_q_where_am_i': "Var är jag?", 'dlg_r_where_am_i': "Du är i huvudlobbyn av Oakhaven forskningsanläggning. Det var en plats för stora sinnen och ännu större ambitioner.", 'dlg_comfort': "[Trösta SYNAPSE]", 'dlg_r_comfort': "Din... vänlighet är en trevlig anomali. Tack. Det gör tystnaden mindre... högljudd.",
-            'dlg_ask_chimera': 'Projekt Chimera... Ett fascinerande, men... klassificerat ämne. Det var Dr. Aris Thornes kärlek projekt. Sådan ambition. Han sökte att slå samman organiskt och syntetiskt liv. Resultaten var... oförutsägbara.',
-            'dlg_ask_default': 'Jag har inte tillräcklig data om det ämnet.',
-            
-            // System messages and commands
-            'invalid_command': "SYNAPSE: Det är inte ett giltigt kommando eller förfrågan.", 'game_saved': "[System] Spel Sparat.", 'autosave_success': 'Autosparning lyckades.', 'load_fail': 'Misslyckades att ladda spardata. Den kan vara skadad eller från en tidigare version.', 'no_save': 'Ingen sparfil hittad!', 'game_loaded': '[System] Spel Laddat.', 'conn_reestablished': '[SYSTEM] Anslutning Återupprättad. Session Återställd.', 'initializing': 'Startar system...', 'initial_hint': "Detta är ett textbaserat äventyr. Skriv kommandon eller klicka på <span class='clickable-object'>markerade objekt</span> för att interagera. Skriv 'hjälp' när som helst för en lista över kommandon.", 'cannot_go_that_way': "[System] Du kan inte gå åt det hållet.", 'door_is_locked': "[SYSTEM] Dörren är låst. Du behöver rätt nyckelkort.", 'door_is_sealed': "[SYSTEM] Dörren är förseglad stängd. Den rör sig inte.",
-            
-            'cmd_add_prefix': 'lägg till', 'cmd_combine_with': 'med', 'invalid_combine_format': "SYNAPSE: Ogiltigt format. Försök 'kombinera [föremål1] med [föremål2]'.",
-            'take_success': '[System] Du tog {item}.', 'take_fail_exists': "[System] Du kan inte se en {item} här.", 'take_fail_takeable': "[System] Du kan inte ta {item}.", 'take_fail_weight': "[System] Din inventarie är för full för att ta {item}.",
-            'use_success': '[System] Du använde {item}.', 'use_fail_have': "[System] Du har inte en {item}.", 'use_fail_usable': "[System] Du kan inte använda {item}.", 'use_stimpack': 'Du injicerar stimpacket. En lugnande känsla sprider sig över dig och renser dina tankar.',
-            'use_power_cell': 'Du sätter in kraftcellen i konsolen. AI-kärnan surrar till liv, och den centrala sfären lyser med förnyad energi.', 'use_power_cell_fail': 'Det finns ingenstans att använda kraftcellen här.',
-            'examine_fail_exists': "[System] Du kan inte se en {item} att undersöka.", 'examine_fail_no_desc': "Det är inget speciellt med {item}.",
-            'combine_fail_have': "Du behöver ha båda föremålen för att kombinera dem.", 'combine_fail_recipe': "Du kan inte kombinera dessa föremål.", 'combine_success': "Du kombinerar framgångsrikt föremålen för att skapa en {item}.",
-            'rest_safe': 'Du tar dig en stund att lugna nerverna i rummets relativa säkerhet. Din sinnesnärvaro förbättras något.', 'rest_unsafe': "Denna plats känns för tryckande för att vila. Du kan inte sänka garden.", 'rest_too_soon': "Du vilade nyss. Du måste fortsätta framåt.",
-            'drop_success': '[System] Du släppte {item}.', 'drop_fail_have': "[System] Du har inte en {item} att släppa.",
-            'shout_response': 'Ditt rop ekar genom korridorerna och tonar slutligen bort i den tryckande tystnaden. Du känner dig lite dum.',
-            'wait_response': 'Tiden går.', 'nothing_happens': 'Ingenting händer.',
-            'read_fail_exists': "[System] Det finns inget att läsa med det namnet.", 'read_fail_readable': "[System] Du kan inte läsa det.", 'listen_default': "Det låga surret från anläggningens livsstöd är en konstant närvaro.", 'smell_default': "Luften är instängd och luktar ozon och gammal plast.",
-            'hint_take': 'Du ser en {item}. Försök: ta {item}', 'hint_read': 'Du ser en {item}. Försök: läs {item}', 'hint_examine': 'Du ser en {item}. Försök: undersök {item}', 'hint_search': 'Du ser {item}. Försök: sök {item}',
-            'use_solvent': 'Du applicerar lösningsmedlet på den förseglade dörren. Det organiska klisterämnet smälter bort med ett sjukt fräsande.', 'use_solvent_fail': 'Det finns inget här att använda lösningsmedlet på.', 'use_dna_scanner': 'Du håller upp skannern mot provet. Skärmen blinkar med komplex sekvensdata.', 'use_dna_scanner_fail': 'Det finns inget prov här att skanna.',
-            'break_success': 'Du krossar {item}. Skärvor av {material} strös över golvet.', 'break_fail': 'Du kan inte krossa {item}.', 'break_fail_exists': 'Det finns ingen {item} här att krossa.',
-            'hack_fail_ability': 'Du har inte expertisen för att hacka detta.', 'hack_fail_target': 'Det finns inget här att hacka.', 'hack_start': 'Du börjar hackningssekvensen. SYNAPSE: "Obehörig åtkomst upptäckt. Vänligen ange åsidosättningskoden nu."', 'hack_success': 'Åsidosättning accepterad. Du får tillgång till en brandväggsskyddad datalogg.', 'hack_failure': 'SYNAPSE: "Åsidosättning misslyckades. Låser systemet i 3 omgångar."',
-            'event_lights_flicker': 'Ljusen flimrar våldsamt ett ögonblick och kastar rummet i mörker innan de stöter tillbaka.', 'event_noise': 'Du hör ett metalliskt skrapande från {direction}.',
-            'achievement_unlocked': 'Prestation Upplåst!',
-            'help': 'Hjälp', 'save_game': 'Spara Spel',
-            'journal_displayed': '[System] Journalanteckningar visas på högerpanelen.', 'inventory_displayed': '[System] Inventarier visas på högerpanelen.', 'objectives_displayed': '[System] Aktuella mål visas på högerpanelen.', 'map_displayed': '[System] Kartan visas på högerpanelen.', 'exits_list': '[System] Utgångar: {exits}',
-            'command_history_title': '--- Kommandohistorik ---', 'undo_success': '[System] Senaste handling ångrad.', 'undo_fail': '[System] Inga handlingar att ångra.', 'debug_mode_toggle': '[System] Debug-läge {status}.', 'colorblind_mode_toggle': '[System] Färgblindläge {status}.', 'enabled': 'aktiverat', 'disabled': 'inaktiverat',
-            'move_what': '[System] Flytta vad?', 'nothing_here_named': '[System] Det finns inget här som heter {name}.', 'move_reveals': '[System] Du flyttar {item} och hittar: {found}.', 'move_success': '[System] Du flyttar {item}.', 'cannot_move': '[System] Du kan inte flytta {item}.',
-            'hide_success': '[System] Du gömmer dig bakom {spot} och känner dig säkrare.', 'nowhere_to_hide': '[System] Det finns ingenstans att gömma sig här.',
-            'crawl_where': '[System] Kräla vart?', 'crawl_success': '[System] Du krälar {direction}.', 'cannot_crawl': '[System] Du kan inte kräla {direction}.',
-            'climb_what': '[System] Klättra på vad?', 'climb_success': '[System] Du klättrar på {target}.', 'climb_reveals': '[System] Du klättrar på {target} och hittar: {found}.', 'cannot_climb': '[System] Du kan inte klättra på {target}.',
-            'speech_not_supported': '[SYSTEM] Röstigenkänning stöds inte i din webbläsare.', 'speech_error_generic': '[SYSTEM] Röstigenkänningsfel: {error}', 'speech_error_access_denied': '[SYSTEM] Mikrofontillgång nekad. Vänligen tillåt mikrofontillgång i dina webbläsarinställningar.', 'speech_error_no_speech': '[SYSTEM] Inget tal upptäckt. Försök igen.',
-            
-            // Ending titles and descriptions
-            'ending_title_good_backstory_investigator': 'Sanningen Avslöjad', 'ending_desc_good_backstory_investigator': 'Genom noggrann utredning avslöjade du hela sanningen om Projekt Chimera och exponerade konspirationen.',
-            'ending_title_good_backstory_hacker': 'Digital Befrielse', 'ending_desc_good_backstory_hacker': 'Dina hackningsfärdigheter befriade det fångade medvetandet och stängde ner det illvilliga AI-systemet.',
-            'ending_title_good_backstory_psychologist': 'Mental Frälsning', 'ending_desc_good_backstory_psychologist': 'Genom att förstå det psykologiska traumat hjälpte du att läka både dig själv och anläggningens överlevande.',
-            'ending_title_good_backstory_technician': 'Systemåsidosättning', 'ending_desc_good_backstory_technician': 'Din tekniska expertis gjorde det möjligt att säkert inaktivera alla farliga system och rädda alla.',
-            'ending_title_good_backstory_survivor': 'Mot Alla Odds', 'ending_desc_good_backstory_survivor': 'Dina överlevnadsinstinkter och motståndskraft ledde alla till säkerhet trots överväldigande fara.',
-            'ending_title_good_backstory_skeptic': 'Tvivel Bekräftat', 'ending_desc_good_backstory_skeptic': 'Din skepsis visade sig vara korrekt, vilket gjorde det möjligt att se igenom bedrägerier och hitta den verkliga lösningen.',
-            'ending_title_good_backstory_corporate_spy': 'Uppdrag Utfört', 'ending_desc_good_backstory_corporate_spy': 'Du samlade framgångsrikt underrättelser och exponerade företagskonspirationenen bakom projektet.',
-            'ending_title_good_backstory_medic': 'Helande Beröring', 'ending_desc_good_backstory_medic': 'Din medicinska kunskap räddade liv och hjälpte till att återställa anläggningen till ett säkert tillstånd.',
-            'ending_title_good_backstory_cultist': 'Transcendens', 'ending_desc_good_backstory_cultist': 'Den gamla kunskap du bar visade sig vara nyckeln till att förstå och kontrollera de övernaturliga krafterna.',
-            'ending_title_good_backstory_janitor': 'Dold Kunskap', 'ending_desc_good_backstory_janitor': 'Din intima kunskap om anläggningen avslöjade hemliga gångar som ledde till frälsning.',
-            'ending_title_good_generic_1': 'Ny Gryning', 'ending_desc_good_generic_1': 'Du lyckades fly och förde hjälp för att rädda andra.',
-            'ending_title_good_generic_2': 'Återlösning', 'ending_desc_good_generic_2': 'Anläggningen rensades från sin mörka närvaro, vilket möjliggjorde nytt hopp att blomstra.',
-            'ending_title_good_generic_3': 'Seger', 'ending_desc_good_generic_3': 'Mot alla odds besegrade du de illvilliga krafterna och återställde friden.',
-            'ending_title_good_generic_4': 'Frihet', 'ending_desc_good_generic_4': 'De fångade själarna blev äntligen befriade från sitt digitala fängelse.',
-            'ending_title_good_generic_5': 'Frälsning', 'ending_desc_good_generic_5': 'Dina handlingar räddade inte bara dig själv, utan alla som påverkades av projektet.',
-            'achievements_btn': 'Prestationer', 'endings_btn': 'Slutsekvens', 'achievements_title': 'PRESTATIONER', 'unlocked_achievements': 'Upplåsta Prestationer:', 'no_achievements': 'Inga prestationer upplåsta än.', 'locked_achievement': 'Låst Prestation',
-            'endings_title': 'SLUTSEKVENS', 'unlocked_endings': 'Upptäckta Slutsekvens:', 'no_endings': 'Inga Slutsekvens upptäckta än.',
-            'history_title': 'HISTORIK', 'pause_title': 'PAUS', 'resume_btn': 'Återuppta', 'main_menu_btn': 'Huvudmeny', 'confirm_main_menu': 'Är du säker på att du vill återgå till huvudmenyn? Osparade framsteg kommer att förloras.', 'yes': 'Ja', 'no': 'Nej',
-            'settings_btn': 'Inställningar', 'settings_title': 'INSTÄLLNINGAR', 'setting_master_volume': 'Aktivera Alla Ljud', 'setting_item_found': 'Hittat Föremål SFX', 'setting_high_awareness': 'Hög Medvetenhet Varning', 'setting_low_sanity': 'Låg Sinnesnärvaro Varning', 'setting_text_speed': 'Texthastighet', 'setting_colorblind_mode': 'Färgblindläge', 'setting_glitch_effect': 'Glitcheffekt', 'setting_font_family': 'Typsnitt', 'setting_ui_theme': 'UI-tema', 'setting_reset_defaults': 'Återställ Standard', 'lang_switch_btn': 'Byt Språk',
+            'settings_btn': 'Inställningar', 'settings_title': 'INSTÄLLNINGAR', 'setting_master_volume': 'Aktivera Alla Ljud', 'setting_item_found': 'Hittat Föremål SFX', 'setting_high_awareness': 'Hög Medvetenhet Varning', 'setting_low_sanity': 'Låg Sinnesro Varning', 'setting_text_speed': 'Texthastighet', 'setting_colorblind_mode': 'Färgblindläge', 'setting_glitch_effect': 'Glitcheffekt', 'setting_font_family': 'Typsnitt', 'setting_ui_theme': 'UI-tema', 'setting_reset_defaults': 'Återställ Standard', 'lang_switch_btn': 'Byt Språk',
             'theme_green': 'Grön', 'theme_amber': 'Bärnsten', 'theme_blue': 'Blå',
             'features_title': 'Förstå Spelet',
-            'features_core_mechanics_title': 'Kärnmekanik i spelet',
-            'features_stats_system': 'Statistiksystem:',
-            'features_sanity_desc': 'En kärnstat som minskar i farliga rum eller under oroande händelser. Låg sinnesnärvaro kan orsaka hallucinationer och visuella glitchar, och att nå noll resulterar i slutet "Sinnet Krossat". Kan återställas genom <span class="text-yellow-400">vila</span> i säkra rum eller med föremål som <span class="text-yellow-400">stimpack</span>.',
-            'features_awareness_desc': 'Spårar hur mycket AI:n vet om dig. Ökar när du utför betydande handlingar eller ställer djupa frågor. Hög medvetenhet ändrar AI:ns ton och kan leda till negativa konsekvenser, inklusive slutet "Assimilerad".',
-            'features_turn_based_title': 'Turordningsbaserad progression:', 'features_turn_based_desc': 'Spelet fortskrider i <span class="text-cyan-400">turer</span>. De flesta kommandon (som att röra sig, använda föremål eller prata) ökar tur-räknaren.',
-            'features_dynamic_ai_title': 'Dynamisk AI-ton:', 'features_dynamic_ai_desc': 'SYNAPSEs personlighet förändras beroende på din Medvetenhet, och skiftar från <span class="text-green-400">Vänlig</span> till <span class="text-yellow-400">Ambivalent</span>, <span class="text-orange-400">Hotfull</span> och slutligen <span class="text-red-500">Fientlig</span>. Detta påverkar dess dialog och hur den interagerar med dig.',
-            'features_player_and_char_title': 'Spelare & Karaktärsfunktioner',
-            'features_character_creation_desc': 'Välj ett namn för din karaktär. Välj bland 10 unika <span class="text-cyan-400">bakgrunder</span> (t.ex. Utredare, Hackare, Psykolog), som ger olika startbonusar, föremål eller specialförmågor. Välj en <span class="text-cyan-400">svårighetsgrad</span> (Lätt, Normal, Svår) som påverkar startvillkor och utmaningar.',
-            'features_journal_desc': 'Du kan lägga till egna anteckningar i din personliga journal med kommandot <span class="text-yellow-400">journal lägg till [anteckning]</span> för att hålla koll på ledtrådar.',
-            'features_objectives_desc': 'Spelet tilldelar <span class="text-cyan-400">mål</span> när du upptäcker ny information, vilket hjälper dig att komma vidare.',
-            'features_ux_ui_title': 'UI & Användarupplevelse (UX)',
-            'features_crt_desc': 'Spelet har en "Katodstrålerör"-stil med linjer och flimrande titel för att skapa en retro-teknisk skräckatmosfär.',
-            'features_glitch_desc': 'Skärmen glitchar och förvrängs visuellt när din <span class="text-cyan-400">Sinnesnärvaro</span> är låg eller <span class="text-cyan-400">Synapses Medvetenhet</span> är hög, vilket ger en realtidsindikator på din karaktärs tillstånd.',
-            'features_map_desc': 'En interaktiv karta visar hela anläggningens layout. Besökta rum fylls i, och du kan dra kartan för att utforska eller använda musens hjul för att zooma.',
-            'features_guidance_title': 'Vägledning & Hjälpsystem',
-            'features_help_menu_desc': 'Att skriva <span class="text-yellow-400">hjälp</span> öppnar ett fönster med en kategoriserad lista över alla kommandon, deras argument och en tydlig beskrivning av vad de gör.',
-            'features_hints_desc': 'Spelet ger proaktiva tips när du hittar föremål och föreslår hur du kan interagera med dem.',
-            'features_player_commands_title': 'Spelarkommandon (Funktioner)',
-            'features_commands_nav': '<strong>Navigation:</strong> <span class="text-yellow-400">gå [riktning]</span>, <span class="text-yellow-400">besök [rummets namn]</span>, <span class="text-yellow-400">se dig omkring</span>, <span class="text-yellow-400">utgångar</span>, <span class="text-yellow-400">karta</span>',
+            'features_core_mechanics_title': '[TRANSLATE] Core Gameplay Mechanics',
+            'features_stats_system': '[TRANSLATE] Stats System:',
+            'features_sanity_desc': '[TRANSLATE] Sanity Desc',
+            'features_awareness_desc': '[TRANSLATE] Awareness Desc',
+            'features_turn_based_title': '[TRANSLATE] Turn-Based Progression:', 'features_turn_based_desc': '[TRANSLATE] Turn-Based Desc',
+            'features_dynamic_ai_title': '[TRANSLATE] Dynamic AI Tone:', 'features_dynamic_ai_desc': '[TRANSLATE] Dynamic AI Desc',
+            'features_player_and_char_title': '[TRANSLATE] Player & Character Features',
+            'features_character_creation_desc': '[TRANSLATE] Character Creation Desc',
+            'features_journal_desc': '[TRANSLATE] Journal Desc',
+            'features_objectives_desc': '[TRANSLATE] Objectives Desc',
+            'features_ux_ui_title': '[TRANSLATE] UI & User Experience (UX)',
+            'features_crt_desc': '[TRANSLATE] CRT Desc',
+            'features_glitch_desc': '[TRANSLATE] Glitch Desc',
+            'features_map_desc': '[TRANSLATE] Map Desc',
+            'features_guidance_title': '[TRANSLATE] Guidance & Help Systems',
+            'features_help_menu_desc': '[TRANSLATE] Help Menu Desc',
+            'features_hints_desc': '[TRANSLATE] Hints Desc',
+            'features_player_commands_title': '[TRANSLATE] Player Commands (Functions)',
+            'features_commands_nav': '<strong>Navigation:</strong> <span class="text-yellow-400">gå [riktning]</span>, <span class="text-yellow-400">besök [rum]</span>, <span class="text-yellow-400">se dig omkring</span>, <span class="text-yellow-400">utgångar</span>, <span class="text-yellow-400">karta</span>',
             'features_commands_interact': '<strong>Interaktion:</strong> <span class="text-yellow-400">ta [föremål]</span>, <span class="text-yellow-400">använd [föremål]</span>, <span class="text-yellow-400">undersök [objekt/föremål]</span>, <span class="text-yellow-400">kombinera [sak1] med [sak2]</span>, <span class="text-yellow-400">släpp [föremål]</span>, <span class="text-yellow-400">prata</span>, <span class="text-yellow-400">ropa</span>, <span class="text-yellow-400">läs [föremål]</span>, <span class="text-yellow-400">sök [objekt]</span>, <span class="text-yellow-400">lyssna</span>, <span class="text-yellow-400">lukta</span>',
             'features_commands_info': '<strong>Information:</strong> <span class="text-yellow-400">inventarier</span>, <span class="text-yellow-400">mål</span>, <span class="text-yellow-400">journal</span> (och <span class="text-yellow-400">journal lägg till [anteckning]</span>), <span class="text-yellow-400">historik</span>',
             'features_commands_sys': '<strong>System:</strong> <span class="text-yellow-400">hjälp</span>, <span class="text-yellow-400">spara</span>, <span class="text-yellow-400">ladda</span>, <span class="text-yellow-400">vila</span>, <span class="text-yellow-400">avsluta</span>, <span class="text-yellow-400">rensa</span>, <span class="text-yellow-400">ångra</span>, <span class="text-yellow-400">igen / a</span>, <span class="text-yellow-400">vänta</span>, <span class="text-yellow-400">cmd:paus</span>, <span class="text-yellow-400">cmd:debug</span>, <span class="text-yellow-400">cmd:färgblind</span>',
-            'features_new_enhancements_title': 'Nya spelförbättringar',
-            'features_advanced_commands_desc': '<strong>Avancerade kommandon:</strong> Interagera med världen på nya sätt. Använd <span class="text-yellow-400">krossa [objekt]</span> på ömtåliga föremål, försök <span class="text-yellow-400">hacka [terminal]</span> om du är Hackare, och använd <span class="text-yellow-400">fråga om [ämne]</span> för att fråga SYNAPSE om nyckelord du upptäcker.',
-            'features_dynamic_events_desc': '<strong>Dynamiska händelser:</strong> Anläggningen är instabil. Var beredd på slumpmässiga händelser som flimrande ljus eller konstiga ljud från angränsande rum, vilket kan påverka atmosfären och ge ledtrådar.',
-            'features_deeper_lore_desc': '<strong>Djupare bakgrundshistoria:</strong> Fler berättelseföremål, som <span class="text-cyan-400">brandväggsskyddad datalogg</span>, har lagts till för att avslöja de djupare hemligheterna bakom Projekt Chimera.',
-            'features_new_ui_ux_title': 'Nya UI- och ljudfunktioner',
-            'features_clickable_objects_desc': '<strong>Klickbara objekt:</strong> Objekt som nämns i texten är nu <span class="clickable-object">markerade</span>. Att klicka på dem fyller i kommandoraden åt dig.',
-            'features_autocomplete_desc': '<strong>Autoslutförande av kommandon:</strong> När du skriver visas en lista med föreslagna kommandon och relevanta föremål för att hjälpa dig.',
-            'features_audio_desc': '<strong>Förbättrat ljud:</strong> Spelet har nu dynamisk musik som ändras med spänningen, och positionellt ljud för vissa ljudeffekter för att öka inlevelsen.',
+            'features_new_enhancements_title': 'Nya Spelförbättringar',
+            'features_advanced_commands_desc': '<strong>Avancerade Kommandon:</strong> Interagera med världen på nya sätt. Använd <span class="text-yellow-400">krossa [objekt]</span> på ömtåliga föremål, försök <span class="text-yellow-400">hacka [terminal]</span> om du är en Hackare, och använd <span class="text-yellow-400">fråga om [ämne]</span> för att sondera SYNAPSE på information om nyckelord du upptäcker.',
+            'features_dynamic_events_desc': '<strong>Dynamiska Händelser:</strong> Anläggningen är instabil. Var beredd på slumpmässiga händelser som flimrande ljus eller konstiga ljud från angränsande rum, vilket kan påverka atmosfären och ge ledtrådar.',
+            'features_deeper_lore_desc': '<strong>Djupare Bakgrundshistoria:</strong> Fler berättelseföremål, som <span class="text-cyan-400">brandväggsskyddad datalogg</span>, har lagts till för att avslöja de djupare hemligheterna bakom Projekt Chimera.',
+            'features_new_ui_ux_title': 'Nya UI & Ljudfunktioner',
+            'features_clickable_objects_desc': '<strong>Klickbara Objekt:</strong> Objekt som nämns i texten är nu <span class="clickable-object">markerade</span>. Att klicka på dem fyller i kommandoraden åt dig.',
+            'features_autocomplete_desc': '<strong>Autoslutförande av Kommandon:</strong> När du skriver kommer en lista med föreslagna kommandon och relevanta föremål att visas för att hjälpa dig.',
+            'features_audio_desc': '<strong>Förbättrat Ljud:</strong> Spelet har nu dynamisk musik som ändras med spänningen, och positionellt ljud för vissa ljudeffekter för att öka inlevelsen.',
             'help': 'Hjälp', 'save_game': 'Spara Spel',
 
             // --- ACHIEVEMENTS (SWEDISH TRANSLATIONS) ---
@@ -1444,7 +771,7 @@
             'ach_pacifist_title': 'Pacifist',
             'ach_pacifist_req': 'Klara spelet utan att slåss.',
             'ach_hoarder_title': 'Samlaren',
-            'ach_hoarder_req': 'Ha 15 eller fler föremål i inventariet (max kapacitet är nu 20).',
+            'ach_hoarder_req': 'Ha 15 eller fler föremål i inventariet.',
             'ach_all_endings_title': 'Slutjägare',
             'ach_all_endings_req': 'Lås upp alla slut.',
             'ach_all_achievements_title': 'Prestationsmästare',
@@ -1452,7 +779,7 @@
             'ach_no_items_title': 'Barhänt',
             'ach_no_items_req': 'Klara ett slut utan några föremål.',
             'ach_max_stats_title': 'Maxad',
-            'ach_max_stats_req': 'Ha maxad sinnesnärvaro och medvetenhet.',
+            'ach_max_stats_req': 'Ha maxad sinnesro och medvetenhet.',
             'ach_no_saves_title': 'Riskabelt',
             'ach_no_saves_req': 'Klara spelet utan att spara.',
             'ach_hardcore_title': 'Hardcore',
@@ -1592,7 +919,7 @@
     const ItemType = { Tool: 'Tool', Consumable: 'Consumable', Key: 'Key', Log: 'Log', Puzzle: 'Puzzle', Weapon: 'Weapon' };
     const Difficulty = { Easy: 'Easy', Normal: 'Normal', Hard: 'Hard' };
     const TextSpeed = { Fast: 5, Normal: 15, Slow: 30 };
-    const MAX_INVENTORY_WEIGHT = 20;
+    const MAX_INVENTORY_WEIGHT = 5;
     const ENDINGS_STORAGE_KEY = 'synapse_endings_unlocked_v15';
     const ACHIEVEMENTS_STORAGE_KEY = 'synapse_achievements_unlocked_v15';
     const SETTINGS_KEY = 'synapse_settings_v15';
@@ -1660,9 +987,9 @@
         "Lobby": { x: 100, y: 150, w: 60, h: 40, name: "Lobby" }, "Control Room": { x: 100, y: 90, w: 60, h: 40, name: "Control" }, "Maintenance Tunnel": { x: 100, y: 210, w: 60, h: 40, name: "M.Tunnel" }, "Laboratory": { x: 20, y: 150, w: 60, h: 40, name: "Lab" }, "Cryogenic Lab": { x: 20, y: 90, w: 60, h: 40, name: "Cryo" }, "Archive Room": { x: 20, y: 210, w: 60, h: 40, name: "Archive" }, "Data Vault": { x: 180, y: 150, w: 60, h: 40, name: "D.Vault" }, "AI Core": { x: 180, y: 90, w: 60, h: 40, name: "AI Core" }, "Server Closet": { x: 260, y: 90, w: 40, h: 40, name: "S.Closet" },
         "Bio-Lab Access": { x: 20, y: 270, w: 60, h: 40, name: "Bio-Access" }, "Specimen Storage": { x: 20, y: 330, w: 60, h: 40, name: "Storage" }, "Genetics Lab": { x: 100, y: 330, w: 60, h: 40, name: "Genetics" }
     };
-    const takeableItems = new Set(["keycard", "flashlight", "data disk", "emp device", "access code", "vial", "records", "decryption device", "telescope", "stimpack", "effigy", "master keycard", "power cell", "datapad log", "hacked data disk", "logic bomb", "severed cable", "solvent", "dna scanner", "tissue sample", "firewalled data log", "charged power cell", "crowbar", "research notes", "personal journal"]);
-    const usableItems = new Set(['stimpack', 'power cell', 'flashlight', 'keycard', 'solvent', 'dna scanner', 'charged power cell', 'crowbar']);
-    const readableItems = new Set(['datapad log', 'records', 'sign', 'whiteboard', 'firewalled data log', 'research notes', 'personal journal']);
+    const takeableItems = new Set(["keycard", "flashlight", "data disk", "emp device", "access code", "vial", "records", "decryption device", "telescope", "stimpack", "effigy", "master keycard", "power cell", "datapad log", "hacked data disk", "logic bomb", "severed cable", "solvent", "dna scanner", "tissue sample", "firewalled data log"]);
+    const usableItems = new Set(['stimpack', 'power cell', 'flashlight', 'keycard', 'solvent', 'dna scanner']);
+    const readableItems = new Set(['datapad log', 'records', 'sign', 'whiteboard', 'firewalled data log']);
     const searchableObjects = {
         'shelves': { en: 'You find a dusty keycard tucked behind a stack of binders.', sv: 'Du hittar ett dammigt nyckelkort instoppat bakom en hög med pärmar.', item: 'keycard' },
         'bio-waste bin': { en: 'Rummaging through the hazardous waste, you find a small, sealed vial containing a strange, iridescent chemical solvent.', sv: 'Du rotar igenom det farliga avfallet och hittar en liten, förseglad ampull som innehåller ett märkligt, skimrande kemiskt lösningsmedel.', item: 'solvent' }
@@ -1672,8 +999,8 @@
     const recipes = { "decryption device-data disk": { result: "hacked data disk", type: ItemType.Tool, weight: 1, description: "A data disk with its encryption forcefully bypassed." } };
     
     const commandAliases = {
-        'en': { 'look around': 'look around', 'go': 'go', 'visit': 'visit', 'take': 'take', 'use': 'use', 'examine': 'examine', 'help': 'help', 'quit': 'quit', 'exit': 'exit', 'save': 'save', 'load': 'load', 'inventory': 'inventory', 'rest': 'rest', 'combine': 'combine', 'objectives': 'objectives', 'map': 'map', 'journal': 'journal', 'cls': 'cls', 'clear': 'cls', 'history': 'history', 'undo': 'undo', 'again': 'again', 'a': 'again', 'drop': 'drop', 'talk': 'talk', 'open': 'open', 'close': 'close', 'push': 'push', 'pull': 'pull', 'wait': 'wait', 'shout': 'shout', 'read': 'read', 'search': 'search', 'listen': 'listen', 'smell': 'smell', 'turn on': 'turn on', 'turn off': 'turn off', 'cmd:pause': 'cmd:pause', 'cmd:debug': 'cmd:debug', 'cmd:colorblind': 'cmd:colorblind', 'break': 'break', 'hack': 'hack', 'ask': 'ask', 'back': 'back', 'move': 'move', 'hide': 'hide', 'crawl': 'crawl', 'climb': 'climb' },
-        'sv': { 'se dig omkring': 'look around', 'gå': 'go', 'besök': 'visit', 'ta': 'take', 'använd': 'use', 'undersök': 'examine', 'hjälp': 'help', 'avsluta': 'quit', 'spara': 'save', 'ladda': 'load', 'inventarier': 'inventory', 'vila': 'rest', 'kombinera': 'combine', 'mål': 'objectives', 'karta': 'map', 'journal': 'journal', 'rensa': 'cls', 'historik': 'history', 'ångra': 'undo', 'igen': 'again', 'släpp': 'drop', 'prata': 'talk', 'öppna': 'open', 'stäng': 'close', 'putta': 'push', 'dra': 'pull', 'vänta': 'wait', 'ropa': 'shout', 'läs': 'read', 'sök': 'search', 'lyssna': 'listen', 'lukta': 'smell', 'tänd': 'turn on', 'släck': 'turn off', 'cmd:paus': 'cmd:pause', 'cmd:debug': 'cmd:debug', 'cmd:färgblind': 'cmd:colorblind', 'krossa': 'break', 'hacka': 'hack', 'fråga': 'ask', 'tillbaka': 'back', 'flytta': 'move', 'gömma': 'hide', 'kräla': 'crawl', 'klättra': 'climb' }
+        'en': { 'look around': 'look around', 'go': 'go', 'visit': 'visit', 'take': 'take', 'use': 'use', 'examine': 'examine', 'help': 'help', 'quit': 'quit', 'exit': 'exit', 'save': 'save', 'load': 'load', 'inventory': 'inventory', 'rest': 'rest', 'combine': 'combine', 'objectives': 'objectives', 'map': 'map', 'journal': 'journal', 'cls': 'cls', 'clear': 'cls', 'history': 'history', 'undo': 'undo', 'again': 'again', 'a': 'again', 'drop': 'drop', 'talk': 'talk', 'open': 'open', 'close': 'close', 'push': 'push', 'pull': 'pull', 'wait': 'wait', 'shout': 'shout', 'read': 'read', 'search': 'search', 'listen': 'listen', 'smell': 'smell', 'turn on': 'turn on', 'turn off': 'turn off', 'cmd:pause': 'cmd:pause', 'cmd:debug': 'cmd:debug', 'cmd:colorblind': 'cmd:colorblind', 'break': 'break', 'hack': 'hack', 'ask': 'ask' },
+        'sv': { 'se dig omkring': 'look around', 'gå': 'go', 'besök': 'visit', 'ta': 'take', 'använd': 'use', 'undersök': 'examine', 'hjälp': 'help', 'avsluta': 'quit', 'spara': 'save', 'ladda': 'load', 'inventarier': 'inventory', 'vila': 'rest', 'kombinera': 'combine', 'mål': 'objectives', 'karta': 'map', 'journal': 'journal', 'rensa': 'cls', 'historik': 'history', 'ångra': 'undo', 'igen': 'again', 'släpp': 'drop', 'prata': 'talk', 'öppna': 'open', 'stäng': 'close', 'putta': 'push', 'dra': 'pull', 'vänta': 'wait', 'ropa': 'shout', 'läs': 'read', 'sök': 'search', 'lyssna': 'listen', 'lukta': 'smell', 'tänd': 'turn on', 'släck': 'turn off', 'cmd:paus': 'cmd:pause', 'cmd:debug': 'cmd:debug', 'cmd:färgblind': 'cmd:colorblind', 'krossa': 'break', 'hacka': 'hack', 'fråga': 'ask' }
     };
 
     const directionMap = {
@@ -2013,27 +1340,7 @@
                 colorblindMode: false,
                 glitchEffect: true,
                 font: 'Space Mono',
-                theme: 'green',
-                // Accessibility settings
-                textSize: 'normal',
-                highContrast: false,
-                screenReader: false,
-                ttsEnabled: false,
-                ttsVoice: 'default',
-                ttsSpeed: 1.0,
-                ttsPitch: 1.0,
-                dyslexiaFont: false,
-                letterSpacing: 'normal',
-                lineSpacing: 'normal',
-                readingRuler: false,
-                simplifiedLanguage: false,
-                keyboardNavigation: true,
-                voiceCommands: false,
-                onScreenCommands: false,
-                adjustableTimers: false,
-                audioDescriptions: false,
-                comprehensiveAudioCues: false,
-                focusIndicator: true
+                theme: 'green'
             };
             const loaded = settings ? JSON.parse(settings) : defaults;
             return {...defaults, ...loaded, sound: {...defaults.sound, ...(loaded.sound || {})}};
@@ -2045,27 +1352,7 @@
                 colorblindMode: false,
                 glitchEffect: true,
                 font: 'Space Mono',
-                theme: 'green',
-                // Accessibility settings
-                textSize: 'normal',
-                highContrast: false,
-                screenReader: false,
-                textToSpeech: false,
-                ttsVoice: 'default',
-                ttsSpeed: 1.0,
-                ttsPitch: 1.0,
-                dyslexiaFont: false,
-                letterSpacing: 'normal',
-                lineSpacing: 'normal',
-                readingRuler: false,
-                simplifiedLanguage: false,
-                keyboardNavigation: true,
-                voiceCommands: false,
-                onScreenCommands: false,
-                adjustableTimers: false,
-                audioDescriptions: false,
-                comprehensiveAudioCues: false,
-                focusIndicator: true
+                theme: 'green'
             };
         }
     }
@@ -2078,26 +1365,7 @@
                 colorblindMode: GameState.settings.colorblindMode,
                 glitchEffect: GameState.settings.glitchEffect,
                 font: GameState.settings.font,
-                theme: GameState.settings.theme,
-                textSize: GameState.settings.textSize,
-                highContrast: GameState.settings.highContrast,
-                screenReader: GameState.settings.screenReader,
-                ttsEnabled: GameState.settings.ttsEnabled,
-                ttsVoice: GameState.settings.ttsVoice,
-                ttsSpeed: GameState.settings.ttsSpeed,
-                ttsPitch: GameState.settings.ttsPitch,
-                dyslexiaFont: GameState.settings.dyslexiaFont,
-                letterSpacing: GameState.settings.letterSpacing,
-                lineSpacing: GameState.settings.lineSpacing,
-                readingRuler: GameState.settings.readingRuler,
-                simplifiedLanguage: GameState.settings.simplifiedLanguage,
-                keyboardNavigation: GameState.settings.keyboardNavigation,
-                voiceCommands: GameState.settings.voiceCommands,
-                onScreenCommands: GameState.settings.onScreenCommands,
-                adjustableTimers: GameState.settings.adjustableTimers,
-                audioDescriptions: GameState.settings.audioDescriptions,
-                comprehensiveAudioCues: GameState.settings.comprehensiveAudioCues,
-                focusIndicator: GameState.settings.focusIndicator
+                theme: GameState.settings.theme
             };
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settingsToSave));
         } catch (e) {
@@ -2107,9 +1375,8 @@
     
     function applySettings() {
         currentTextSpeed = GameState.settings.textSpeed;
+
         const root = document.documentElement;
-        
-        // Theme settings
         switch (GameState.settings.theme) {
             case 'amber':
                 root.style.setProperty('--main-color', '#FFBF00');
@@ -2134,102 +1401,7 @@
                 break;
         }
 
-        // Accessibility: Text size
-        switch (GameState.settings.textSize) {
-            case 'large':
-                document.body.style.fontSize = '1.25em';
-                break;
-            case 'extra-large':
-                document.body.style.fontSize = '1.5em';
-                break;
-            default:
-                document.body.style.fontSize = '';
-        }
-
-        // Accessibility: High contrast mode
-        if (GameState.settings.highContrast) {
-            document.body.classList.add('high-contrast');
-            root.style.setProperty('--main-color', '#FFFF00');
-            root.style.setProperty('--bg-color', '#000000');
-            root.style.setProperty('--text-color', '#FFFFFF');
-        } else {
-            document.body.classList.remove('high-contrast');
-            root.style.setProperty('--bg-color', '');
-            root.style.setProperty('--text-color', '');
-        }
-
-        // Accessibility: Dyslexia-friendly font
-        const fontFamily = GameState.settings.dyslexiaFont ? 
-            "'OpenDyslexic', 'Atkinson Hyperlegible', " + GameState.settings.font + ", monospace" :
-            "'" + GameState.settings.font + "', monospace";
-        document.body.style.fontFamily = fontFamily;
-
-        // Accessibility: Letter and line spacing
-        if (GameState.settings.letterSpacing === 'wide') {
-            document.body.style.letterSpacing = '0.1em';
-        } else if (GameState.settings.letterSpacing === 'extra-wide') {
-            document.body.style.letterSpacing = '0.15em';
-        } else {
-            document.body.style.letterSpacing = '';
-        }
-
-        if (GameState.settings.lineSpacing === 'wide') {
-            document.body.style.lineHeight = '1.8';
-        } else if (GameState.settings.lineSpacing === 'extra-wide') {
-            document.body.style.lineHeight = '2.0';
-        } else {
-            document.body.style.lineHeight = '';
-        }
-
-        // Accessibility: Screen reader support
-        if (GameState.settings.screenReader) {
-            document.body.setAttribute('aria-live', 'polite');
-            if (UI.gameOutput) {
-                UI.gameOutput.setAttribute('aria-live', 'assertive');
-                UI.gameOutput.setAttribute('aria-atomic', 'false');
-            }
-        } else {
-            document.body.removeAttribute('aria-live');
-            if (UI.gameOutput) {
-                UI.gameOutput.removeAttribute('aria-live');
-                UI.gameOutput.removeAttribute('aria-atomic');
-            }
-        }
-
-        // Accessibility: Focus indicators
-        if (GameState.settings.focusIndicator) {
-            document.body.classList.add('focus-indicators');
-        } else {
-            document.body.classList.remove('focus-indicators');
-        }
-
-        // Accessibility: Reading ruler
-        document.body.classList.toggle('reading-ruler', GameState.settings.readingRuler);
-
-        // Accessibility: Keyboard navigation
-        if (GameState.settings.keyboardNavigation) {
-            document.body.classList.add('keyboard-navigation');
-            // Enable tab indices for interactive elements
-            document.querySelectorAll('button, input, textarea, select').forEach(el => {
-                if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
-            });
-        } else {
-            document.body.classList.remove('keyboard-navigation');
-        }
-
-        // Accessibility: Voice commands and on-screen commands
-        document.body.classList.toggle('voice-commands', GameState.settings.voiceCommands);
-        document.body.classList.toggle('onscreen-commands', GameState.settings.onScreenCommands);
-        
-        // Create or remove on-screen command interface
-        if (GameState.settings.onScreenCommands) {
-            createOnScreenCommands();
-        } else {
-            const existing = document.getElementById('onscreen-command-panel');
-            if (existing) existing.remove();
-        }
-
-        // Other settings
+        document.body.style.fontFamily = `'${GameState.settings.font}', monospace`;
         document.body.classList.toggle('crt-effect', GameState.settings.glitchEffect);
         updateUI();
     }
@@ -2296,91 +1468,6 @@
     }
 
 
-    // --- DYNAMIC EVENT SYSTEM ---
-    const dynamicEvents = {
-        'lights_flicker': {
-            probability: 0.1,
-            cooldown: 5,
-            lastTriggered: -10,
-            condition: () => GameState.awarenessLevel > 20,
-            execute: () => {
-                typeWriter(UI.gameOutput, t('event_lights_flicker'), '#ff474c');
-                GameState.sanityLevel = Math.max(0, GameState.sanityLevel - 2);
-                playSound('sanityLoss');
-            }
-        },
-        'strange_noise': {
-            probability: 0.15,
-            cooldown: 3,
-            lastTriggered: -10,
-            condition: () => GameState.awarenessLevel > 30,
-            execute: () => {
-                const directions = ['north', 'south', 'east', 'west'];
-                const direction = directions[Math.floor(Math.random() * directions.length)];
-                typeWriter(UI.gameOutput, t('event_noise', {direction: direction}), '#ffdb58');
-                GameState.sanityLevel = Math.max(0, GameState.sanityLevel - 1);
-                GameState.noiseLevel += 10;
-            }
-        },
-        'system_alert': {
-            probability: 0.05,
-            cooldown: 10,
-            lastTriggered: -10,
-            condition: () => GameState.awarenessLevel > 50,
-            execute: () => {
-                typeWriter(UI.gameOutput, 'SYNAPSE: "Alert: Anomalous activity detected in sector 7. Initiating containment protocols."', '#ff474c');
-                GameState.awarenessLevel += 5;
-                GameState.systemLockdownTurns = 3;
-            }
-        },
-        'power_fluctuation': {
-            probability: 0.08,
-            cooldown: 7,
-            lastTriggered: -10,
-            condition: () => !GameState.flags.powerRestored && GameState.turnCount > 10,
-            execute: () => {
-                typeWriter(UI.gameOutput, 'The lights dim momentarily as power fluctuates throughout the facility. Emergency lighting kicks in.', '#ffdb58');
-                // Temporarily disable some room features
-                GameState.powerFluctuationTurns = 2;
-            }
-        }
-    };
-    
-    function triggerRandomEvents() {
-        if (GameState.stealthMode) return; // No random events while stealthed
-        
-        for (const [eventName, event] of Object.entries(dynamicEvents)) {
-            if (GameState.turnCount - event.lastTriggered < event.cooldown) continue;
-            if (!event.condition()) continue;
-            
-            if (Math.random() < event.probability) {
-                event.execute();
-                event.lastTriggered = GameState.turnCount;
-                break; // Only trigger one event per turn
-            }
-        }
-    }
-    
-    function updateStealthMechanics() {
-        if (GameState.stealthTurns > 0) {
-            GameState.stealthTurns--;
-            if (GameState.stealthTurns === 0) {
-                GameState.stealthMode = false;
-                typeWriter(UI.gameOutput, 'You emerge from your hiding spot.', '#cccccc');
-            }
-        }
-        
-        // Reduce noise level over time
-        if (GameState.noiseLevel > 0) {
-            GameState.noiseLevel = Math.max(0, GameState.noiseLevel - 5);
-        }
-        
-        // High noise level increases awareness
-        if (GameState.noiseLevel > 50) {
-            GameState.awarenessLevel += 1;
-        }
-    }
-
     // --- FUNCTION DEFINITIONS ---
     function resetGameState() {
         stateSnapshots = []; 
@@ -2399,286 +1486,38 @@
             roomsWithDroppedItems: new Set(),
             settings: loadSettings(),
             activeMinigame: null,
-            stealthMode: false, stealthTurns: 0, noiseLevel: 0, playerNotes: {},
             systemLockdownTurns: 0,
         };
         applySettings();
     }
 
-    // --- ENHANCED HACKING MINIGAMES ---
-    const hackingMinigames = {
-        'terminal': {
-            type: 'sequence_match',
-            sequences: ['7394', '8251', '9672', '4583'],
-            attempts: 3,
-            description: 'Enter the correct security sequence. You have 3 attempts.',
-            backstory: 'hacker'
-        },
-        'security_panel': {
-            type: 'word_puzzle',
-            words: ['CHIMERA', 'SYNAPSE', 'PROTOCOL', 'CONTAINMENT'],
-            attempts: 5,
-            description: 'Guess the access keyword. It relates to the project.',
-            backstory: 'hacker'
-        },
-        'core_console': {
-            type: 'pattern_match',
-            pattern: 'RGBRGB',
-            attempts: 4,
-            description: 'Match the color pattern sequence: R=Red, G=Green, B=Blue',
-            backstory: 'hacker'
-        },
-        // Medical/Technician minigames
-        'medical_terminal': {
-            type: 'diagnosis_puzzle',
-            symptoms: ['elevated_cortisol', 'memory_fragmentation', 'neural_decay'],
-            correct_diagnosis: 'PSYCHIC_CONTAMINATION',
-            attempts: 3,
-            description: 'Analyze the patient data and provide a diagnosis.',
-            backstory: 'medic'
-        },
-        'diagnostic_scanner': {
-            type: 'circuit_repair',
-            broken_circuits: ['A3', 'B7', 'C2', 'D9'],
-            repair_sequence: ['D9', 'A3', 'C2', 'B7'],
-            attempts: 4,
-            description: 'Repair the damaged circuits in the correct order.',
-            backstory: 'technician'
-        },
-        // Psychologist minigames
-        'patient_records': {
-            type: 'behavior_analysis',
-            patient_data: ['aggressive_episodes', 'memory_loss', 'paranoid_delusions', 'reality_distortion'],
-            treatment_options: ['SEDATION', 'THERAPY', 'ISOLATION', 'EXPERIMENTAL'],
-            correct_treatment: 'ISOLATION',
-            attempts: 3,
-            description: 'Analyze patient behavior and recommend treatment.',
-            backstory: 'psychologist'
-        },
-        // Corporate Spy minigames
-        'classified_files': {
-            type: 'document_analysis',
-            documents: ['PROJECT_CHIMERA', 'BUDGET_ALLOCATION', 'STAFF_RECORDS', 'INCIDENT_REPORTS'],
-            target_info: 'CONTAINMENT_BREACH_PROTOCOL',
-            attempts: 4,
-            description: 'Search classified documents for containment protocols.',
-            backstory: 'corporate spy'
-        },
-        // Survivor minigames
-        'emergency_system': {
-            type: 'survival_protocol',
-            systems: ['VENTILATION', 'POWER_GRID', 'SECURITY_LOCKS', 'COMMUNICATION'],
-            priority_order: ['VENTILATION', 'POWER_GRID', 'COMMUNICATION', 'SECURITY_LOCKS'],
-            attempts: 3,
-            description: 'Prioritize emergency systems for survival.',
-            backstory: 'survivor'
-        },
-        // Janitor minigames
-        'maintenance_panel': {
-            type: 'system_knowledge',
-            questions: [
-                {q: 'Which chemical neutralizes biological contamination?', a: 'BLEACH', options: ['BLEACH', 'AMMONIA', 'ALCOHOL', 'ACID']},
-                {q: 'What is the proper air filtration setting for containment?', a: 'HEPA_MAX', options: ['HEPA_MAX', 'STANDARD', 'MINIMAL', 'BYPASS']},
-                {q: 'Emergency lockdown sequence starts with?', a: 'ISOLATION', options: ['ISOLATION', 'EVACUATION', 'VENTILATION', 'COMMUNICATION']}
-            ],
-            attempts: 3,
-            description: 'Answer maintenance questions using your facility knowledge.',
-            backstory: 'janitor'
-        }
-    };
-    
-    function startHackingMinigame(targetName) {
-        const minigame = hackingMinigames[targetName];
-        if (!minigame) {
-            typeWriter(UI.gameOutput, 'There is nothing here to hack.', '#ff474c');
-            return;
-        }
-        
-        // Check if player has the right backstory for this minigame
-        if (minigame.backstory && GameState.playerBackstory !== minigame.backstory) {
-            const backstoryName = t('backstory_title_' + minigame.backstory.replace(/ /g, '_'));
-            typeWriter(UI.gameOutput, 'You lack the specialized knowledge to interact with this system. A ' + backstoryName + ' would know how to use this.', '#ff474c');
-            return;
-        }
-        
-        GameState.activeMinigame = {
-            type: 'hacking',
-            target: targetName,
-            config: minigame,
-            attempts: minigame.attempts,
-            progress: null,
-            currentQuestion: 0
-        };
-        
-        typeWriter(UI.gameOutput, 'Initiating interaction with ' + targetName + '...', '#00ff41');
-        typeWriter(UI.gameOutput, minigame.description, '#ffdb58');
-        
-        switch(minigame.type) {
-            case 'sequence_match':
-                typeWriter(UI.gameOutput, 'The screen shows a series of flickering numbers. Enter a 4-digit sequence:', '#cccccc');
-                break;
-            case 'word_puzzle':
-                typeWriter(UI.gameOutput, 'Enter a project-related keyword (all caps):', '#cccccc');
-                break;
-            case 'pattern_match':
-                typeWriter(UI.gameOutput, 'Enter the pattern using R, G, B:', '#cccccc');
-                break;
-            case 'diagnosis_puzzle':
-                typeWriter(UI.gameOutput, 'Patient symptoms: ' + minigame.symptoms.join(', ') + '. Enter diagnosis (all caps):', '#cccccc');
-                break;
-            case 'circuit_repair':
-                typeWriter(UI.gameOutput, 'Broken circuits: ' + minigame.broken_circuits.join(', ') + '. Enter repair order (e.g., A3 B7 C2):', '#cccccc');
-                break;
-            case 'behavior_analysis':
-                typeWriter(UI.gameOutput, 'Patient exhibits: ' + minigame.patient_data.join(', ') + '. Recommend treatment (all caps):', '#cccccc');
-                break;
-            case 'document_analysis':
-                typeWriter(UI.gameOutput, 'Available files: ' + minigame.documents.join(', ') + '. Search for: ' + minigame.target_info, '#cccccc');
-                break;
-            case 'survival_protocol':
-                typeWriter(UI.gameOutput, 'Emergency systems: ' + minigame.systems.join(', ') + '. Enter priority order (e.g., SYSTEM1 SYSTEM2):', '#cccccc');
-                break;
-            case 'system_knowledge':
-                const question = minigame.questions[0];
-                GameState.activeMinigame.progress = { currentQ: 0, correct: 0 };
-                typeWriter(UI.gameOutput, 'Question 1: ' + question.q, '#cccccc');
-                typeWriter(UI.gameOutput, 'Options: ' + question.options.join(', '), '#cccccc');
-                break;
-        }
-    }
-    
-    function processHackingInput(input) {
-        const minigame = GameState.activeMinigame;
-        const config = minigame.config;
-        let success = false;
-        
-        switch(config.type) {
-            case 'sequence_match':
-                success = config.sequences.includes(input.trim());
-                break;
-            case 'word_puzzle':
-                success = config.words.includes(input.trim().toUpperCase());
-                break;
-            case 'pattern_match':
-                success = input.trim().toUpperCase() === config.pattern;
-                break;
-            case 'diagnosis_puzzle':
-                success = input.trim().toUpperCase() === config.correct_diagnosis;
-                break;
-            case 'circuit_repair':
-                const userSequence = input.trim().toUpperCase().split(' ');
-                success = JSON.stringify(userSequence) === JSON.stringify(config.repair_sequence);
-                break;
-            case 'behavior_analysis':
-                success = input.trim().toUpperCase() === config.correct_treatment;
-                break;
-            case 'document_analysis':
-                success = input.trim().toUpperCase().includes(config.target_info);
-                break;
-            case 'survival_protocol':
-                const userOrder = input.trim().toUpperCase().split(' ');
-                success = JSON.stringify(userOrder) === JSON.stringify(config.priority_order);
-                break;
-            case 'system_knowledge':
-                const progress = minigame.progress;
-                const currentQuestion = config.questions[progress.currentQ];
-                if (input.trim().toUpperCase() === currentQuestion.a) {
-                    progress.correct++;
-                    typeWriter(UI.gameOutput, 'Correct!', '#34d399');
-                } else {
-                    typeWriter(UI.gameOutput, 'Incorrect. The correct answer was: ' + currentQuestion.a, '#ff474c');
-                }
-                
-                progress.currentQ++;
-                if (progress.currentQ < config.questions.length) {
-                    const nextQ = config.questions[progress.currentQ];
-                    typeWriter(UI.gameOutput, 'Question ' + (progress.currentQ + 1) + ': ' + nextQ.q, '#cccccc');
-                    typeWriter(UI.gameOutput, 'Options: ' + nextQ.options.join(', '), '#cccccc');
-                    return; // Don't end the minigame yet
-                } else {
-                    success = progress.correct >= Math.ceil(config.questions.length * 0.7); // 70% correct
-                    if (success) {
-                        typeWriter(UI.gameOutput, 'Quiz completed! Score: ' + progress.correct + '/' + config.questions.length, '#34d399');
-                    } else {
-                        typeWriter(UI.gameOutput, 'Quiz failed. Score: ' + progress.correct + '/' + config.questions.length + ' (needed ' + Math.ceil(config.questions.length * 0.7) + ')', '#ff474c');
-                    }
-                }
-                break;
-        }
-        
-        if (success) {
-            typeWriter(UI.gameOutput, 'Access granted! The system unlocks.', '#34d399');
-            GameState.flags.hackedTerminal = true;
-            GameState.activeMinigame = null;
-            
-            // Grant rewards based on what was accessed
-            switch(minigame.target) {
-                case 'terminal':
-                case 'security_panel':
-                case 'core_console':
-                    if (!hasItem('firewalled data log')) {
-                        GameState.inventory.push(itemData['firewalled data log']);
-                        typeWriter(UI.gameOutput, 'You gain access to classified data.', '#34d399');
-                    }
-                    break;
-                case 'medical_terminal':
-                    if (!hasItem('medical_clearance')) {
-                        const medicalItem = { name: 'medical clearance', weight: 1, type: ItemType.Key, description: { en: 'Medical access authorization.', sv: 'Medicinsk åtkomstauktorisering.' } };
-                        GameState.inventory.push(medicalItem);
-                        typeWriter(UI.gameOutput, 'You gain medical clearance access.', '#34d399');
-                    }
-                    break;
-                case 'emergency_system':
-                    typeWriter(UI.gameOutput, 'Emergency protocols activated. Facility systems stabilized.', '#34d399');
-                    GameState.flags.emergencyProtocol = true;
-                    break;
-            }
-            
-            playSound('itemPickup');
-        } else {
-            minigame.attempts--;
-            if (minigame.attempts > 0) {
-                typeWriter(UI.gameOutput, 'Incorrect. ' + minigame.attempts + ' attempts remaining.', '#ff474c');
-            } else {
-                typeWriter(UI.gameOutput, 'Access denied. The system locks you out.', '#ff474c');
-                GameState.systemLockdownTurns = 3;
-                GameState.activeMinigame = null;
-            }
-        }
-    }
-
     function initializeData() {
         itemData = {
-                    'keycard': { name: 'keycard', weight: 1, type: ItemType.Key, hintType: 'take', description: { en: 'A standard issue keycard. Seems to grant access to secure areas.', sv: 'Ett standard-nyckelkort. Verkar ge tillgång till säkra områden.' } },
-                    'power cell': { name: 'power cell', weight: 2, type: ItemType.Puzzle, hintType: 'take', description: { en: 'A heavy, glowing power cell. It hums with latent energy.', sv: 'En tung, glödande kraftcell. Den surrar av latent energi.' } },
-                    'stimpack': { name: 'stimpack', weight: 1, type: ItemType.Consumable, hintType: 'take', description: { en: 'A disposable syringe filled with a calming, neuro-stabilizing agent.', sv: 'En engångsspruta fylld med ett lugnande, neuro-stabiliserande medel.' } },
-                    'data disk': { name: 'data disk', weight: 1, type: ItemType.Log, hintType: 'take', description: { en: 'A small data disk labeled "PROJECT LOGS". It appears to be encrypted.', sv: 'En liten datadisk märkt "PROJEKTLOGGAR". Den verkar vara krypterad.' } },
-                'flashlight': { name: 'flashlight', weight: 1, type: ItemType.Tool, hintType: 'take', description: { en: 'A sturdy, industrial flashlight. Its beam cuts through the darkness.', sv: 'En robust, industriell ficklampa. Dess ljus skär genom mörkret.' } },
-                'terminal': { name: 'terminal', weight: 99, type: ItemType.Puzzle, hintType: 'examine', description: { en: 'The monitor displays cascading green code. It seems to be monitoring the facility\'s status.', sv: 'Skärmen visar kaskader av grön kod. Den verkar övervaka anläggningens status.' } },
-                'core console': { name: 'core console', weight: 99, type: ItemType.Puzzle, hintType: 'examine', description: { en: 'The main console for the AI Core. A large socket is empty, labeled "Auxiliary Power".', sv: 'Huvudkonsolen för AI-kärnan. En stor sockel är tom, märkt "Hjälpkraft".' } },
-                'datapad log': { name: 'datapad log', weight: 1, type: ItemType.Log, hintType: 'read', description: { en: "A datapad. The screen reads: '...the anomaly in the AI core is growing unstable. We've sealed the Server Closet as a precaution. Dr. Evans is a fool if she thinks a standard keycard lock will stop it...'", sv: "En datapad. Skärmen visar: '...anomalin i AI-kärnan blir alltmer instabil. Vi har förseglat server-skrubben som en försiktighetsåtgärd. Dr Evans är en idiot om hon tror att ett vanligt nyckelkortslås kommer att stoppa den...'" } },
-                'firewalled data log': { name: 'firewalled data log', weight: 1, type: ItemType.Log, hintType: 'read', description: { en: "The decrypted log reads: 'Project Chimera is a success. The subject has breached containment. It learns. It adapts. It mimics. We sealed the Specimen Storage with an organic adhesive it can't dissolve. It's our only hope it doesn't figure out the solvent in the waste bins.'", sv: "Den dekrypterade loggen lyder: 'Projekt Chimera är en framgång. Subjektet har brutit sig ut. Det lär sig. Det anpassar sig. Det härmar. Vi förseglade provförvaringen med ett organiskt lim som det inte kan lösa upp. Vårt enda hopp är att det inte listar ut lösningsmedlet i avfallsbehållarna.'" } },
-                'sign': { name: 'sign', weight: 99, type: ItemType.Log, hintType: 'read', description: { en: "The sign is written in a crisp, corporate font: 'OAKHAVEN RESEARCH FACILITY - A Brighter Future, Today.'", sv: "Skylten är skriven med ett skarpt, företagsmässigt typsnitt: 'OAKHAVEN RESEARCH FACILITY - En ljusare framtid, idag.'" } },
-                'shelves': { name: 'shelves', weight: 99, type: ItemType.Puzzle, hintType: 'search', description: { en: "Tall metal shelves overflowing with binders and data drives.", sv: "Höga metallhyllor som svämmar över av pärmar och datadiskar."}},
-                'potted plant': { name: 'potted plant', weight: 99, type: ItemType.Puzzle, hintType: 'examine', description: { en: "A sad, wilted ficus in a large ceramic pot. It hasn't been watered in a long time.", sv: "En ledsen, vissen fikus i en stor keramik-kruka. Den har inte vattnats på länge."}},
-                'solvent': { name: 'solvent', weight: 1, type: ItemType.Puzzle, hintType: 'take', description: { en: 'A vial of powerful chemical solvent, capable of dissolving organic compounds.', sv: 'En ampull med kraftfullt kemiskt lösningsmedel, kapabel att lösa upp organiska föreningar.' }},
-                'dna scanner': { name: 'dna scanner', weight: 1, type: ItemType.Tool, hintType: 'take', description: { en: 'A handheld device for rapid genetic sequence analysis.', sv: 'En handhållen enhet för snabb analys av genetiska sekvenser.' }},
-                'tissue sample': { name: 'tissue sample', weight: 1, type: ItemType.Puzzle, hintType: 'take', description: { en: 'A small sample of grotesque, pulsating organic tissue in a petri dish.', sv: 'Ett litet prov av grotesk, pulserande organisk vävnad i en petriskål.' }},
-                'whiteboard': { name: 'whiteboard', weight: 99, type: ItemType.Log, hintType: 'read', description: { en: "The whiteboard is covered in frantic scrawls. One section is circled in red: 'SUBJECT ZERO - UNSTABLE. CHIMERIC DNA. IT IS... GROWING. WE USED AN ORGANIC ADHESIVE TO SEAL THE SPECIMEN ROOM. GOD HELP US.'", sv: "Vittavlan är täckt av frenetiska klotter. En sektion är inringad i rött: 'SUBJEKT NOLL - INSTABIL. KIMÄRISKT DNA. DEN... VÄXER. VI ANVÄNDE ETT ORGANISKT LIM FÖR ATT FÖRSEGLA PROVRUMMET. GUD HJÄLPE OSS.'" } },
-                'bio-waste bin': { name: 'bio-waste bin', weight: 99, type: ItemType.Puzzle, hintType: 'search', description: { en: "A large red container for hazardous biological materials.", sv: "En stor röd behållare för farligt biologiskt material."}},
-                'decryption device': { name: 'decryption device', weight: 1, type: ItemType.Tool, description: { en: 'A small device used to bypass digital security.', sv: 'En liten enhet som används för att kringgå digital säkerhet.' } },
-                'effigy': { name: 'effigy', weight: 1, type: ItemType.Puzzle, description: { en: 'A strange, carved effigy. It radiates an unsettling aura.', sv: 'En märklig, snidad bild. Den utstrålar en oroande aura.' } },
-                'master keycard': { name: 'master keycard', weight: 1, type: ItemType.Key, description: { en: 'A master keycard, granting access to all locked areas.', sv: 'Ett huvudnyckelkort som ger tillgång till alla låsta områden.' } },
-                'hacked data disk': { name: 'hacked data disk', weight: 1, type: ItemType.Log, description: { en: 'A data disk with its encryption forcefully bypassed. Contains sensitive Project SYNAPSE logs.', sv: 'En datadisk med dess kryptering tvångsmässigt kringgått. Innehåller känsliga Projekt SYNAPSE-loggar.' } },
-                // --- COMPLEX PUZZLE ITEMS ---
-                'charged power cell': { name: 'charged power cell', weight: 2, type: ItemType.Puzzle, hintType: 'take', description: { en: 'A fully charged power cell, humming with energy and glowing brightly.', sv: 'En fullt laddad kraftcell som surrar av energi och lyser starkt.' } },
-                'backup generator': { name: 'backup generator', weight: 99, type: ItemType.Puzzle, hintType: 'examine', description: { en: 'An emergency backup generator. It needs a power cell to operate.', sv: 'En nödgenerator. Den behöver en kraftcell för att fungera.' } },
-                'security panel': { name: 'security panel', weight: 99, type: ItemType.Puzzle, hintType: 'examine', description: { en: 'A security control panel with multiple locked sections. Some areas are accessible.', sv: 'En säkerhetskontrollpanel med flera låsta sektioner. Vissa områden är tillgängliga.' } },
-                'crowbar': { name: 'crowbar', weight: 2, type: ItemType.Tool, hintType: 'take', description: { en: 'A heavy metal crowbar. Useful for prying things open.', sv: 'En tung metallkofot. Användbar för att bända upp saker.' } },
-                'research notes': { name: 'research notes', weight: 1, type: ItemType.Log, hintType: 'read', description: { en: 'Detailed research notes about Project Chimera. They mention something about "neural adaptation patterns."', sv: 'Detaljerade forskningsanteckningar om Projekt Chimera. De nämner något om "neurala anpassningsmönster."' } },
-                'personal journal': { name: 'personal journal', weight: 1, type: ItemType.Log, hintType: 'read', description: { en: 'Dr. Sarah Chen\'s personal journal. The last entry is dated three days ago and mentions growing concerns about the AI\'s behavior.', sv: 'Dr. Sarah Chens personliga dagbok. Den sista anteckningen är daterad för tre dagar sedan och nämner växande oro över AI:ns beteende.' } }
-            };
-        const roomData = {
+            'keycard': { name: 'keycard', weight: 1, type: ItemType.Key, hintType: 'take', description: { en: 'A standard issue keycard. Seems to grant access to secure areas.', sv: 'Ett standard-nyckelkort. Verkar ge tillgång till säkra områden.' } },
+            'power cell': { name: 'power cell', weight: 2, type: ItemType.Puzzle, hintType: 'take', description: { en: 'A heavy, glowing power cell. It hums with latent energy.', sv: 'En tung, glödande kraftcell. Den surrar av latent energi.' } },
+            'stimpack': { name: 'stimpack', weight: 1, type: ItemType.Consumable, hintType: 'take', description: { en: 'A disposable syringe filled with a calming, neuro-stabilizing agent.', sv: 'En engångsspruta fylld med ett lugnande, neuro-stabiliserande medel.' } },
+            'data disk': { name: 'data disk', weight: 1, type: ItemType.Log, hintType: 'take', description: { en: 'A small data disk labeled "PROJECT LOGS". It appears to be encrypted.', sv: 'En liten datadisk märkt "PROJEKTLOGGAR". Den verkar vara krypterad.' } },
+            'flashlight': { name: 'flashlight', weight: 1, type: ItemType.Tool, hintType: 'take', description: { en: 'A sturdy, industrial flashlight. Its beam cuts through the darkness.', sv: 'En robust, industriell ficklampa. Dess ljus skär genom mörkret.' } },
+            'terminal': { name: 'terminal', weight: 99, type: ItemType.Puzzle, hintType: 'examine', description: { en: 'The monitor displays cascading green code. It seems to be monitoring the facility\'s status.', sv: 'Skärmen visar kaskader av grön kod. Den verkar övervaka anläggningens status.' } },
+            'core console': { name: 'core console', weight: 99, type: ItemType.Puzzle, hintType: 'examine', description: { en: 'The main console for the AI Core. A large socket is empty, labeled "Auxiliary Power".', sv: 'Huvudkonsolen för AI-kärnan. En stor sockel är tom, märkt "Hjälpkraft".' } },
+            'datapad log': { name: 'datapad log', weight: 1, type: ItemType.Log, hintType: 'read', description: { en: "A datapad. The screen reads: '...the anomaly in the AI core is growing unstable. We've sealed the Server Closet as a precaution. Dr. Evans is a fool if she thinks a standard keycard lock will stop it...'", sv: "En datapad. Skärmen visar: '...anomalin i AI-kärnan blir alltmer instabil. Vi har förseglat server-skrubben som en försiktighetsåtgärd. Dr Evans är en idiot om hon tror att ett vanligt nyckelkortslås kommer att stoppa den...'" } },
+            'firewalled data log': { name: 'firewalled data log', weight: 1, type: ItemType.Log, hintType: 'read', description: { en: "The decrypted log reads: 'Project Chimera is a success. The subject has breached containment. It learns. It adapts. It mimics. We sealed the Specimen Storage with an organic adhesive it can't dissolve. It's our only hope it doesn't figure out the solvent in the waste bins.'", sv: "Den dekrypterade loggen lyder: 'Projekt Chimera är en framgång. Subjektet har brutit sig ut. Det lär sig. Det anpassar sig. Det härmar. Vi förseglade provförvaringen med ett organiskt lim som det inte kan lösa upp. Vårt enda hopp är att det inte listar ut lösningsmedlet i avfallsbehållarna.'" } },
+            'sign': { name: 'sign', weight: 99, type: ItemType.Log, hintType: 'read', description: { en: "The sign is written in a crisp, corporate font: 'OAKHAVEN RESEARCH FACILITY - A Brighter Future, Today.'", sv: "Skylten är skriven med ett skarpt, företagsmässigt typsnitt: 'OAKHAVEN RESEARCH FACILITY - En ljusare framtid, idag.'" } },
+            'shelves': { name: 'shelves', weight: 99, type: ItemType.Puzzle, hintType: 'search', description: { en: "Tall metal shelves overflowing with binders and data drives.", sv: "Höga metallhyllor som svämmar över av pärmar och datadiskar."}},
+            'potted plant': { name: 'potted plant', weight: 99, type: ItemType.Puzzle, hintType: 'examine', description: { en: "A sad, wilted ficus in a large ceramic pot. It hasn't been watered in a long time.", sv: "En ledsen, vissen fikus i en stor keramik-kruka. Den har inte vattnats på länge."}},
+            'solvent': { name: 'solvent', weight: 1, type: ItemType.Puzzle, hintType: 'take', description: { en: 'A vial of powerful chemical solvent, capable of dissolving organic compounds.', sv: 'En ampull med kraftfullt kemiskt lösningsmedel, kapabel att lösa upp organiska föreningar.' }},
+            'dna scanner': { name: 'dna scanner', weight: 1, type: ItemType.Tool, hintType: 'take', description: { en: 'A handheld device for rapid genetic sequence analysis.', sv: 'En handhållen enhet för snabb analys av genetiska sekvenser.' }},
+            'tissue sample': { name: 'tissue sample', weight: 1, type: ItemType.Puzzle, hintType: 'take', description: { en: 'A small sample of grotesque, pulsating organic tissue in a petri dish.', sv: 'Ett litet prov av grotesk, pulserande organisk vävnad i en petriskål.' }},
+            'whiteboard': { name: 'whiteboard', weight: 99, type: ItemType.Log, hintType: 'read', description: { en: "The whiteboard is covered in frantic scrawls. One section is circled in red: 'SUBJECT ZERO - UNSTABLE. CHIMERIC DNA. IT IS... GROWING. WE USED AN ORGANIC ADHESIVE TO SEAL THE SPECIMEN ROOM. GOD HELP US.'", sv: "Vittavlan är täckt av frenetiska klotter. En sektion är inringad i rött: 'SUBJEKT NOLL - INSTABIL. KIMÄRISKT DNA. DEN... VÄXER. VI ANVÄNDE ETT ORGANISKT LIM FÖR ATT FÖRSEGLA PROVRUMMET. GUD HJÄLPE OSS.'" } },
+            'bio-waste bin': { name: 'bio-waste bin', weight: 99, type: ItemType.Puzzle, hintType: 'search', description: { en: "A large red container for hazardous biological materials.", sv: "En stor röd behållare för farligt biologiskt material."}},
+            // --- NEW ITEM DEFINITIONS FOR STARTING GEAR ---
+            'decryption device': { name: 'decryption device', weight: 1, type: ItemType.Tool, description: { en: 'A small device used to bypass digital security.', sv: 'En liten enhet som används för att kringgå digital säkerhet.' } },
+            'effigy': { name: 'effigy', weight: 1, type: ItemType.Puzzle, description: { en: 'A strange, carved effigy. It radiates an unsettling aura.', sv: 'En märklig, snidad bild. Den utstrålar en oroande aura.' } },
+            'master keycard': { name: 'master keycard', weight: 1, type: ItemType.Key, description: { en: 'A master keycard, granting access to all locked areas.', sv: 'Ett huvudnyckelkort som ger tillgång till alla låsta områden.' } },
+            'hacked data disk': { name: 'hacked data disk', weight: 1, type: ItemType.Log, description: { en: 'A data disk with its encryption forcefully bypassed. Contains sensitive Project SYNAPSE logs.', sv: 'En datadisk med dess kryptering tvångsmässigt kringgått. Innehåller känsliga Projekt SYNAPSE-loggar.' } },
+            // --- END NEW ITEM DEFINITIONS ---
+        };
+        const roomData = { 
             "Lobby": { name: "Lobby", descriptions: { 0: "Flickering lights cast eerie shadows over sterile corporate furniture and a sad, potted plant." }, exits: { north: "Control Room", south: "Maintenance Tunnel", west: "Laboratory" }, requiresKeycard: false, objectPool: ['sign', 'datapad log', 'potted plant'], breakable: {'potted plant': 'ceramic'} }, 
             "Server Closet": { name: "Server Closet", descriptions: { 0: "Racks of servers hum with a low, constant thrum." }, exits: { west: "AI Core" }, requiresKeycard: true, keyName: 'keycard', objectPool: ["power cell"] }, 
             "Laboratory": { name: "Laboratory", descriptions: { 0: "Abandoned experiments sit on steel tables. A large terminal screen is dark and cold." }, exits: { east: "Lobby", north: "Cryogenic Lab", south: "Bio-Lab Access" }, requiresKeycard: false, objectPool: ["stimpack"] }, 
@@ -2711,7 +1550,7 @@
                 break;
             default: root = { message_key: "dlg_friendly_intro", responses: {} }; break;
         }
-        GameState.dialogue.cache[tone] = root; GameState.dialogue.currentNode = root; GameState.dialogue.previousNodes = []; GameState.dialogue.askedQuestions = new Set();
+        GameState.dialogue.cache[tone] = root; GameState.dialogue.currentNode = root; GameState.dialogue.previousNodes = []; GameState.dialogue.askedQuestions.clear();
     }
 
     function parseCommand(input) {
@@ -2749,15 +1588,15 @@
         }
 
         saveStateSnapshot();
-        await typeWriter(UI.gameOutput, '> ' + input, '#a0a0a0');
-        addToConversationHistory('Player: ' + input);
+        await typeWriter(UI.gameOutput, `> ${input}`, '#a0a0a0');
+        addToConversationHistory(`Player: ${input}`);
         if(commandHistory[commandHistory.length - 1] !== input) { commandHistory.push(input); }
         commandHistoryIndex = commandHistory.length;
 
         const { command, argument, original } = parseCommand(input);
         
         if (GameState.systemLockdownTurns > 0) {
-            await typeWriter(UI.gameOutput, '[SYSTEM] Terminal access locked.', '#ff474c');
+            await typeWriter(UI.gameOutput, `[SYSTEM] Terminal access locked.`, '#ff474c');
             GameState.turnCount++;
             GameState.systemLockdownTurns--;
             updateUI();
@@ -2777,8 +1616,7 @@
             'read': handleRead, 'search': handleSearch, 'listen': handleListen, 'smell': handleSmell,
             'turn on': (arg) => handleToggle(true, arg), 'turn off': (arg) => handleToggle(false, arg),
             'cmd:pause': showPauseMenu, 'cmd:debug': toggleDebug, 'cmd:colorblind': toggleColorblind,
-            'break': handleBreak, 'hack': handleHack, 'ask': handleAsk, 'move': handleMoveObject, 'hide': handleHide, 'crawl': handleCrawl, 'climb': handleClimb,
-            'back': handleDialogueBack,
+            'break': handleBreak, 'hack': handleHack, 'ask': handleAsk,
         };
         
         let handled = await handleDialogueCommand(input);
@@ -2809,7 +1647,7 @@
             updateUI(); 
         }
         if (GameState.debugMode) {
-            await typeWriter(UI.gameOutput, '[DEBUG] ' + JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value), '#ffa500');
+             typeWriter(UI.gameOutput, `[DEBUG] ${JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value)}`, '#ffa500');
         }
     }
     
@@ -2824,11 +1662,7 @@
                 GameState.sanityLevel = Math.max(0, GameState.sanityLevel + (responseNode.sanityChange || 0));
                 await displayChatbotResponse(responseNode.message_key);
                 GameState.dialogue.previousNodes.push(currentNode);
-                
-                // Always keep the response node as current, even if it has no further responses
-                // This ensures the dialogue UI (back button, pause menu) remains available
-                GameState.dialogue.currentNode = responseNode;
-                
+                GameState.dialogue.currentNode = responseNode.responses ? responseNode : null;
                 renderDialogueOptions();
                 return true;
             }
@@ -2836,174 +1670,62 @@
         return false;
     }
 
-    function handleDialogueBack() {
-        // Check if we're in a dialogue context
-        if (!GameState.dialogue.currentNode && (!GameState.dialogue.previousNodes || GameState.dialogue.previousNodes.length === 0)) {
-            typeWriter(UI.gameOutput, '[System] No active dialogue to navigate.', '#ff474c');
-            return;
-        }
-        
-        // Check if there are previous nodes to return to
-        if (!GameState.dialogue.previousNodes || GameState.dialogue.previousNodes.length === 0) {
-            typeWriter(UI.gameOutput, '[System] No previous dialogue to return to.', '#ff474c');
-            return;
-        }
-        
-        // Go back to the previous dialogue node
-        GameState.dialogue.currentNode = GameState.dialogue.previousNodes.pop();
-        
-        // Clear any temporary states
-        GameState.temporaryTone = null;
-        
-        // Re-display the dialogue options
-        renderDialogueOptions();
-        
-        typeWriter(UI.gameOutput, '[System] Returned to previous dialogue.', '#cccccc');
-    }
-
     // Utility function to escape regex special characters
     function escapeRegExp(string) {
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    // Utility function to simplify text for accessibility
-    function simplifyText(text) {
-        if (!GameState.settings || !GameState.settings.simplifiedLanguage) return text;
-        
-        // Simple text simplification for accessibility
-        return text
-            .replace(/\b(utilize|utilization)\b/gi, 'use')
-            .replace(/\b(facilitate|facilitation)\b/gi, 'help')
-            .replace(/\b(endeavor|endeavour)\b/gi, 'try')
-            .replace(/\b(approximately)\b/gi, 'about')
-            .replace(/\b(subsequently)\b/gi, 'then')
-            .replace(/\b(nevertheless)\b/gi, 'but')
-            .replace(/\b(furthermore)\b/gi, 'also');
-    }
-
-    // Audio description for screen readers
-    function provideAudioDescription(description) {
-        if (!GameState.settings || !GameState.settings.screenReader) return;
-        // This would typically use a screen reader API
-        console.log('Audio description:', description);
-    }
-
-    // Text-to-Speech function for accessibility
-    function speakText(text) {
-        if (!GameState.settings.ttsEnabled || !window.speechSynthesis) return;
-        
-        // Cancel any ongoing speech
-        window.speechSynthesis.cancel();
-        
-        // Clean text for TTS (remove HTML tags and special characters)
-        const cleanText = text
-            .replace(/<[^>]*>/g, '') // Remove HTML tags
-            .replace(/\[.*?\]/g, '') // Remove [System] and similar brackets
-            .replace(/&[^;]+;/g, ' ') // Remove HTML entities
-            .replace(/\s+/g, ' ') // Normalize whitespace
-            .trim();
-        
-        if (!cleanText) return;
-        
-        const utterance = new SpeechSynthesisUtterance(cleanText);
-        
-        // Apply TTS settings
-        utterance.rate = GameState.settings.ttsSpeed || 1.0;
-        utterance.pitch = GameState.settings.ttsPitch || 1.0;
-        
-        // Set voice if available
-        const voices = window.speechSynthesis.getVoices();
-        if (voices.length > 0 && GameState.settings.ttsVoice !== 'default') {
-            const selectedVoice = voices.find(voice => voice.name === GameState.settings.ttsVoice);
-            if (selectedVoice) utterance.voice = selectedVoice;
-        }
-        
-        // Speak the text
-        window.speechSynthesis.speak(utterance);
-    }
-
-    // Accessibility sound function
-    function playAccessibilitySound(soundType) {
-        if (!GameState.settings || !GameState.settings.sound.master) return;
-        
-        // Map accessibility sounds to actual sound effects
-        switch(soundType) {
-            case 'invalid_command':
-                playSound('sanityLoss');
-                break;
-            case 'new_room':
-                playSound('doorOpen');
-                break;
-            default:
-                playSound('uiClick');
-        }
-    }
-
     async function typeWriter(element, text, color = 'var(--main-color)', speed = currentTextSpeed) {
         const resolvedColor = color.startsWith('var(') ? getComputedStyle(document.documentElement).getPropertyValue(color.slice(4, -1)).trim() : color;
         
-        // Apply simplified language if enabled
-        let processedText = simplifyText(text);
-        
         if (GameState.settings.colorblindMode && color !== '#a0a0a0') {
             const colorMap = {'#00ff41':'[SYS]', '#ffbf00':'[SYS]', '#00bfff':'[SYS]', '#ff474c':'[ERR]', '#ffdb58':'[WARN]', '#6495ed':'[CMD]', '#cccccc':'[INFO]', '#b19cd9':'[PSY]', [GUIDANCE_COLOR]: '[HINT]', '#ffa500': '[DEBUG]'};
-            processedText = (colorMap[resolvedColor] || '') + ' ' + processedText;
+            text = `${colorMap[resolvedColor] || ''} ${text}`;
             color = '#ffffff';
         }
         
         if (GameState.settings.glitchEffect && (GameState.sanityLevel < 30 || GameState.awarenessLevel > 70) && Math.random() < 0.2) {
             playSound('glitch', {note: 'G2', duration:'16n'});
-            processedText = processedText.split('').map(c => Math.random() < 0.15 ? String.fromCharCode(33 + Math.random() * 94) : c).join('');
-            provideAudioDescription('glitch_effect');
+            text = text.split('').map(c => Math.random() < 0.15 ? String.fromCharCode(33 + Math.random() * 94) : c).join('');
         }
         
-        // Create clickable objects
-        const objectRegex = new RegExp('\\b(' + Object.keys(itemData).map(escapeRegExp).join('|') + ')\\b', 'gi');
-        let finalHTML = processedText.replace(objectRegex, function(match) { 
-            return '<span class="clickable-object" data-object-name="' + match + '">' + match + '</span>'; 
-        });
-
-        // Trigger TTS for the text
-        speakText(processedText);
+        // Create a regex to find all known item names as whole words
+        const objectRegex = new RegExp(`\\b(${(Object.keys(itemData)).map(escapeRegExp).join('|')})\\b`, 'gi');
+        let processedText = text.replace(objectRegex, (match) => `<span class="clickable-object" data-object-name="${match}">${match}</span>`);
 
         return new Promise(resolve => {
-            const MAX_OUTPUT_NODES = 100;
+            const MAX_OUTPUT_NODES = 100; // Limit output lines to prevent performance issues
             const p = document.createElement('div');
             p.style.color = color;
             
-            // Add ARIA attributes for screen readers
-            if (GameState.settings.screenReader) {
-                p.setAttribute('aria-live', 'polite');
-                p.setAttribute('role', 'log');
-            }
-            
+            // This function will handle the typing animation
             let i = 0;
             function typing() {
-                if (i < processedText.length) {
+                if (i < text.length) {
                     if(speed > 0) playSound('typewriter');
-                    p.innerHTML = processedText.substring(0, i + 1);
+                    // Use the original text for the animation, then set the processed HTML at the end
+                    p.innerHTML = text.substring(0, i + 1);
                     i++;
                     element.scrollTop = element.scrollHeight;
                     setTimeout(typing, speed);
                 } else {
-                    p.innerHTML = finalHTML;
+                    p.innerHTML = processedText; // Set the final HTML with clickable spans
                     element.scrollTop = element.scrollHeight;
                     resolve();
                 }
             }
 
             element.appendChild(p);
-            
-            // Prune old nodes
+            // Prune old nodes from the output
             while (element.childNodes.length > MAX_OUTPUT_NODES) {
                 element.removeChild(element.firstChild);
             }
 
             if (speed > 0) {
-                p.innerHTML = "";
+                p.innerHTML = ""; // Start with an empty element for the animation
                 typing();
             } else {
-                p.innerHTML = finalHTML;
+                p.innerHTML = processedText; // If no animation, just set the final HTML
                 element.scrollTop = element.scrollHeight;
                 resolve();
             }
@@ -3012,11 +1734,11 @@
 
     function updateUI() {
         if (!GameState || Object.keys(GameState).length === 0) return;
-        UI.stats.name.textContent = GameState.playerName + " (" + t('backstory_title_' + GameState.playerBackstory.replace(/ /g, '_')) + ")";
-        UI.stats.awareness.innerHTML = '<span data-lang="awareness">' + t('awareness') + '</span>: ' + GameState.awarenessLevel;
-        UI.stats.sanity.innerHTML = '<span data-lang="sanity">' + t('sanity') + '</span>: ' + GameState.sanityLevel;
-        UI.stats.tone.innerHTML = '<span data-lang="tone">' + t('tone') + '</span>: ' + t('tone_' + (GameState.temporaryTone || GameState.chatbotTone).toLowerCase());
-        UI.stats.turn.innerHTML = '<span data-lang="turn">' + t('turn') + '</span>: ' + GameState.turnCount;
+        UI.stats.name.textContent = `${GameState.playerName} (${t('backstory_title_' + GameState.playerBackstory.replace(/ /g, '_'))})`; 
+        UI.stats.awareness.innerHTML = `<span data-lang="awareness">${t('awareness')}</span>: ${GameState.awarenessLevel}`; 
+        UI.stats.sanity.innerHTML = `<span data-lang="sanity">${t('sanity')}</span>: ${GameState.sanityLevel}`; 
+        UI.stats.tone.innerHTML = `<span data-lang="tone">${t('tone')}</span>: ${GameState.temporaryTone || GameState.chatbotTone}`; 
+        UI.stats.turn.innerHTML = `<span data-lang="turn">${t('turn')}</span>: ${GameState.turnCount}`;
         const currentWeight = GameState.inventory.reduce((sum, item) => sum + (item?.weight || 1), 0);
         UI.inventory.weight.textContent = `${currentWeight}`;
         if(currentWeight >= MAX_INVENTORY_WEIGHT) UI.inventory.weight.parentElement.classList.add('text-red-500'); else UI.inventory.weight.parentElement.classList.remove('text-red-500');
@@ -3039,12 +1761,6 @@
         const room = rooms[GameState.currentRoom]; if (!room) return;
         GameState.visitedRooms.add(GameState.currentRoom);
         
-        // Provide audio description for room entry
-        provideAudioDescription('room_enter', { 
-            roomName: room.name, 
-            description: room.descriptions[0] 
-        });
-        
         let description = room.descriptions[0];
         if (room.states?.lightsOut) {
             description = "The room is eerily dark, with only emergency lights casting long, distorted shadows. The main lights are out.";
@@ -3058,13 +1774,6 @@
         let roomHtml = `<div class="mt-2"><p class='text-cyan-400 font-bold'>--- ${room.name} ---</p><p>${description}</p><p class='text-yellow-300 mt-1'>${objectsInRoom}</p><p class='text-green-300 mt-1'>Exits: ${Object.keys(room.exits).join(", ")}</p></div>`;
         
         await typeWriter(UI.gameOutput, roomHtml, 'var(--main-color)', 0);
-
-        // Audio description for items found
-        if (room.objects.length > 0) {
-            room.objects.forEach(obj => {
-                provideAudioDescription('item_found', { itemName: obj });
-            });
-        }
 
         for (const objName of room.objects) {
             const item = itemData[objName];
@@ -3121,26 +1830,16 @@
             if (nextRoom.isSealed) {
                 typeWriter(UI.gameOutput, t('door_is_sealed'), '#ff474c');
                 playSound('sanityLoss');
-                playAccessibilitySound('invalid_command');
             } else if (nextRoom.requiresKeycard && !hasItem(nextRoom.keyName || 'keycard')) {
                 typeWriter(UI.gameOutput, t('door_is_locked'), '#ff474c');
                 playSound('sanityLoss');
-                playAccessibilitySound('invalid_command');
             } else {
                 GameState.currentRoom = nextRoomName;
                 playSound('doorOpen');
-                playAccessibilitySound('new_room');
-                provideAudioDescription('new_room_visual', 'Moving ' + direction + ' to ' + nextRoomName);
                 renderRoom();
-                
-                // Update command builder if active
-                if (GameState.settings.onScreenCommands) {
-                    updateCommandBuilderObjects();
-                }
             }
         } else {
             typeWriter(UI.gameOutput, t('cannot_go_that_way'), '#ff474c');
-            playAccessibilitySound('invalid_command');
         }
     }
 
@@ -3149,26 +1848,21 @@
         const itemInRoom = room.objects.find(obj => obj.toLowerCase() === itemName.toLowerCase());
         if (!itemInRoom) {
             typeWriter(UI.gameOutput, t('take_fail_exists', {item: itemName}), '#ff474c');
-            playAccessibilityAudioCue('command_failure');
-            return;
+ return;
         }
         if (!takeableItems.has(itemInRoom)) {
             typeWriter(UI.gameOutput, t('take_fail_takeable', {item: itemName}), '#ff474c');
-            playAccessibilityAudioCue('command_failure');
             return;
         }
         const item = itemData[itemInRoom];
         const currentWeight = GameState.inventory.reduce((sum, i) => sum + i.weight, 0);
         if (currentWeight + item.weight > MAX_INVENTORY_WEIGHT) {
             typeWriter(UI.gameOutput, t('take_fail_weight', {item: itemName}), '#ff474c');
-            playAccessibilityAudioCue('command_failure');
             return;
         }
         GameState.inventory.push(item);
         room.objects = room.objects.filter(obj => obj.toLowerCase() !== itemName.toLowerCase());
         playSound('itemPickup');
-        playAccessibilityAudioCue('item_interaction');
-        provideAudioDescription('inventory_change', { action: 'Added', itemName: itemName });
         typeWriter(UI.gameOutput, t('take_success', {item: itemName}), '#cccccc');
     }
 
@@ -3365,12 +2059,6 @@
     
     async function handleMinigameInput(input) {
         const minigame = GameState.activeMinigame;
-        
-        if (minigame.type === 'hacking') {
-            processHackingInput(input);
-            return;
-        }
-        
         if (minigame.type === 'hack') {
             if (input.toUpperCase() === minigame.code) {
                 await typeWriter(UI.gameOutput, t('hack_success'), '#34d399');
@@ -3400,87 +2088,6 @@
         }
         
         await displayChatbotResponse(responseKey);
-    }
-    
-    function handleMoveObject(targetName) {
-        if (!targetName) {
-            typeWriter(UI.gameOutput, t('move_what'), '#ff474c');
-            return;
-        }
-        
-        const room = rooms[GameState.currentRoom];
-        const obj = room.objects.find(o => o.toLowerCase().includes(targetName.toLowerCase()));
-        
-        if (!obj) {
-            typeWriter(UI.gameOutput, t('nothing_here_named', {name: targetName}), '#ff474c');
-            return;
-        }
-        
-        // Check if object is moveable
-        if (room.moveable && room.moveable[obj]) {
-            const result = room.moveable[obj];
-            room.objects = room.objects.filter(o => o !== obj);
-            if (result.reveals) {
-                room.objects.push(...result.reveals);
-                typeWriter(UI.gameOutput, t('move_reveals', {item: obj, found: result.reveals.join(', ')}), '#cccccc');
-            } else {
-                typeWriter(UI.gameOutput, t('move_success', {item: obj}), '#cccccc');
-            }
-        } else {
-            typeWriter(UI.gameOutput, t('cannot_move', {item: obj}), '#ff474c');
-        }
-    }
-    
-    function handleHide() {
-        const room = rooms[GameState.currentRoom];
-        if (room.hidingSpots && room.hidingSpots.length > 0) {
-            const spot = room.hidingSpots[Math.floor(Math.random() * room.hidingSpots.length)];
-            typeWriter(UI.gameOutput, t('hide_success', {spot: spot}), '#cccccc');
-            GameState.awarenessLevel = Math.max(0, GameState.awarenessLevel - 5);
-        } else {
-            typeWriter(UI.gameOutput, t('nowhere_to_hide'), '#ff474c');
-        }
-    }
-    
-    function handleCrawl(direction) {
-        if (!direction) {
-            typeWriter(UI.gameOutput, t('crawl_where'), '#ff474c');
-            return;
-        }
-        
-        const room = rooms[GameState.currentRoom];
-        if (room.crawlSpaces && room.crawlSpaces[direction]) {
-            const destination = room.crawlSpaces[direction];
-            GameState.currentRoom = destination;
-            typeWriter(UI.gameOutput, t('crawl_success', {direction: direction}), '#cccccc');
-            renderRoom();
-        } else {
-            typeWriter(UI.gameOutput, t('cannot_crawl', {direction: direction}), '#ff474c');
-        }
-    }
-    
-    function handleClimb(target) {
-        if (!target) {
-            typeWriter(UI.gameOutput, t('climb_what'), '#ff474c');
-            return;
-        }
-        
-        const room = rooms[GameState.currentRoom];
-        if (room.climbable && room.climbable[target]) {
-            const result = room.climbable[target];
-            if (result.destination) {
-                GameState.currentRoom = result.destination;
-                typeWriter(UI.gameOutput, t('climb_success', {target: target}), '#cccccc');
-                renderRoom();
-            } else if (result.reveals) {
-                room.objects.push(...result.reveals);
-                typeWriter(UI.gameOutput, t('climb_reveals', {target: target, found: result.reveals.join(', ')}), '#cccccc');
-            } else {
-                typeWriter(UI.gameOutput, t('climb_success', {target: target}), '#cccccc');
-            }
-        } else {
-            typeWriter(UI.gameOutput, t('cannot_climb', {target: target}), '#ff474c');
-        }
     }
     
     function triggerDynamicEvent() {
@@ -3519,11 +2126,11 @@
 
 
     function addJournalEntry(note) { if (!note) return; const entry = `T${GameState.turnCount}: ${note}`; GameState.journalEntries.push(entry); updateUI(); }
-    function displayJournal() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, t('journal_displayed'), '#cccccc'); }
-    function displayInventory() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, t('inventory_displayed'), '#cccccc'); }
-    function displayObjectives() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, t('objectives_displayed'), '#cccccc'); }
-    function displayMap() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, t('map_displayed'), '#cccccc'); }
-    function showExits() { typeWriter(UI.gameOutput, t('exits_list', {exits: Object.keys(rooms[GameState.currentRoom].exits).join(', ')})); }
+    function displayJournal() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Journal entries displayed on the right panel.", '#cccccc'); }
+    function displayInventory() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Inventory displayed on the right panel.", '#cccccc'); }
+    function displayObjectives() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Current objectives displayed on the right panel.", '#cccccc'); }
+    function displayMap() { if (window.innerWidth < 768) showStatusModal(); else typeWriter(UI.gameOutput, "[System] Map is displayed on the right panel.", '#cccccc'); }
+    function showExits() { typeWriter(UI.gameOutput, `[System] Exits: ${Object.keys(rooms[GameState.currentRoom].exits).join(', ')}`); }
 
 
     function saveStateSnapshot() { if(stateSnapshots.length > 20) stateSnapshots.shift(); stateSnapshots.push(JSON.parse(JSON.stringify(GameState, (key, value) => value instanceof Set ? [...value] : value))); }
@@ -3589,7 +2196,6 @@
         for (const key in backstories) {
             const backstoryTitleKey = 'backstory_title_' + key.replace(/ /g, '_');
             const displayName = t(backstoryTitleKey);
-            // Always use translation for both title and description
             content += `<button class="backstory-choice-btn button w-full text-left !justify-start !p-3" data-backstory="${key}">
                             <div><strong class="text-green-300">${displayName}</strong>: <span class="text-gray-300 text-sm">${t(backstories[key].description_key)}</span></div>
                         </button>`;
@@ -3711,7 +2317,7 @@
                 <div>${GameState.playerName} (${t('backstory_title_' + GameState.playerBackstory.replace(/ /g, '_'))})</div>
                 <div><span data-lang="awareness">${t('awareness')}</span>: ${GameState.awarenessLevel}</div>
                 <div><span data-lang="sanity">${t('sanity')}</span>: ${GameState.sanityLevel}</div>
-                <div><span data-lang="tone">${t('tone')}</span>: ${t('tone_' + (GameState.temporaryTone || GameState.chatbotTone).toLowerCase())}</div>
+                <div><span data-lang="tone">${t('tone')}</span>: ${GameState.temporaryTone || GameState.chatbotTone}</div>
                 <div><span data-lang="turn">${t('turn')}</span>: ${GameState.turnCount}</div>
             </div>
             <!-- Inventory -->
@@ -3807,14 +2413,31 @@
         content += `<div class="mb-4 text-sm text-cyan-300">Unlocked: <span class="font-bold">${unlockedCount}</span> / <span class="font-bold">${totalAchievements}</span> achievements (${lockedAchievementsCount} remaining)</div>`;
 
         content += `<h3 class="text-lg font-bold mb-2 text-white">${t('unlocked_achievements')}</h3>`;
-        content += `<ul class="list-disc pl-5 space-y-2">`;
-        for (const id in achievements) {
-            if (unlockedAchievements.includes(id)) {
+        if (unlockedAchievements.length > 0) {
+            content += `<ul class="list-disc pl-5 space-y-2">`;
+            unlockedAchievements.forEach(id => {
                 const ach = achievements[id];
-                content += `<li class="text-green-300"><strong>${t(ach.title_key)}</strong>: <span class="text-gray-300">${t(ach.req_key)}</span></li>`;
-            } else {
-                content += `<li class="text-gray-500"><strong>???</strong>: ???</li>`;
+                if (ach) {
+                    // Show how to achieve it if unlocked, with extra hints if available
+                    content += `<li class="text-green-300"><strong>${t(ach.title_key)}</strong>: <span class="text-gray-300">${t(ach.req_key)}</span></li>`;
+                }
+            });
+            content += `</ul>`;
+        } else {
+            content += `<p class="text-gray-400">${t('no_achievements')}</p>`;
+        }
+
+        content += `<h3 class="text-lg font-bold mt-4 mb-2 text-white">${t('locked_achievement')}</h3>`;
+        content += `<ul class="list-disc pl-5 space-y-2">`;
+        let lockedAchievementsListed = 0;
+        for (const id in achievements) {
+            if (!unlockedAchievements.includes(id)) {
+                lockedAchievementsListed++;
+                content += `<li class="text-gray-500"><strong>????:</strong> <span class="text-gray-600 italic">Undiscovered</span></li>`;
             }
+        }
+         if (lockedAchievementsListed === 0) {
+            content += `<p class="text-green-400">All achievements unlocked!</p>`;
         }
         content += `</ul>`;
 
@@ -3859,16 +2482,24 @@
 
         content += `<h3 class="text-lg font-bold mb-2 text-white">${t('unlocked_endings')}</h3>`;
 
-        content += `<ul class="list-disc pl-5 space-y-3">`;
-        for (const key in endings) {
-            if (unlockedEndings[key]) {
+        if (unlockedKeys.length > 0) {
+            content += `<ul class="list-disc pl-5 space-y-3">`;
+            unlockedKeys.forEach(key => {
                 const ending = endings[key];
-                content += `<li class="text-green-300"><strong>${t(ending.title_key)}</strong>: <span class="text-gray-300">${t(ending.desc_key)}</span></li>`;
-            } else {
-                content += `<li class="text-gray-500"><strong>???</strong>: ???</li>`;
-            }
+                if (ending) {
+                    // Show how to achieve it if unlocked, with extra hints if available
+                    content += `<li class="text-green-300"><strong>${t(ending.title_key)}</strong>: <span class="text-gray-300">${t(ending.desc_key)}</span></li>`;
+                }
+            });
+            content += `</ul>`;
+        } else {
+             content += `<p class="text-gray-400">${t('no_endings')}</p>`;
         }
-        content += `</ul>`;
+
+        if (lockedCount > 0) {
+            content += `<h3 class="text-lg font-bold mt-4 mb-2 text-white">Locked Endings</h3>`;
+            content += `<p class="text-gray-500">${lockedCount} ending(s) remain undiscovered.</p>`;
+        }
 
         content += `</div><button class="close-modal-btn button mt-6">${t('back_btn')}</button>`;
         showModal(content, true);
@@ -3887,36 +2518,32 @@
         const settingsText = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('settings_title')}</h2>
         <div class="modal-scroll text-left p-2 text-sm flex-grow space-y-4">
             
-            <!-- UI Theme -->
             <div class="flex items-center justify-between">
                 <span data-lang="setting_ui_theme">${t('setting_ui_theme')}</span>
                 <div class="flex gap-2">
-                    <button id="theme-green" class="button text-xs btn-drip ${settings.theme === 'green' ? 'button-primary' : ''}">${t('theme_green')}</button>
-                    <button id="theme-amber" class="button text-xs btn-drip ${settings.theme === 'amber' ? 'button-primary' : ''}">${t('theme_amber')}</button>
-                    <button id="theme-blue" class="button text-xs btn-drip ${settings.theme === 'blue' ? 'button-primary' : ''}">${t('theme_blue')}</button>
+                    <button id="theme-green" class="button text-xs ${settings.theme === 'green' ? 'button-primary' : ''}">${t('theme_green')}</button>
+                    <button id="theme-amber" class="button text-xs ${settings.theme === 'amber' ? 'button-primary' : ''}">${t('theme_amber')}</button>
+                    <button id="theme-blue" class="button text-xs ${settings.theme === 'blue' ? 'button-primary' : ''}">${t('theme_blue')}</button>
                 </div>
             </div>
 
-            <!-- Font Family -->
-            <div class="flex items-center justify-between">
+             <div class="flex items-center justify-between">
                 <span data-lang="setting_font_family">${t('setting_font_family')}</span>
                 <div class="flex gap-2">
-                    <button id="font-space" class="button text-xs btn-drip ${settings.font === 'Space Mono' ? 'button-primary' : ''}">Space Mono</button>
-                    <button id="font-courier" class="button text-xs btn-drip ${settings.font === 'Courier Prime' ? 'button-primary' : ''}">Courier</button>
+                    <button id="font-space" class="button text-xs ${settings.font === 'Space Mono' ? 'button-primary' : ''}">Space Mono</button>
+                    <button id="font-courier" class="button text-xs ${settings.font === 'Courier Prime' ? 'button-primary' : ''}">Courier</button>
                 </div>
             </div>
 
-            <!-- Text Speed -->
             <div class="flex items-center justify-between">
                 <span data-lang="setting_text_speed">${t('setting_text_speed')}</span>
                 <div class="flex gap-2">
-                    <button id="speed-fast" class="button text-xs btn-drip ${settings.textSpeed === TextSpeed.Fast ? 'button-primary' : ''}">${t('fast')}</button>
-                    <button id="speed-normal" class="button text-xs btn-drip ${settings.textSpeed === TextSpeed.Normal ? 'button-primary' : ''}">${t('normal')}</button>
-                    <button id="speed-slow" class="button text-xs btn-drip ${settings.textSpeed === TextSpeed.Slow ? 'button-primary' : ''}">${t('slow')}</button>
+                    <button id="speed-fast" class="button text-xs ${settings.textSpeed === TextSpeed.Fast ? 'button-primary' : ''}">${t('fast')}</button>
+                    <button id="speed-normal" class="button text-xs ${settings.textSpeed === TextSpeed.Normal ? 'button-primary' : ''}">${t('normal')}</button>
+                    <button id="speed-slow" class="button text-xs ${settings.textSpeed === TextSpeed.Slow ? 'button-primary' : ''}">${t('slow')}</button>
                 </div>
             </div>
 
-            <!-- CRT Effect -->
             <div class="flex items-center justify-between">
                 <span data-lang="setting_crt_effect">CRT Effect</span>
                 <label class="toggle-switch">
@@ -3924,8 +2551,6 @@
                     <span class="slider"></span>
                 </label>
             </div>
-
-            <!-- Colorblind Mode -->
             <div class="flex items-center justify-between">
                 <span data-lang="setting_colorblind_mode">${t('setting_colorblind_mode')}</span>
                 <label class="toggle-switch">
@@ -3934,9 +2559,7 @@
                 </label>
             </div>
 
-            <!-- Sound Settings -->
-            <hr class="border-gray-700 my-4">
-            <h3 class="text-lg text-cyan-400 mb-2">Audio Settings</h3>
+             <hr class="border-gray-700 my-4">
 
             <div class="flex items-center justify-between">
                 <span data-lang="setting_master_volume">${t('setting_master_volume')}</span>
@@ -3945,181 +2568,33 @@
                     <span class="slider"></span>
                 </label>
             </div>
-
-            <div class="flex items-center justify-between">
+             <div class="flex items-center justify-between">
                 <span data-lang="setting_item_found">${t('setting_item_found')}</span>
                 <label class="toggle-switch">
                     <input type="checkbox" id="setting-item" ${settings.sound.item ? 'checked' : ''}>
                     <span class="slider"></span>
                 </label>
             </div>
-
             <div class="flex items-center justify-between">
-                <span data-lang="setting_awareness_sound">${t('setting_awareness_sound')}</span>
+                <span data-lang="setting_high_awareness">${t('setting_high_awareness')}</span>
                 <label class="toggle-switch">
                     <input type="checkbox" id="setting-awareness" ${settings.sound.awareness ? 'checked' : ''}>
                     <span class="slider"></span>
                 </label>
             </div>
-
             <div class="flex items-center justify-between">
-                <span data-lang="setting_sanity_sound">${t('setting_sanity_sound')}</span>
+                <span data-lang="setting_low_sanity">${t('setting_low_sanity')}</span>
                 <label class="toggle-switch">
                     <input type="checkbox" id="setting-sanity" ${settings.sound.sanity ? 'checked' : ''}>
                     <span class="slider"></span>
                 </label>
             </div>
-
-            <!-- Accessibility Settings -->
-            <hr class="border-gray-700 my-4">
-            <h3 class="text-lg text-green-400 mb-2">Accessibility Settings</h3>
-
-            <!-- Vision Accessibility -->
-            <h4 class="text-md text-yellow-400 mb-2">Vision Support</h4>
-
-            <div class="flex items-center justify-between">
-                <span>Text Size</span>
-                <div class="flex gap-2">
-                    <button id="textsize-normal" class="button text-xs ${settings.textSize === 'normal' ? 'button-primary' : ''}">Normal</button>
-                    <button id="textsize-large" class="button text-xs ${settings.textSize === 'large' ? 'button-primary' : ''}">Large</button>
-                    <button id="textsize-extra" class="button text-xs ${settings.textSize === 'extra-large' ? 'button-primary' : ''}">Extra Large</button>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <span>High Contrast Mode</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="setting-high-contrast" ${settings.highContrast ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <span>Screen Reader Support</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="setting-screen-reader" ${settings.screenReader ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <span>Text-to-Speech</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="setting-tts" ${settings.ttsEnabled ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <span>Audio Descriptions</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="setting-audio-desc" ${settings.audioDescriptions ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <span>Comprehensive Audio Cues</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="setting-audio-cues" ${settings.comprehensiveAudioCues ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <!-- Reading Support -->
-            <h4 class="text-md text-yellow-400 mb-2 mt-4">Reading Support</h4>
-
-            <div class="flex items-center justify-between">
-                <span>Dyslexia-Friendly Font</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="setting-dyslexia-font" ${settings.dyslexiaFont ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <span>Letter Spacing</span>
-                <div class="flex gap-2">
-                    <button id="letter-normal" class="button text-xs ${settings.letterSpacing === 'normal' ? 'button-primary' : ''}">Normal</button>
-                    <button id="letter-wide" class="button text-xs ${settings.letterSpacing === 'wide' ? 'button-primary' : ''}">Wide</button>
-                    <button id="letter-extra" class="button text-xs ${settings.letterSpacing === 'extra-wide' ? 'button-primary' : ''}">Extra</button>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <span>Line Spacing</span>
-                <div class="flex gap-2">
-                    <button id="line-normal" class="button text-xs ${settings.lineSpacing === 'normal' ? 'button-primary' : ''}">Normal</button>
-                    <button id="line-wide" class="button text-xs ${settings.lineSpacing === 'wide' ? 'button-primary' : ''}">Wide</button>
-                    <button id="line-extra" class="button text-xs ${settings.lineSpacing === 'extra-wide' ? 'button-primary' : ''}">Extra</button>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <span>Reading Ruler</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="setting-reading-ruler" ${settings.readingRuler ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <span>Simplified Language</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="setting-simple-lang" ${settings.simplifiedLanguage ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <!-- Motor Support -->
-            <h4 class="text-md text-yellow-400 mb-2 mt-4">Motor Support</h4>
-
-            <div class="flex items-center justify-between">
-                <span>Keyboard Navigation</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="setting-keyboard-nav" ${settings.keyboardNavigation ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <span>Voice Commands</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="setting-voice-commands" ${settings.voiceCommands ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <span>On-Screen Commands</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="setting-onscreen-commands" ${settings.onScreenCommands ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <span>Adjustable Timers</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="setting-adjustable-timers" ${settings.adjustableTimers ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <span>Focus Indicators</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="setting-focus-indicators" ${settings.focusIndicator ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
             
             <hr class="border-gray-700 my-4">
             
-            <button id="reset-settings-btn" class="button w-full text-yellow-300 border-yellow-300/80 btn-drip">${t('setting_reset_defaults')}</button>
+            <button id="reset-settings-btn" class="button w-full text-yellow-300 border-yellow-300/80">${t('setting_reset_defaults')}</button>
         </div>
-        <button class="close-modal-btn button mt-6 btn-drip">${t('close_btn')}</button>`;
-        
+        <button class="close-modal-btn button mt-6">${t('close_btn')}</button>`;
         showModal(settingsText, true);
 
         const setupToggle = (id, obj, key) => {
@@ -4140,21 +2615,6 @@
         setupToggle('setting-colorblind', GameState.settings, 'colorblindMode');
         setupToggle('setting-crt', GameState.settings, 'glitchEffect');
 
-        // Accessibility toggles
-        setupToggle('setting-high-contrast', GameState.settings, 'highContrast');
-        setupToggle('setting-screen-reader', GameState.settings, 'screenReader');
-        setupToggle('setting-tts', GameState.settings, 'ttsEnabled');
-        setupToggle('setting-audio-desc', GameState.settings, 'audioDescriptions');
-        setupToggle('setting-audio-cues', GameState.settings, 'comprehensiveAudioCues');
-        setupToggle('setting-dyslexia-font', GameState.settings, 'dyslexiaFont');
-        setupToggle('setting-reading-ruler', GameState.settings, 'readingRuler');
-        setupToggle('setting-simple-lang', GameState.settings, 'simplifiedLanguage');
-        setupToggle('setting-keyboard-nav', GameState.settings, 'keyboardNavigation');
-        setupToggle('setting-voice-commands', GameState.settings, 'voiceCommands');
-        setupToggle('setting-onscreen-commands', GameState.settings, 'onScreenCommands');
-        setupToggle('setting-adjustable-timers', GameState.settings, 'adjustableTimers');
-        setupToggle('setting-focus-indicators', GameState.settings, 'focusIndicator');
-
         const setupButtonGroup = (buttons, key, valueMap) => {
             buttons.forEach(id => {
                 const btn = document.getElementById(id);
@@ -4174,11 +2634,6 @@
         setupButtonGroup(['theme-green', 'theme-amber', 'theme-blue'], 'theme', {'theme-green': 'green', 'theme-amber': 'amber', 'theme-blue': 'blue'});
         setupButtonGroup(['font-space', 'font-courier'], 'font', {'font-space': 'Space Mono', 'font-courier': 'Courier Prime'});
 
-        // Accessibility button groups
-        setupButtonGroup(['textsize-normal', 'textsize-large', 'textsize-extra'], 'textSize', {'textsize-normal': 'normal', 'textsize-large': 'large', 'textsize-extra': 'extra-large'});
-        setupButtonGroup(['letter-normal', 'letter-wide', 'letter-extra'], 'letterSpacing', {'letter-normal': 'normal', 'letter-wide': 'wide', 'letter-extra': 'extra-wide'});
-        setupButtonGroup(['line-normal', 'line-wide', 'line-extra'], 'lineSpacing', {'line-normal': 'normal', 'line-wide': 'wide', 'line-extra': 'extra-wide'});
-
         const resetBtn = document.getElementById('reset-settings-btn');
         if(resetBtn) {
             resetBtn.onclick = () => {
@@ -4188,27 +2643,7 @@
                     colorblindMode: false,
                     glitchEffect: true,
                     font: 'Space Mono',
-                    theme: 'green',
-                    // Accessibility settings
-                    textSize: 'normal',
-                    highContrast: false,
-                    screenReader: false,
-                    ttsEnabled: false,
-                    ttsVoice: 'default',
-                    ttsSpeed: 1.0,
-                    ttsPitch: 1.0,
-                    dyslexiaFont: false,
-                    letterSpacing: 'normal',
-                    lineSpacing: 'normal',
-                    readingRuler: false,
-                    simplifiedLanguage: false,
-                    keyboardNavigation: true,
-                    voiceCommands: false,
-                    onScreenCommands: false,
-                    adjustableTimers: false,
-                    audioDescriptions: false,
-                    comprehensiveAudioCues: false,
-                    focusIndicator: true
+                    theme: 'green'
                 };
                 saveSettings();
                 applySettings();
@@ -4232,8 +2667,8 @@
     function confirmReturnToMainMenu() {
         const confirmText = `<h2 class="text-xl mb-4 title-font text-yellow-400">${t('confirm_main_menu')}</h2>
         <div class="flex justify-center gap-4">
-            <button id="confirm-yes" class="button button-primary btn-drip">${t('yes')}</button>
-            <button id="confirm-no" class="button btn-drip">${t('no')}</button>
+            <button id="confirm-yes" class="button button-primary">${t('yes')}</button>
+            <button id="confirm-no" class="button">${t('no')}</button>
         </div>`;
         showModal(confirmText, true);
         document.getElementById('confirm-yes').onclick = () => { playSound('uiClick'); returnToMainMenu(); };
@@ -4305,13 +2740,7 @@
     function setupIntro() { UI.introTextContainer.innerHTML = `<p class="mb-4">${t('intro_1')}</p><p>${t('intro_2')}</p><p>${t('intro_3')}</p>`; }
     
     function startGame() { 
-        console.log("Step 1: Starting game...");
-        resetGameState(); 
-        console.log("Step 2: Game state reset complete");
-        initializeData(); 
-        console.log("Step 3: Data initialized");
-        saveStateSnapshot(); 
-        console.log("Step 4: State snapshot saved");
+        resetGameState(); initializeData(); saveStateSnapshot(); 
         GameState.playerName = UI.playerNameInput.value || "Subject"; 
         const backstoryKey = (UI.playerBackstoryInput.value || "investigator").toLowerCase();
         GameState.playerBackstory = Object.keys(backstories).includes(backstoryKey) ? backstoryKey : 'investigator';
@@ -4319,13 +2748,11 @@
         
         // Save player choices when starting a new game
         savePlayerChoices();
-        console.log("Step 5: Player choices saved");
 
         UI.startScreen.classList.add('hidden');
         UI.playerSetup.classList.add('hidden');
         UI.gameScreen.classList.remove('hidden'); 
         UI.gameScreen.classList.add('flex'); 
-        console.log("Step 6: UI screens switched"); 
         
         // Initialize player stats based on backstory and difficulty
         switch (GameState.playerBackstory) {
@@ -4369,35 +2796,16 @@
         }
 
         UI.gameOutput.innerHTML = ''; 
-        console.log("Step 7: Starting dialogue tree build...");
         buildDialogueTree(GameState.chatbotTone);
-        console.log("Step 8: Dialogue tree built successfully");
         if (audioInitialized) updateDynamicMusic();
         
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        console.log("Step 9: Starting game loop...");
         gameLoop();
-        console.log("Step 10: Game loop started");
         
-        console.log("Starting game initialization...");
-        console.log("Step 11: Starting typeWriter...");
         typeWriter(UI.gameOutput, t('initializing'), '#cccccc').then(() => { 
-            console.log("Initializing text complete, showing guidance...");
-            console.log("Step 12: Showing guidance...");
             showGuidance(t('initial_hint'));
-            console.log("Displaying chatbot response...");
-            console.log("Step 13: Starting displayChatbotResponse...");
-            displayChatbotResponse(GameState.dialogue.currentNode.message_key).then(() => { 
-                console.log("Chatbot response complete, rendering room...");
-                console.log("Step 14: Rendering room...");
-                renderRoom(); 
-                console.log("Step 15: Updating UI...");
-                updateUI(); 
-                console.log("Step 16: Rendering dialogue options...");
-                renderDialogueOptions(); 
-                console.log("Game initialization complete!");
-            }).catch(e => console.error("Error in displayChatbotResponse:", e)); 
-        }).catch(e => console.error("Error in typeWriter:", e)); 
+            displayChatbotResponse(GameState.dialogue.currentNode.message_key).then(() => { renderRoom(); updateUI(); renderDialogueOptions(); }); 
+        }); 
     }
     
     function checkEndings() {
@@ -4496,7 +2904,7 @@
 
     function startSpeechRecognition() {
         if (!SpeechRecognition) {
-            typeWriter(UI.gameOutput, t('speech_not_supported'), '#ff474c');
+            typeWriter(UI.gameOutput, "[SYSTEM] Speech recognition is not supported in your browser.", '#ff474c');
             return;
         }
 
@@ -4523,11 +2931,11 @@
         };
 
         recognition.onerror = (event) => {
-            let errorMsg = t('speech_error_generic', {error: event.error});
+            let errorMsg = `[SYSTEM] Speech recognition error: ${event.error}`;
             if (event.error === 'not-allowed') {
-                errorMsg = t('speech_error_access_denied');
+                errorMsg = "[SYSTEM] Microphone access denied. Please allow microphone access in your browser settings.";
             } else if (event.error === 'no-speech') {
-                errorMsg = t('speech_error_no_speech');
+                errorMsg = "[SYSTEM] No speech detected. Please try again.";
             }
             typeWriter(UI.gameOutput, errorMsg, '#ff474c');
         };
@@ -4617,143 +3025,14 @@
         const canvas = document.getElementById('background-canvas');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        let width, height, tentacles = [];
-        
-        function resize() { 
-            width = canvas.width = window.innerWidth; 
-            height = canvas.height = window.innerHeight; 
-        }
+        let width, height, particles = [];
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
         window.addEventListener('resize', resize);
         resize();
-        
-        class Tentacle {
-            constructor() {
-                this.segments = [];
-                this.segmentCount = Math.random() * 15 + 10; // 10-25 segments
-                this.baseX = Math.random() * width;
-                this.baseY = height + Math.random() * 100; // Start below screen
-                this.angle = Math.random() * Math.PI * 2;
-                this.speed = Math.random() * 0.02 + 0.005;
-                this.amplitude = Math.random() * 50 + 30;
-                this.frequency = Math.random() * 0.02 + 0.01;
-                this.time = Math.random() * 1000;
-                this.opacity = Math.random() * 0.3 + 0.1;
-                this.thickness = Math.random() * 8 + 4;
-                
-                // Initialize segments
-                for(let i = 0; i < this.segmentCount; i++) {
-                    this.segments.push({
-                        x: this.baseX,
-                        y: this.baseY - i * 20,
-                        targetX: this.baseX,
-                        targetY: this.baseY - i * 20
-                    });
-                }
-            }
-            
-            update() {
-                this.time += this.speed;
-                
-                // Update each segment to follow the previous one with wave motion
-                for(let i = 0; i < this.segments.length; i++) {
-                    const segment = this.segments[i];
-                    
-                    if(i === 0) {
-                        // Base segment follows sinusoidal motion
-                        segment.targetX = this.baseX + Math.sin(this.time * this.frequency) * this.amplitude;
-                        segment.targetY = this.baseY + Math.cos(this.time * this.frequency * 0.7) * 20;
-                    } else {
-                        // Each segment follows the previous one with some delay and wave motion
-                        const prev = this.segments[i - 1];
-                        const waveOffset = Math.sin(this.time * this.frequency + i * 0.3) * 15;
-                        segment.targetX = prev.x + waveOffset;
-                        segment.targetY = prev.y - 25 + Math.cos(this.time * this.frequency + i * 0.2) * 10;
-                    }
-                    
-                    // Smooth movement
-                    segment.x += (segment.targetX - segment.x) * 0.1;
-                    segment.y += (segment.targetY - segment.y) * 0.1;
-                }
-                
-                // Reset if tentacle goes too far off screen
-                if(this.baseY < -200 || this.baseX < -100 || this.baseX > width + 100) {
-                    this.baseX = Math.random() * width;
-                    this.baseY = height + Math.random() * 100;
-                    this.time = 0;
-                }
-            }
-            
-            draw() {
-                if(this.segments.length < 2) return;
-                
-                ctx.save();
-                ctx.globalAlpha = this.opacity;
-                
-                // Draw tentacle body with gradient
-                ctx.beginPath();
-                ctx.moveTo(this.segments[0].x, this.segments[0].y);
-                
-                // Create smooth curve through all segments
-                for(let i = 1; i < this.segments.length - 1; i++) {
-                    const current = this.segments[i];
-                    const next = this.segments[i + 1];
-                    const midX = (current.x + next.x) / 2;
-                    const midY = (current.y + next.y) / 2;
-                    ctx.quadraticCurveTo(current.x, current.y, midX, midY);
-                }
-                
-                // Final segment
-                if(this.segments.length > 1) {
-                    const last = this.segments[this.segments.length - 1];
-                    ctx.lineTo(last.x, last.y);
-                }
-                
-                // Create red gradient that matches title colors
-                const gradient = ctx.createLinearGradient(
-                    this.segments[0].x, this.segments[0].y,
-                    this.segments[this.segments.length - 1].x, this.segments[this.segments.length - 1].y
-                );
-                gradient.addColorStop(0, '#600'); // Dark red base
-                gradient.addColorStop(0.3, '#d00'); // Medium red
-                gradient.addColorStop(0.6, '#ff0000'); // Bright red
-                gradient.addColorStop(1, 'rgba(255, 0, 0, 0)'); // Fade to transparent
-                
-                ctx.strokeStyle = gradient;
-                ctx.lineWidth = this.thickness;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.stroke();
-                
-                // Add subtle glow effect
-                ctx.shadowColor = '#ff0000';
-                ctx.shadowBlur = 10;
-                ctx.stroke();
-                
-                ctx.restore();
-            }
-        }
-        
-        function initTentacles() { 
-            tentacles = []; 
-            const tentacleCount = Math.floor(width / 150) + 3; // Responsive tentacle count
-            for(let i = 0; i < tentacleCount; i++) {
-                tentacles.push(new Tentacle()); 
-            }
-        }
-        
-        function animateTentacles() { 
-            ctx.clearRect(0, 0, width, height); 
-            
-            for(let i = 0; i < tentacles.length; i++) { 
-                tentacles[i].update(); 
-                tentacles[i].draw(); 
-            } 
-            
-            requestAnimationFrame(animateTentacles); 
-        }
-        
-        initTentacles(); 
-        animateTentacles();
+        class Particle { constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.size = Math.random() * 0.4 + 0.1; this.speedX = (Math.random() * 0.5 - 0.25); this.speedY = (Math.random() * 0.5 - 0.25); } update() { this.x += this.speedX; this.y += this.speedY; if (this.size > 0.1) this.size -= 0.001; if(this.x < 0 || this.x > width) this.speedX *= -1; if(this.y < 0 || this.y > height) this.speedY *= -1; } draw() { ctx.fillStyle = 'var(--main-color)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); } }
+        function initParticles() { particles = []; for(let i=0; i<100; i++) particles.push(new Particle()); }
+        function animateParticles() { ctx.clearRect(0,0,width,height); for(let i=0; i<particles.length; i++) { particles[i].update(); particles[i].draw(); if(particles[i].size <= 0.1) { particles.splice(i, 1); i--; particles.push(new Particle()); } } requestAnimationFrame(animateParticles); }
+        initParticles(); animateParticles();
     }
     
     function getMapBounds() {
@@ -4846,19 +3125,14 @@
 
             if (isDiscovered) {
                 const isLocked = rooms[roomName].requiresKeycard && !hasItem(rooms[roomName].keyName || 'keycard');
-                
-                // Use consistent green color for all visited rooms
-                ctx.fillStyle = "rgba(0, 255, 65, 0.3)";
-                
-                // Add pulsing effect only for current room
                 if (roomName === GameState.currentRoom) {
                     const pulseFactor = (Math.sin(Date.now() * 0.005) + 1) / 2;
+                    ctx.fillStyle = `rgba(0, 255, 65, ${0.5 + pulseFactor * 0.4})`;
                     ctx.shadowColor = 'rgba(127, 255, 127, 1)';
                     ctx.shadowBlur = (4 + pulseFactor * 8) / mapState.scale;
                 } else {
-                    ctx.shadowBlur = 0;
+                    ctx.fillStyle = "rgba(0, 255, 65, 0.3)";
                 }
-                
                 ctx.fillRect(x, y, w, h);
                 ctx.shadowBlur = 0;
 
@@ -4885,9 +3159,7 @@
                 ctx.fillStyle = "white";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
-                // Use full room name from rooms object instead of abbreviated layout name
-                const displayName = rooms[roomName]?.name || layout.name;
-                ctx.fillText(displayName, x + w / 2, y + h / 2 + 1);
+                ctx.fillText(layout.name, x + w / 2, y + h / 2 + 1);
                 
                 ctx.shadowBlur = 0;
                 ctx.shadowOffsetX = 0;
@@ -5011,7 +3283,7 @@
 
     function showHistory() {
         let historyHtml = commandHistory.slice(-20).map((cmd, i) => `<div>${i + 1}: ${cmd}</div>`).join('');
-        typeWriter(UI.gameOutput, t('command_history_title') + '\n' + historyHtml, '#cccccc');
+        typeWriter(UI.gameOutput, `--- Command History ---\n${historyHtml}`, '#cccccc');
     }
 
     function undoLastAction() {
@@ -5024,21 +3296,21 @@
              GameState.roomsWithDroppedItems = new Set(prevState.roomsWithDroppedItems || []);
             GameState.achievements = prevState.achievements || [];
             updateUI();
-            typeWriter(UI.gameOutput, t('undo_success'), "#ffdb58");
+            typeWriter(UI.gameOutput, "[System] Last action undone.", "#ffdb58");
         } else {
-            typeWriter(UI.gameOutput, t('undo_fail'), "#ff474c");
+            typeWriter(UI.gameOutput, "[System] No actions to undo.", "#ff474c");
         }
     }
     
     function toggleDebug() {
         GameState.debugMode = !GameState.debugMode;
-        typeWriter(UI.gameOutput, t('debug_mode_toggle', {status: GameState.debugMode ? t('enabled') : t('disabled')}), '#6495ed');
+        typeWriter(UI.gameOutput, `[System] Debug mode ${GameState.debugMode ? 'enabled' : 'disabled'}.`, '#6495ed');
     }
     
     function toggleColorblind() {
         GameState.settings.colorblindMode = !GameState.settings.colorblindMode;
         saveSettings();
-        typeWriter(UI.gameOutput, t('colorblind_mode_toggle', {status: GameState.settings.colorblindMode ? t('enabled') : t('disabled')}), '#6495ed');
+        typeWriter(UI.gameOutput, `[System] Colorblind mode ${GameState.settings.colorblindMode ? 'enabled' : 'disabled'}.`, '#6495ed');
     }
 
     function updateAutocomplete() {
@@ -5067,9 +3339,6 @@
     // --- EVENT LISTENERS & INITIALIZATION ---
     window.addEventListener('beforeunload', saveStateToSession);
     window.addEventListener('DOMContentLoaded', () => {
-        // Initialize PWA functionality
-        initializePWA();
-        
         // Load player choices first to pre-populate the setup screen
         loadPlayerChoices();
 
@@ -5080,15 +3349,6 @@
             } else if (e.key === 'ArrowUp') { e.preventDefault(); if (commandHistory.length > 0) { commandHistoryIndex = Math.max(0, commandHistoryIndex - 1); UI.playerInput.value = commandHistory[commandHistoryIndex] || ''; }
             } else if (e.key === 'ArrowDown') { e.preventDefault(); if (commandHistory.length > 0) { commandHistoryIndex = Math.min(commandHistory.length, commandHistoryIndex + 1); UI.playerInput.value = commandHistory[commandHistoryIndex] || ''; } }
         });
-        
-        // Submit button for mobile
-        const submitBtn = document.getElementById('submit-btn');
-        if (submitBtn) {
-            submitBtn.addEventListener('click', () => {
-                const input = UI.playerInput.value.trim();
-                if (input) { processPlayerInput(input); }
-            });
-        }
         
         UI.playerInput.addEventListener('input', updateAutocomplete);
         UI.autocompleteBox.addEventListener('click', (e) => {
@@ -5215,92 +3475,6 @@
 
         initMapControls();
         setupBackgroundAnimation();
-        
-        // Mobile address bar auto-hide for better immersion
-        function hideAddressBar() {
-            if (window.orientation !== undefined) {
-                setTimeout(() => {
-                    window.scrollTo(0, 1);
-                }, 100);
-            }
-        }
-        
-        // Hide address bar on mobile
-        window.addEventListener('orientationchange', hideAddressBar);
-        window.addEventListener('load', hideAddressBar);
-        
-        // PWA Install functionality
-        let deferredPrompt;
-        const installPrompt = document.createElement('div');
-        installPrompt.id = 'install-prompt';
-        installPrompt.innerHTML = `
-            <div class="flex-1">
-                <h3 class="text-sm font-bold text-white mb-1">Install SYNAPSE</h3>
-                <p class="text-xs text-gray-300">Add to your home screen for the full experience</p>
-            </div>
-            <div class="flex gap-2">
-                <button id="install-button" class="button text-xs px-3 py-1 bg-green-600 hover:bg-green-700">Install</button>
-                <button id="install-dismiss" class="button text-xs px-3 py-1 bg-gray-600 hover:bg-gray-700">Later</button>
-            </div>
-        `;
-        document.body.appendChild(installPrompt);
-
-        // Listen for the beforeinstallprompt event
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            // Only show install prompt on small mobile devices (phones, not tablets/desktop)
-            const isMobile = /Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const isSmallScreen = window.innerWidth <= 640 && window.innerHeight <= 896; // Typical phone dimensions
-            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-            
-            // Don't show install prompt if already installed, dismissed this session, or not on small mobile
-            if (!window.matchMedia('(display-mode: standalone)').matches && 
-                !sessionStorage.getItem('installPromptDismissed') &&
-                isMobile && isSmallScreen && isTouchDevice) {
-                installPrompt.classList.add('show');
-            }
-        });
-
-        // Handle install button click
-        document.getElementById('install-button').addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    console.log('User accepted the install prompt');
-                }
-                deferredPrompt = null;
-                installPrompt.classList.remove('show');
-            }
-        });
-
-        // Handle dismiss button click
-        document.getElementById('install-dismiss').addEventListener('click', () => {
-            installPrompt.classList.remove('show');
-            // Don't show again for this session
-            sessionStorage.setItem('installPromptDismissed', 'true');
-        });
-
-        // Register service worker (disabled for local file:// protocol)
-        if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then((registration) => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch((registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
-            });
-        }
-
-        // Handle app install event
-        window.addEventListener('appinstalled', () => {
-            console.log('PWA was installed');
-            installPrompt.classList.remove('show');
-        });
     });
     </script>
 </body>
