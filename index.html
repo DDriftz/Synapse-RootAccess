@@ -9,6 +9,18 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SYNAPSE">
     <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- iOS specific meta tags -->
+    <meta name="apple-touch-fullscreen" content="yes">
+    <link rel="apple-touch-startup-image" href="Icon.png">
+    
+    <!-- Additional PWA meta tags -->
+    <meta name="application-name" content="SYNAPSE">
+    <meta name="msapplication-TileColor" content="#00ff41">
+    <meta name="msapplication-TileImage" href="Icon.png">
     <title>SYNAPSE</title>
     <link rel="icon" type="image/png" href="Icon.png">
     <link rel="apple-touch-icon" href="Icon.png">
@@ -710,10 +722,48 @@
             align-items: center;
             gap: 1rem;
             backdrop-filter: blur(10px);
+            animation: slideUp 0.3s ease-out;
         }
 
         #install-prompt.show {
             display: flex;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        #install-prompt .install-icon {
+            font-size: 2rem;
+            color: var(--main-color);
+        }
+
+        #install-prompt .install-content {
+            flex-grow: 1;
+        }
+
+        #install-prompt .install-title {
+            font-weight: bold;
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+
+        #install-prompt .install-description {
+            font-size: 0.875rem;
+            color: #cccccc;
+        }
+
+        #install-prompt .install-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
         }
 
         @media (max-width: 640px) {
@@ -721,6 +771,11 @@
                 flex-direction: column;
                 text-align: center;
                 gap: 0.75rem;
+            }
+            
+            #install-prompt .install-actions {
+                width: 100%;
+                justify-content: center;
             }
         }
 
@@ -954,6 +1009,19 @@
 
     <div id="modal" class="modal">
         <div id="modal-content" class="modal-content"></div>
+    </div>
+
+    <!-- PWA Install Prompt -->
+    <div id="install-prompt">
+        <div class="install-icon">📱</div>
+        <div class="install-content">
+            <div class="install-title">Install SYNAPSE</div>
+            <div class="install-description">Add to your home screen for a better experience</div>
+        </div>
+        <div class="install-actions">
+            <button id="install-btn" class="button button-primary">Install</button>
+            <button id="install-dismiss" class="button">Maybe Later</button>
+        </div>
     </div>
     
     <script>
@@ -4999,6 +5067,9 @@
     // --- EVENT LISTENERS & INITIALIZATION ---
     window.addEventListener('beforeunload', saveStateToSession);
     window.addEventListener('DOMContentLoaded', () => {
+        // Initialize PWA functionality
+        initializePWA();
+        
         // Load player choices first to pre-populate the setup screen
         loadPlayerChoices();
 
