@@ -87,10 +87,31 @@
             letter-spacing: 0.1em;
             position: relative;
             z-index: 1; 
-            /* Green text's own glow */
+            /* Enhanced green text glow */
             text-shadow: 
                 0 0 5px #39FF14, 
-                0 0 10px #39FF14;
+                0 0 10px #39FF14,
+                0 0 15px #39FF14,
+                0 0 20px #39FF14;
+            animation: title-main-glow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes title-main-glow {
+            0% {
+                text-shadow: 
+                    0 0 5px #39FF14, 
+                    0 0 10px #39FF14,
+                    0 0 15px #39FF14,
+                    0 0 20px #39FF14;
+            }
+            100% {
+                text-shadow: 
+                    0 0 8px #39FF14, 
+                    0 0 15px #39FF14,
+                    0 0 25px #39FF14,
+                    0 0 35px #39FF14,
+                    0 0 45px #2ae60d;
+            }
         }
 
         /* The blood layer behind the text */
@@ -99,17 +120,87 @@
             position: absolute;
             left: 0;
             top: 0;
-            color: transparent; /* The text color is transparent; the shadow creates the effect */
+            color: transparent; 
             z-index: -1; 
-            animation: liquid-drip 3.5s infinite ease-in;
-            filter: drop-shadow(0 0 5px #ff0000) drop-shadow(0 0 15px #d40000) drop-shadow(0 0 25px #a00);
+            animation: liquid-drip 4s infinite ease-in-out;
+            filter: drop-shadow(0 0 8px #ff0000) drop-shadow(0 0 20px #d40000) drop-shadow(0 0 35px #a00);
         }
 
         @keyframes liquid-drip {
-            0% { text-shadow: 1px 1px 0px #a00, 2px 2px 0px #800, 3px 3px 0px #600, 0 0 5px #d00, 0px 0px 0px #500; opacity: 1; }
-            50% { text-shadow: 1px 1px 0px #a00, 2px 2px 0px #800, 3px 3px 0px #600, 0 0 5px #d00, 0px 20px 10px #500, -5px 30px 12px #400, 5px 35px 12px #300; opacity: 1; }
-            90% { text-shadow: 1px 1px 0px rgba(170,0,0,0.2), 2px 2px 0px rgba(136,0,0,0.2), 3px 3px 0px rgba(102,0,0,0.2), 0 0 5px rgba(221,0,0,0.5), 0px 40px 20px rgba(85,0,0,0.1), -5px 50px 22px rgba(68,0,0,0.05), 5px 55px 22px rgba(51,0,0,0.05); opacity: 0.8; }
-            100% { text-shadow: 1px 1px 0px transparent, 2px 2px 0px transparent, 3px 3px 0px transparent, 0 0 5px transparent, 0px 45px 30px transparent, -5px 55px 30px transparent, 5px 60px 30px transparent; opacity: 0; }
+            0% { 
+                text-shadow: 
+                    1px 1px 0px #a00, 
+                    2px 2px 0px #800, 
+                    3px 3px 0px #600, 
+                    0 0 5px #d00, 
+                    0px 0px 0px #500; 
+                opacity: 1; 
+            }
+            25% {
+                text-shadow: 
+                    1px 1px 0px #c00, 
+                    2px 2px 0px #a00, 
+                    3px 3px 0px #800, 
+                    0 0 8px #f00, 
+                    0px 10px 5px #700,
+                    -2px 15px 8px #500; 
+                opacity: 1;
+            }
+            50% { 
+                text-shadow: 
+                    1px 1px 0px #a00, 
+                    2px 2px 0px #800, 
+                    3px 3px 0px #600, 
+                    0 0 5px #d00, 
+                    0px 20px 10px #500, 
+                    -5px 30px 12px #400, 
+                    5px 35px 12px #300,
+                    -8px 45px 15px #200,
+                    8px 50px 15px #200; 
+                opacity: 1; 
+            }
+            75% {
+                text-shadow: 
+                    1px 1px 0px rgba(170,0,0,0.8), 
+                    2px 2px 0px rgba(136,0,0,0.6), 
+                    3px 3px 0px rgba(102,0,0,0.4), 
+                    0 0 5px rgba(221,0,0,0.8), 
+                    0px 35px 18px rgba(85,0,0,0.4), 
+                    -5px 45px 20px rgba(68,0,0,0.3), 
+                    5px 50px 20px rgba(51,0,0,0.3),
+                    -10px 60px 25px rgba(34,0,0,0.2),
+                    10px 65px 25px rgba(34,0,0,0.2),
+                    0px 70px 30px rgba(17,0,0,0.1); 
+                opacity: 0.9; 
+            }
+            90% { 
+                text-shadow: 
+                    1px 1px 0px rgba(170,0,0,0.2), 
+                    2px 2px 0px rgba(136,0,0,0.2), 
+                    3px 3px 0px rgba(102,0,0,0.2), 
+                    0 0 5px rgba(221,0,0,0.5), 
+                    0px 40px 20px rgba(85,0,0,0.1), 
+                    -5px 50px 22px rgba(68,0,0,0.05), 
+                    5px 55px 22px rgba(51,0,0,0.05),
+                    -12px 70px 30px rgba(34,0,0,0.05),
+                    12px 75px 30px rgba(34,0,0,0.05),
+                    0px 80px 35px rgba(17,0,0,0.02); 
+                opacity: 0.8; 
+            }
+            100% { 
+                text-shadow: 
+                    1px 1px 0px transparent, 
+                    2px 2px 0px transparent, 
+                    3px 3px 0px transparent, 
+                    0 0 5px transparent, 
+                    0px 45px 30px transparent, 
+                    -5px 55px 30px transparent, 
+                    5px 60px 30px transparent,
+                    -15px 80px 40px transparent,
+                    15px 85px 40px transparent,
+                    0px 90px 45px transparent; 
+                opacity: 0; 
+            }
         }
 
         /* Subtitle glow effect */
@@ -138,6 +229,47 @@
                     0 0 8px #ff0000,
                     0 0 12px #ff0000;
                 opacity: 1;
+            }
+        }
+
+        /* Mobile scroll improvements */
+        @media (max-width: 768px) {
+            .game-interface {
+                height: 100vh;
+                overflow: hidden;
+            }
+            
+            #game-output {
+                -webkit-overflow-scrolling: touch;
+                scroll-behavior: smooth;
+                max-height: calc(100vh - 200px);
+            }
+            
+            .mobile-scroll-indicator {
+                position: fixed;
+                bottom: 80px;
+                right: 10px;
+                background: rgba(0, 255, 65, 0.2);
+                border: 1px solid var(--main-color);
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                animation: pulse-scroll 2s infinite;
+            }
+            
+            @keyframes pulse-scroll {
+                0%, 100% { opacity: 0.6; transform: scale(1); }
+                50% { opacity: 1; transform: scale(1.1); }
+            }
+            
+            .side-panel {
+                max-height: 40vh;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
             }
         }
         
@@ -350,6 +482,70 @@
             outline: 3px solid var(--main-color) !important;
             outline-offset: 2px !important;
         }
+        
+        /* Enhanced Accessibility Features */
+        .colorblind-support {
+            filter: hue-rotate(20deg) saturate(1.2);
+        }
+        .colorblind-support .text-red-500 {
+            color: #ff6b6b !important;
+        }
+        .colorblind-support .text-green-400 {
+            color: #4ecdc4 !important;
+        }
+        .colorblind-support .text-yellow-400 {
+            color: #ffe66d !important;
+        }
+        
+        .dyslexia-font, .dyslexia-font * {
+            font-family: 'Arial', 'Helvetica', sans-serif !important;
+            letter-spacing: 0.15em !important;
+            line-height: 1.8 !important;
+        }
+        
+        .auto-scroll {
+            scroll-behavior: smooth;
+        }
+        .auto-scroll #game-output {
+            animation: auto-scroll-text 3s linear infinite;
+        }
+        
+        @keyframes auto-scroll-text {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+        
+        .click-feedback button:active {
+            transform: scale(0.95);
+            transition: transform 0.1s;
+        }
+        
+        .simplified-ui .bg-gradient-to-br {
+            background: #000 !important;
+        }
+        .simplified-ui .border-2 {
+            border-width: 1px !important;
+        }
+        .simplified-ui .rounded-lg {
+            border-radius: 4px !important;
+        }
+        .simplified-ui .title-slasher::before {
+            display: none !important;
+        }
+        
+        .ui-scale-small {
+            font-size: 0.8em;
+        }
+        .ui-scale-large {
+            font-size: 1.2em;
+        }
+        .ui-scale-large .text-sm {
+            font-size: 1rem;
+        }
+        .ui-scale-large .text-xs {
+            font-size: 0.875rem;
+        }
+        
         #on-screen-commands {
             position: fixed;
             bottom: 20px;
@@ -511,6 +707,13 @@
                          <button id="view-progression-btn" class="button w-full" data-lang="progress_btn">PROGRESS</button>
                      </div>
                 </div>
+            </div>
+
+            <!-- Mobile Scroll Indicator -->
+            <div id="mobile-scroll-indicator" class="mobile-scroll-indicator md:hidden">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 0a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 6.293V.5A.5.5 0 0 1 8 0zm0 10a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708l2.147 2.147V10.5A.5.5 0 0 1 8 10z"/>
+                </svg>
             </div>
 
             <div class="mt-2 flex items-center border-t-2 border-[var(--main-color-border)] pt-2 gap-2 relative">
@@ -1422,7 +1625,14 @@
                 audioDescriptions: false,
                 keyboardNavigation: false,
                 focusIndicators: false,
-                readingSupport: false
+                readingSupport: false,
+                colorBlindSupport: false,
+                dyslexiaFont: false,
+                autoScroll: false,
+                clickFeedback: true,
+                simplifiedUI: false,
+                ttsSpeed: 1,
+                uiScale: 1
             };
             const loaded = settings ? JSON.parse(settings) : defaults;
             return {...defaults, ...loaded, sound: {...defaults.sound, ...(loaded.sound || {})}};
@@ -1443,7 +1653,14 @@
                 audioDescriptions: false,
                 keyboardNavigation: false,
                 focusIndicators: false,
-                readingSupport: false
+                readingSupport: false,
+                colorBlindSupport: false,
+                dyslexiaFont: false,
+                autoScroll: false,
+                clickFeedback: true,
+                simplifiedUI: false,
+                ttsSpeed: 1,
+                uiScale: 1
             };
         }
     }
@@ -1500,6 +1717,23 @@
         document.body.classList.toggle('large-text', GameState.settings.largeText);
         document.body.classList.toggle('reduced-motion', GameState.settings.reducedMotion);
         document.body.classList.toggle('focus-indicators', GameState.settings.focusIndicators);
+        document.body.classList.toggle('colorblind-support', GameState.settings.colorBlindSupport);
+        document.body.classList.toggle('dyslexia-font', GameState.settings.dyslexiaFont);
+        document.body.classList.toggle('auto-scroll', GameState.settings.autoScroll);
+        document.body.classList.toggle('click-feedback', GameState.settings.clickFeedback);
+        document.body.classList.toggle('simplified-ui', GameState.settings.simplifiedUI);
+        
+        // Apply UI scale
+        const uiScale = GameState.settings.uiScale || 1;
+        if (uiScale < 1) {
+            document.body.classList.add('ui-scale-small');
+            document.body.classList.remove('ui-scale-large');
+        } else if (uiScale > 1) {
+            document.body.classList.add('ui-scale-large');
+            document.body.classList.remove('ui-scale-small');
+        } else {
+            document.body.classList.remove('ui-scale-small', 'ui-scale-large');
+        }
         
         // Update text-to-speech and screen reader support
         if (GameState.settings.screenReader) {
@@ -2850,6 +3084,68 @@
             </div>
             
             <div class="flex items-center justify-between">
+                <span>Color Blind Support</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-colorblind-support" ${settings.colorBlindSupport ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <span>Dyslexia-Friendly Font</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-dyslexia-font" ${settings.dyslexiaFont ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <span>Auto-Scroll Text</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-auto-scroll" ${settings.autoScroll ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <span>Click Sound Feedback</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-click-feedback" ${settings.clickFeedback ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <span>Simplified UI</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-simplified-ui" ${settings.simplifiedUI ? 'checked' : ''}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Text-to-Speech Speed</label>
+                <input type="range" id="setting-tts-speed" min="0.5" max="2" step="0.1" value="${settings.ttsSpeed || 1}" 
+                       class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                <div class="flex justify-between text-xs text-gray-400 mt-1">
+                    <span>Slow</span>
+                    <span>Normal</span>
+                    <span>Fast</span>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">UI Scale</label>
+                <input type="range" id="setting-ui-scale" min="0.8" max="1.5" step="0.1" value="${settings.uiScale || 1}" 
+                       class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                <div class="flex justify-between text-xs text-gray-400 mt-1">
+                    <span>Small</span>
+                    <span>Normal</span>
+                    <span>Large</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between">
                 <span>Reading Support</span>
                 <label class="toggle-switch">
                     <input type="checkbox" id="setting-reading-support" ${settings.readingSupport ? 'checked' : ''}>
@@ -2891,6 +3187,29 @@
         setupToggle('setting-keyboard-navigation', GameState.settings, 'keyboardNavigation');
         setupToggle('setting-focus-indicators', GameState.settings, 'focusIndicators');
         setupToggle('setting-reading-support', GameState.settings, 'readingSupport');
+        setupToggle('setting-colorblind-support', GameState.settings, 'colorBlindSupport');
+        setupToggle('setting-dyslexia-font', GameState.settings, 'dyslexiaFont');
+        setupToggle('setting-auto-scroll', GameState.settings, 'autoScroll');
+        setupToggle('setting-click-feedback', GameState.settings, 'clickFeedback');
+        setupToggle('setting-simplified-ui', GameState.settings, 'simplifiedUI');
+        
+        // Range sliders for accessibility
+        const ttsSpeedSlider = document.getElementById('setting-tts-speed');
+        if (ttsSpeedSlider) {
+            ttsSpeedSlider.addEventListener('input', (e) => {
+                GameState.settings.ttsSpeed = parseFloat(e.target.value);
+                saveSettings();
+            });
+        }
+        
+        const uiScaleSlider = document.getElementById('setting-ui-scale');
+        if (uiScaleSlider) {
+            uiScaleSlider.addEventListener('input', (e) => {
+                GameState.settings.uiScale = parseFloat(e.target.value);
+                saveSettings();
+                applySettings();
+            });
+        }
 
         const setupButtonGroup = (buttons, key, valueMap) => {
             buttons.forEach(id => {
@@ -3910,6 +4229,85 @@
                     console.error('Service Worker registration failed:', error);
                 });
         }
+        
+        // Mobile scroll functionality
+        if (window.innerWidth <= 768) {
+            const gameOutput = document.getElementById('game-output');
+            const scrollIndicator = document.getElementById('mobile-scroll-indicator');
+            
+            // Auto-scroll to bottom when new content is added
+            const observer = new MutationObserver(() => {
+                if (GameState.settings?.autoScroll) {
+                    gameOutput.scrollTop = gameOutput.scrollHeight;
+                }
+            });
+            
+            if (gameOutput) {
+                observer.observe(gameOutput, { childList: true, subtree: true });
+                
+                // Show/hide scroll indicator based on scroll position
+                gameOutput.addEventListener('scroll', () => {
+                    if (scrollIndicator) {
+                        const isAtBottom = gameOutput.scrollTop + gameOutput.clientHeight >= gameOutput.scrollHeight - 10;
+                        scrollIndicator.style.opacity = isAtBottom ? '0.3' : '1';
+                    }
+                });
+                
+                // Click scroll indicator to scroll to bottom
+                if (scrollIndicator) {
+                    scrollIndicator.addEventListener('click', () => {
+                        gameOutput.scrollTo({ top: gameOutput.scrollHeight, behavior: 'smooth' });
+                    });
+                }
+            }
+        }
+        
+        // Enhanced accessibility event listeners
+        document.addEventListener('keydown', (e) => {
+            if (GameState.settings?.keyboardNavigation) {
+                // Tab navigation enhancement
+                if (e.key === 'Tab') {
+                    const focusableElements = document.querySelectorAll('button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                    const currentIndex = Array.from(focusableElements).indexOf(document.activeElement);
+                    
+                    if (e.shiftKey) {
+                        // Previous element
+                        const prevIndex = currentIndex - 1;
+                        if (prevIndex >= 0) {
+                            e.preventDefault();
+                            focusableElements[prevIndex].focus();
+                        }
+                    } else {
+                        // Next element
+                        const nextIndex = currentIndex + 1;
+                        if (nextIndex < focusableElements.length) {
+                            e.preventDefault();
+                            focusableElements[nextIndex].focus();
+                        }
+                    }
+                }
+                
+                // Escape key to close modals
+                if (e.key === 'Escape') {
+                    const modal = document.getElementById('modal');
+                    if (modal && !modal.classList.contains('hidden')) {
+                        closeModal();
+                    }
+                }
+            }
+        });
+        
+        // Enhanced TTS with speed control
+        const originalSpeakText = window.speakText;
+        window.speakText = function(text) {
+            if (GameState.settings?.screenReader || GameState.settings?.audioDescriptions) {
+                const utterance = new SpeechSynthesisUtterance(text.replace(/<[^>]*>/g, ''));
+                utterance.rate = GameState.settings?.ttsSpeed || 1;
+                utterance.pitch = 1;
+                utterance.volume = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        };
     });
     </script>
 </body>
