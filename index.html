@@ -935,36 +935,7 @@
     let stateSnapshots = [];
     let currentLanguage = 'en';
     let animationFrameId = null;
-    const UI = {
-        appContainer: document.getElementById('app-container'), startScreen: document.getElementById('start-screen'), gameScreen: document.getElementById('game-screen'),
-        newGameBtn: document.getElementById('new-game-btn'), loadGameBtn: document.getElementById('load-game-btn'), viewFeaturesBtn: document.getElementById('view-features-btn'),
-        startSettingsBtn: document.getElementById('start-settings-btn'),
-        playerSetup: document.getElementById('player-setup'), startOptions: document.getElementById('start-options'), playerNameInput: document.getElementById('player-name'),
-        playerBackstoryInput: document.getElementById('player-backstory'), startGameBtn: document.getElementById('start-game-btn'), difficultyBtns: document.querySelectorAll('.difficulty-btn'),
-        backToStartBtn: document.getElementById('back-to-start-btn'),
-        gameOutput: document.getElementById('game-output'), playerInput: document.getElementById('player-input'),
-        stats: { panel: document.getElementById('stats-panel'), name: document.getElementById('player-name-display'), awareness: document.getElementById('awareness-display'), sanity: document.getElementById('sanity-display'), tone: document.getElementById('tone-display'), turn: document.getElementById('turn-display'), },
-        objectives: { panel: document.getElementById('objectives-panel'), list: document.getElementById('objectives-list') },
-        inventory: { panel: document.getElementById('inventory-panel'), weight: document.getElementById('inventory-weight'), list: document.getElementById('inventory-list') },
-        journal: { panel: document.getElementById('journal-panel'), list: document.getElementById('journal-list') },
-        dialogueOptionsContainer: document.getElementById('dialogue-options'), modal: document.getElementById('modal'), modalContent: document.getElementById('modal-content'),
-        introTextContainer: document.getElementById('intro-text-container'), viewBackstoriesBtn: document.getElementById('view-backstories-btn'),
-        abilityDisplay: document.getElementById('ability-display'), statusBtn: document.getElementById('status-btn'), backgroundCanvas: document.getElementById('background-canvas'),
-        mapCanvas: document.getElementById('map-canvas'),
-        mapPanel: document.getElementById('map-panel'),
-        mapToggleBtn: document.getElementById('map-toggle-btn'),
-        mapLayersBtn: document.getElementById('map-layers-btn'),
-        mapExpandIcon: document.getElementById('map-expand-icon'),
-        mapMinimizeIcon: document.getElementById('map-minimize-icon'),
-        micBtn: document.getElementById('mic-btn'),
-        viewProgressionBtn: document.getElementById('view-progression-btn'),
-        langEnBtn: document.getElementById('lang-en-btn'), langSvBtn: document.getElementById('lang-sv-btn'),
-        langButtons: document.getElementById('lang-buttons'),
-        setupLangButtons: document.getElementById('setup-lang-buttons'),
-        setupSettingsBtn: document.getElementById('setup-settings-btn'),
-        setupFeaturesBtn: document.getElementById('setup-features-btn'),
-        autocompleteBox: document.getElementById('autocomplete-box'),
-    };
+    let UI = {}; // Initialize empty, will be populated after DOM loads
     let currentTextSpeed = TextSpeed.Normal;
     let commandHistory = []; let commandHistoryIndex = -1;
     let audioInitialized = false;
@@ -2341,8 +2312,22 @@
     }
     
     function showProgressionModal() {
-        const unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_STORAGE_KEY) || '{}');
-        const unlockedAchievements = JSON.parse(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY) || '{}');
+        let unlockedEndings = {};
+        let unlockedAchievements = {};
+        
+        try {
+            unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_STORAGE_KEY) || '{}');
+        } catch (e) {
+            console.error('Failed to parse endings from localStorage:', e);
+            unlockedEndings = {};
+        }
+        
+        try {
+            unlockedAchievements = JSON.parse(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY) || '{}');
+        } catch (e) {
+            console.error('Failed to parse achievements from localStorage:', e);
+            unlockedAchievements = {};
+        }
 
         let endingsHtml = `<h4 class="text-md font-bold mt-4 mb-2 text-white">${t('unlocked_endings')}</h4>`;
         const endingsList = Object.values(unlockedEndings);
@@ -2403,7 +2388,14 @@
         let content = `<h2 class="text-2xl mb-4 title-font text-cyan-400">${t('achievements_title')}</h2>
                        <div class="modal-scroll flex-grow p-2 text-left">`;
 
-        const unlockedAchievementsObj = JSON.parse(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY) || '{}');
+        let unlockedAchievementsObj = {};
+        try {
+            unlockedAchievementsObj = JSON.parse(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY) || '{}');
+        } catch (e) {
+            console.error('Failed to parse achievements from localStorage:', e);
+            unlockedAchievementsObj = {};
+        }
+        
         const unlockedAchievements = Object.keys(unlockedAchievementsObj);
         const totalAchievements = Object.keys(achievements).length;
         const unlockedCount = unlockedAchievements.length;
@@ -2614,6 +2606,16 @@
         setupToggle('setting-sanity', GameState.settings.sound, 'sanity');
         setupToggle('setting-colorblind', GameState.settings, 'colorblindMode');
         setupToggle('setting-crt', GameState.settings, 'glitchEffect');
+        
+        // Accessibility toggles
+        setupToggle('setting-high-contrast', GameState.settings, 'highContrast');
+        setupToggle('setting-large-text', GameState.settings, 'largeText');
+        setupToggle('setting-screen-reader', GameState.settings, 'screenReader');
+        setupToggle('setting-reduced-motion', GameState.settings, 'reducedMotion');
+        setupToggle('setting-audio-descriptions', GameState.settings, 'audioDescriptions');
+        setupToggle('setting-keyboard-navigation', GameState.settings, 'keyboardNavigation');
+        setupToggle('setting-focus-indicators', GameState.settings, 'focusIndicators');
+        setupToggle('setting-reading-support', GameState.settings, 'readingSupport');
 
         const setupButtonGroup = (buttons, key, valueMap) => {
             buttons.forEach(id => {
@@ -3339,6 +3341,70 @@
     // --- EVENT LISTENERS & INITIALIZATION ---
     window.addEventListener('beforeunload', saveStateToSession);
     window.addEventListener('DOMContentLoaded', () => {
+        // Initialize UI elements after DOM is loaded
+        UI = {
+            appContainer: document.getElementById('app-container'), 
+            startScreen: document.getElementById('start-screen'), 
+            gameScreen: document.getElementById('game-screen'),
+            newGameBtn: document.getElementById('new-game-btn'), 
+            loadGameBtn: document.getElementById('load-game-btn'), 
+            viewFeaturesBtn: document.getElementById('view-features-btn'),
+            startSettingsBtn: document.getElementById('start-settings-btn'),
+            playerSetup: document.getElementById('player-setup'), 
+            startOptions: document.getElementById('start-options'), 
+            playerNameInput: document.getElementById('player-name'),
+            playerBackstoryInput: document.getElementById('player-backstory'), 
+            startGameBtn: document.getElementById('start-game-btn'), 
+            difficultyBtns: document.querySelectorAll('.difficulty-btn'),
+            backToStartBtn: document.getElementById('back-to-start-btn'),
+            gameOutput: document.getElementById('game-output'), 
+            playerInput: document.getElementById('player-input'),
+            stats: { 
+                panel: document.getElementById('stats-panel'), 
+                name: document.getElementById('player-name-display'), 
+                awareness: document.getElementById('awareness-display'), 
+                sanity: document.getElementById('sanity-display'), 
+                tone: document.getElementById('tone-display'), 
+                turn: document.getElementById('turn-display') 
+            },
+            objectives: { 
+                panel: document.getElementById('objectives-panel'), 
+                list: document.getElementById('objectives-list') 
+            },
+            inventory: { 
+                panel: document.getElementById('inventory-panel'), 
+                weight: document.getElementById('inventory-weight'), 
+                list: document.getElementById('inventory-list') 
+            },
+            journal: { 
+                panel: document.getElementById('journal-panel'), 
+                list: document.getElementById('journal-list') 
+            },
+            dialogueOptionsContainer: document.getElementById('dialogue-options'), 
+            modal: document.getElementById('modal'), 
+            modalContent: document.getElementById('modal-content'),
+            introTextContainer: document.getElementById('intro-text-container'), 
+            viewBackstoriesBtn: document.getElementById('view-backstories-btn'),
+            abilityDisplay: document.getElementById('ability-display'), 
+            statusBtn: document.getElementById('status-btn'), 
+            backgroundCanvas: document.getElementById('background-canvas'),
+            mapCanvas: document.getElementById('map-canvas'),
+            mapPanel: document.getElementById('map-panel'),
+            mapToggleBtn: document.getElementById('map-toggle-btn'),
+            mapLayersBtn: document.getElementById('map-layers-btn'),
+            mapExpandIcon: document.getElementById('map-expand-icon'),
+            mapMinimizeIcon: document.getElementById('map-minimize-icon'),
+            micBtn: document.getElementById('mic-btn'),
+            viewProgressionBtn: document.getElementById('view-progression-btn'),
+            langEnBtn: document.getElementById('lang-en-btn'), 
+            langSvBtn: document.getElementById('lang-sv-btn'),
+            langButtons: document.getElementById('lang-buttons'),
+            setupLangButtons: document.getElementById('setup-lang-buttons'),
+            setupSettingsBtn: document.getElementById('setup-settings-btn'),
+            setupFeaturesBtn: document.getElementById('setup-features-btn'),
+            autocompleteBox: document.getElementById('autocomplete-box'),
+        };
+        
         // Load player choices first to pre-populate the setup screen
         loadPlayerChoices();
 
@@ -3475,6 +3541,100 @@
 
         initMapControls();
         setupBackgroundAnimation();
+        
+        // --- PWA FUNCTIONALITY ---
+        let deferredPrompt;
+        let pwaInstalled = false;
+        
+        // Check if device is mobile/tablet
+        function isMobileDevice() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/.test(userAgent);
+            const isTablet = /ipad|android(?!.*mobile)|tablet/.test(userAgent);
+            const isSmallScreen = window.innerWidth <= 768 || window.innerHeight <= 768;
+            return (isMobile || isTablet) && isSmallScreen;
+        }
+        
+        // Check if PWA can be installed
+        function canInstallPWA() {
+            return !pwaInstalled && deferredPrompt && isMobileDevice();
+        }
+        
+        // Show install prompt
+        function showInstallPrompt() {
+            if (!canInstallPWA()) return;
+            
+            const installBtn = document.createElement('button');
+            installBtn.className = 'bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 mt-4';
+            installBtn.innerHTML = `
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                Install SYNAPSE App
+            `;
+            installBtn.onclick = installApp;
+            
+            // Add to start screen if visible
+            if (!UI.startScreen.classList.contains('hidden')) {
+                const langButtons = UI.startScreen.querySelector('#lang-buttons');
+                if (langButtons) {
+                    langButtons.appendChild(installBtn);
+                }
+            }
+        }
+        
+        // Install PWA
+        async function installApp() {
+            if (!deferredPrompt) return;
+            
+            try {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    pwaInstalled = true;
+                    console.log('PWA installed successfully');
+                    // Remove install button
+                    document.querySelectorAll('button').forEach(btn => {
+                        if (btn.textContent.includes('Install SYNAPSE App')) {
+                            btn.remove();
+                        }
+                    });
+                }
+                
+                deferredPrompt = null;
+            } catch (error) {
+                console.error('PWA installation failed:', error);
+            }
+        }
+        
+        // PWA event listeners
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Only show install prompt on mobile devices
+            if (isMobileDevice()) {
+                setTimeout(showInstallPrompt, 2000); // Show after 2 seconds
+            }
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            pwaInstalled = true;
+            deferredPrompt = null;
+            console.log('PWA was installed');
+        });
+        
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => {
+                    console.log('Service Worker registered:', registration);
+                })
+                .catch(error => {
+                    console.error('Service Worker registration failed:', error);
+                });
+        }
     });
     </script>
 </body>
